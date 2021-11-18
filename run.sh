@@ -1,5 +1,5 @@
 cd build
-cmake ../cgql
+cmake ../cgql/
 make
 cp ./cgql ~/cgql-out/
 
@@ -7,4 +7,4 @@ if [ $1 -gt 0 ]
 then
   chmod 777 ~/cgql-out/cgql
 fi
-~/cgql-out/cgql
+time ~/cgql-out/cgql
