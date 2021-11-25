@@ -2,26 +2,30 @@
 #include "schema/GraphQLDefinition.h"
 
 int main() {
-  GraphQLObject address = {
+  GraphQLObject address (
     "Address",
     {
-      { "houseName", {
+      {
+        "houseName",
         GraphQLTypes::GraphQLString
-      }},
-      { "city", {
+      },
+      {
+        "city",
         GraphQLTypes::GraphQLString
-      }}
+      }
     }
-  };
-  GraphQLObject person = {
+  );
+  GraphQLObject person (
     "Person",
     {
-      { "name", {
-        GraphQLTypes::GraphQLInt
-      }},
-      { "address", {
-        address
-      }}
+      {
+        "name",
+        GraphQLTypes::GraphQLString
+      },
+      {
+        "address",
+        &address
+      }
     }
-  };
+  );
 }
