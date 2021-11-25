@@ -1,13 +1,13 @@
-#include "GraphQLScalar.h"
+#include "./GraphQLScalar.h"
 
 namespace GraphQLTypes {
-  GraphQLScalarType<Int> GraphQLInt(
+  inline GraphQLScalarType<Int> GraphQLInt(
     "Int",
     [](Int value) -> Int {
       return value;
     }
   );
-  GraphQLScalarType<String> GraphQLString(
+  inline GraphQLScalarType<String> GraphQLString(
     "String",
     [](String value) -> String {
       return value;
