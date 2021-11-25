@@ -2,7 +2,8 @@
 
 GraphQLField::GraphQLField(
   string name,
-  GraphQLOutputTypes type
-): name(name), type(type) {}
+  GraphQLOutputTypes type,
+  ResolverFunc resolve
+): name(name), type(type), resolve(resolve) {}
 
 GraphQLField::~GraphQLField() {}
