@@ -9,6 +9,8 @@ include_directories(utils)
 include_directories(schema)
 file(GLOB SOURCES
   schema/*.cpp
+  schema/GraphQLObject/*.h
+  schema/GraphQLObject/*.cpp
   utils/pch.h
   schema/*.h
   main.cpp
