@@ -10,9 +10,15 @@ using std::unordered_map;
 
 class GraphQLObject;
 
-using GraphQLOutputTypes = variant<
+using GraphQLType = variant<
   GraphQLScalarType<Int>,
   GraphQLScalarType<String>,
+  GraphQLObject*
+>;
+
+using GraphQLOutputTypes = variant<
+  Int,
+  String,
   GraphQLObject*
 >;
 
@@ -29,12 +35,12 @@ class GraphQLField {
 public:
   GraphQLField(
     string name,
-    GraphQLOutputTypes type,
+    GraphQLType type,
     ResolverFunc resolve
   );
   ~GraphQLField();
 private:
   string name;
-  GraphQLOutputTypes type;
+  GraphQLType type;
   ResolverFunc resolve;
 };
