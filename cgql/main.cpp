@@ -8,8 +8,8 @@ int main() {
         {
           "houseName",
           GraphQLTypes::GraphQLString,
-          [](unordered_map<string, GraphQLInputTypes>) -> GraphQLOutputTypes {
-            return nullptr;
+          [](unordered_map<string, GraphQLInputTypes>) -> String {
+            return "";
           }
         }
       }
@@ -20,14 +20,14 @@ int main() {
       {
         "name",
         GraphQLTypes::GraphQLString,
-        [](unordered_map<string, GraphQLInputTypes>) -> GraphQLOutputTypes {
-          return nullptr;
+        [](unordered_map<string, GraphQLInputTypes>) -> String {
+          return "";
         }
       },
       {
         "address",
         &address,
-        [](unordered_map<string, GraphQLInputTypes>) -> GraphQLOutputTypes {
+        [](unordered_map<string, GraphQLInputTypes>) -> GraphQLObject* {
           return nullptr;
         }
       }
