@@ -1,4 +1,3 @@
-#include "../../utils/pch.h"
 #include "GraphQLField.h"
 #include <vector>
 

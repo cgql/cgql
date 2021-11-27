@@ -11,8 +11,9 @@ file(GLOB SOURCES
   schema/*.cpp
   schema/GraphQLObject/*.h
   schema/GraphQLObject/*.cpp
-  utils/pch.h
   schema/*.h
+  logger/logger.h
+  logger/logger.cpp
   main.cpp
 )
 add_executable(cgql ${SOURCES})

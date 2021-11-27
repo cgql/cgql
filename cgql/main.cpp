@@ -1,4 +1,4 @@
-#include "utils/pch.h"
+#include "logger/logger.h"
 #include "schema/GraphQLDefinition.h"
 
 int main() {
@@ -33,4 +33,6 @@ int main() {
       }
     }
   );
+
+  logger::info("Hello, You are handsome anyways");
 }
