@@ -15,6 +15,7 @@ file(GLOB SOURCES
   logger/logger.h
   logger/logger.cpp
   type/*.h
+  type/*.cpp
   main.cpp
 )
 add_executable(cgql ${SOURCES})
