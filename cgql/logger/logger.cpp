@@ -1,8 +1,9 @@
 #include "logger.h"
+#include <ostream>
 
 namespace logger {
   void print(const char *ansiCode, const char *msg) {
-    std::cout << ansiCode << msg << RESET;
+    std::cout << ansiCode << msg << RESET << std::endl;
   }
 
   void info(const char *msg) {
