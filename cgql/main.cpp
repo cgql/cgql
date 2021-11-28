@@ -34,6 +34,23 @@ int main() {
       }
     }
   );
+  
+  Field name {
+    "name"
+  };
+
+  Document query {
+    { // vector
+      { // operation definition
+        QUERY,
+        { // selection set
+          &name
+        }
+      }
+    }
+  };
 
   logger::info("Hello, You are handsome anyways");
+  logger::success("Yayyyyyy!!");
+  logger::error("Ooops!");
 }
