@@ -1,5 +1,6 @@
 #include "logger/logger.h"
 #include "schema/GraphQLDefinition.h"
+#include "type/Document.h"
 
 int main() {
   GraphQLObject address {
