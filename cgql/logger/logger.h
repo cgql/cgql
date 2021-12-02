@@ -5,8 +5,21 @@ namespace logger {
   #define ERROR "\u001b[38;5;196m"
   #define RESET "\u001b[0m"
 
-  void print(const char* ansiCode, const char* msg);
-  void info(const char* msg);
-  void success(const char* msg);
-  void error(const char* msg);
+  template<typename T>
+  inline void print(const char *ansiCode, T msg) {
+    std::cout << ansiCode << msg << RESET << std::endl;
+  }
+
+  template<typename T>
+  inline void info(T msg) {
+    print<T>(INFO, msg);
+  }
+  template<typename T>
+  inline void success(T msg) {
+    print<T>(SUCCESS, msg);
+  }
+  template<typename T>
+  inline void error(T msg) {
+    print<T>(ERROR, msg);
+  }
 };
