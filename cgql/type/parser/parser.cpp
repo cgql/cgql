@@ -39,8 +39,16 @@ string Parser::parseName() {
 }
 
 Field* Parser::parseField() {
+  string name = this->parseName();
+  bool hasSelectionSet = this->checkType(TokenType::CURLY_BRACES_L);
+  SelectionSet selections;
+  if(hasSelectionSet) {
+    selections = this->parseSelectionSet();
+    this->tokenizer.advance();
+  }
   Field* field = new Field(
-    this->parseName()
+    name,
+    selections
   );
   return field;
 }
@@ -52,9 +60,9 @@ Selection Parser::parseSelection() {
 SelectionSet Parser::parseSelectionSet() {
   this->move(TokenType::CURLY_BRACES_L);
   SelectionSet selections;
-  while(!this->checkType(TokenType::CURLY_BRACES_R)) {
+  do {
     selections.push_back(this->parseSelection());
-  }
+  } while(!this->checkType(TokenType::CURLY_BRACES_R));
   return {
     selections
   };
