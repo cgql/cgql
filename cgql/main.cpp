@@ -1,4 +1,5 @@
 #include "type/parser/parser.h"
+#include "logger/logger.h"
 
 int main() {
 //  GraphQLObject address {
@@ -32,9 +33,18 @@ int main() {
 //      }
 //    }
 //  );
-  parse("      {         name       address     }      ");
-
-  parse("    {     name   }     ");
-
-  parse("{ name address _age }");
+  parse(
+    "{"
+    "  name"
+    "  address {"
+    "    city"
+    "  }"
+    "  age"
+    "  parents {"
+    "    father"
+    "    mother"
+    "  }"
+    "}"
+  );
+  parse("{}");
 }
