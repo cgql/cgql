@@ -22,7 +22,8 @@ typedef vector<Selection> SelectionSet;
 class Field {
 public:
   Field(
-    const string& name
+    const string& name,
+    const SelectionSet& selectionSet
   );
   ~Field();
 private:
