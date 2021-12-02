@@ -2,8 +2,9 @@
 
 // Field
 Field::Field(
-  const string& name
-): name(name), selectionSet() {}
+  const string& name,
+  const SelectionSet& selectionSet
+): name(name), selectionSet(selectionSet) {}
 
 Field::~Field() {}
 
