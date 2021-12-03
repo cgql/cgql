@@ -37,7 +37,6 @@ Token generateToken(TokenType type) {
 }
 Token generateToken(TokenType type, string value) {
   Token generatedToken(type, value);
-  logger::info(value);
   return generatedToken;
 }
 
