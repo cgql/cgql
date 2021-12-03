@@ -1,5 +1,23 @@
 #include "type/parser/parser.h"
 #include "logger/logger.h"
+#include <variant>
+
+void printSelectionSet(SelectionSet ss, int level) {
+  for(auto s : ss) {
+    string v;
+    for(int i = 0; i < level; i++) v += "  ";
+    std::visit([&v](Selection&& args) {
+      if(std::holds_alternative<Field*>(args)) {
+        v += std::get<Field*>(args)->getName();
+      }
+    }, s);
+    logger::info(v);
+    Field* selection = std::get<Field*>(s);
+    if(!selection->getSelectionSet().empty()) {
+      printSelectionSet(selection->getSelectionSet(), level + 1);
+    }
+  }
+}
 
 int main() {
 //  GraphQLObject address {
@@ -33,18 +51,24 @@ int main() {
 //      }
 //    }
 //  );
-  parse(
+  Document ast = parse(
     "{"
     "  name"
     "  address {"
-    "    city"
+    "    houseName"
     "  }"
     "  age"
     "  parents {"
-    "    father"
-    "    mother"
+    "    father {"
+    "      name"
+    "      age"
+    "    }"
+    "    mother {"
+    "      name"
+    "      age"
+    "    }"
     "  }"
     "}"
   );
-  parse("{}");
+  printSelectionSet(ast.getDefinitions()[0].getSelectionSet(), 0);
 }
