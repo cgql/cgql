@@ -26,6 +26,8 @@ public:
     const SelectionSet& selectionSet
   );
   ~Field();
+  inline string getName() { return this->name; }
+  inline SelectionSet getSelectionSet() { return this->selectionSet; }
 private:
   string name;
   SelectionSet selectionSet;
@@ -38,6 +40,8 @@ public:
     const SelectionSet& selectionSet
   );
   ~OperationDefinition();
+  inline OperationType getOperationType() { return this->operationType; }
+  inline SelectionSet getSelectionSet() { return this->selectionSet; }
 private:
   OperationType operationType;
   SelectionSet selectionSet;
@@ -49,6 +53,7 @@ public:
     const vector<OperationDefinition>& definitions
   );
   ~Document();
+  inline vector<OperationDefinition> getDefinitions() { return this->definitions; }
 private:
   vector<OperationDefinition> definitions;
 };
