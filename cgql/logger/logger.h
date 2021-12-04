@@ -1,3 +1,6 @@
+#ifndef LOGGER_H
+#define LOGGER_H
+
 #include <iostream>
 namespace logger {
   #define INFO "\u001b[38;5;226m"
@@ -23,3 +26,5 @@ namespace logger {
     print<T>(ERROR, msg);
   }
 };
+
+#endif
