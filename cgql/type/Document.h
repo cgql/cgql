@@ -2,6 +2,8 @@
 #include <variant>
 #include <vector>
 
+#include "../logger/logger.h"
+
 using std::vector;
 using std::variant;
 using std::string;
@@ -57,3 +59,6 @@ public:
 private:
   vector<OperationDefinition> definitions;
 };
+
+void printSelectionSet(SelectionSet selectionSet, int level);
+void printDocumentNode(Document& doc);
