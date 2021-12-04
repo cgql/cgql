@@ -13,5 +13,7 @@ int main() {
     "}"
   );
 
+  printDocumentNode(ast);
+
   return 0;
 }
