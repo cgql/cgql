@@ -1,3 +1,6 @@
+#ifndef DOCUMENT_H
+#define DOCUMENT_H
+
 #include <string>
 #include <variant>
 #include <vector>
@@ -28,8 +31,8 @@ public:
     const SelectionSet& selectionSet
   );
   ~Field();
-  inline string getName() { return this->name; }
-  inline SelectionSet getSelectionSet() { return this->selectionSet; }
+  inline string getName() const { return this->name; }
+  inline SelectionSet getSelectionSet() const { return this->selectionSet; }
 private:
   string name;
   SelectionSet selectionSet;
@@ -42,8 +45,8 @@ public:
     const SelectionSet& selectionSet
   );
   ~OperationDefinition();
-  inline OperationType getOperationType() { return this->operationType; }
-  inline SelectionSet getSelectionSet() { return this->selectionSet; }
+  inline OperationType getOperationType() const { return this->operationType; }
+  inline SelectionSet getSelectionSet() const { return this->selectionSet; }
 private:
   OperationType operationType;
   SelectionSet selectionSet;
@@ -55,10 +58,12 @@ public:
     const vector<OperationDefinition>& definitions
   );
   ~Document();
-  inline vector<OperationDefinition> getDefinitions() { return this->definitions; }
+  inline vector<OperationDefinition> getDefinitions() const { return this->definitions; }
 private:
   vector<OperationDefinition> definitions;
 };
 
 void printSelectionSet(SelectionSet selectionSet, int level);
 void printDocumentNode(Document& doc);
+
+#endif
