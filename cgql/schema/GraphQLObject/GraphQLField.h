@@ -1,12 +1,10 @@
 #include "../GraphQLScalarTypes.h"
-#include <unordered_map>
 #include <variant>
 #include <string>
 #include <functional>
 
 using std::variant;
 using std::string;
-using std::unordered_map;
 
 class GraphQLObject;
 
@@ -28,7 +26,7 @@ using GraphQLInputTypes = variant<
 >;
 
 using ResolverFunc = function<
-  GraphQLOutputTypes(unordered_map<string, GraphQLInputTypes>)
+  GraphQLOutputTypes()
 >;
 
 class GraphQLField {
@@ -39,6 +37,9 @@ public:
     ResolverFunc resolve
   );
   ~GraphQLField();
+  inline string getName() const { return this->name; };
+  inline GraphQLType getType() const { return this->type; };
+  inline ResolverFunc getResolver() const { return this->resolve; };
 private:
   string name;
   GraphQLType type;
