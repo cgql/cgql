@@ -10,6 +10,8 @@ file(GLOB SOURCES
   type/*.cpp
   type/parser/*.h
   type/parser/*.cpp
+  execute/*.h
+  execute/*.cpp
 )
 add_library(cgqlSource ${SOURCES})
 
