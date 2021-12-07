@@ -44,12 +44,12 @@ GroupedField collectFields(
   return groupedFields;
 }
 
-GraphQLOutputTypes executeField(
+GraphQLReturnTypes executeField(
   const GraphQLField& field,
-  const GraphQLType& fieldType,
+  const GraphQLScalarTypes& fieldType,
   const vector<Field>& fields
 ) {
-  GraphQLOutputTypes result = field.getResolver()();
+  GraphQLReturnTypes result = field.getResolver()();
   return result;
 }
 
@@ -70,7 +70,7 @@ ResultMap executeSelectionSet(
           objectType,
           fieldName
         );
-      const GraphQLType& fieldType = field.getType();
+      const GraphQLScalarTypes& fieldType = field.getType();
       resultMap.insert({
         responseKey,
         executeField(

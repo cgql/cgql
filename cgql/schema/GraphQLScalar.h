@@ -11,13 +11,13 @@ typedef int64_t Int;
 typedef std::string String;
 
 template<typename T>
-class GraphQLScalarType {
+class GraphQLTypesBase {
 public:
-  GraphQLScalarType(
+  GraphQLTypesBase(
     const string& name,
     const SerializeFunc<T>& serialize
   ): name(name), serialize(serialize) {};
-  ~GraphQLScalarType() {};
+  ~GraphQLTypesBase() {};
 private:
   string name;
   SerializeFunc<T> serialize;

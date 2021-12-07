@@ -2,7 +2,7 @@
 
 GraphQLField::GraphQLField(
   string name,
-  GraphQLType type,
+  GraphQLScalarTypes type,
   ResolverFunc resolve
 ): name(name), type(type), resolve(resolve) {}
 

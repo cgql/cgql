@@ -4,11 +4,12 @@
 #include "../type/Document.h"
 #include "../schema/GraphQLDefinition.h"
 #include <unordered_map>
+#include <any>
 
 using std::unordered_map;
 
 typedef unordered_map<string, vector<Field>> GroupedField;
-typedef unordered_map<string, GraphQLOutputTypes> ResultMap;
+typedef unordered_map<string, std::any> ResultMap;
 
 GraphQLField& findGraphQLFieldByName(
   const GraphQLObject& objectType,
@@ -20,9 +21,9 @@ GroupedField collectFields(
   const SelectionSet& selectionSet
 );
 
-GraphQLOutputTypes executeField(
+GraphQLReturnTypes executeField(
   const GraphQLField& field,
-  const GraphQLType& fieldType,
+  const GraphQLScalarTypes& fieldType,
   const vector<Field>& fields
 );
 

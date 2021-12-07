@@ -37,13 +37,6 @@ int main() {
 
   printDocumentNode(ast);
   for(auto e : execute(schema, ast)) {
-    std::visit([](GraphQLOutputTypes&& arg) {
-      if(std::holds_alternative<String>(arg)) {
-        logger::info(std::get<String>(arg));
-      } else if(std::holds_alternative<Int>(arg)) {
-        logger::info(std::get<Int>(arg));
-      }
-    }, e.second);
   }
 
   return 0;
