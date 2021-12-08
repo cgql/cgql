@@ -1,13 +1,14 @@
 #include "execute.h"
 #include "cgql/logger/logger.h"
 
-GraphQLField& findGraphQLFieldByName(
+GraphQLField findGraphQLFieldByName(
   const GraphQLObject& objectType,
   const string& fieldName
 ) {
   for(GraphQLField& field : objectType.getFields()) {
-    if(fieldName == field.getName())
+    if(fieldName == field.getName()) {
       return field;
+    }
   }
   throw fieldName;
 }
@@ -60,10 +61,9 @@ Data completeValue(
   const GraphQLReturnTypes& result
 ) {
   Data completedValue;
-  logger::success(fieldType.index());
-  if(fieldType.index() == 3) {
-    GraphQLObject* obj =
-      std::get<GraphQLObject*>(result);
+  if(fieldType.index() == 2) {
+    shared_ptr<GraphQLObject> obj =
+      std::get<shared_ptr<GraphQLObject>>(result);
     SelectionSet mergedSelectionSet =
       mergeSelectionSet(fields);
     ResultMap resultingValue = executeSelectionSet(
@@ -103,12 +103,12 @@ ResultMap executeSelectionSet(
   );
   for(auto const& [responseKey, fields] : groupedFieldSet) {
     try {
-      const GraphQLField& field =
+      GraphQLField field =
         findGraphQLFieldByName(
           objectType,
           responseKey
         );
-      const GraphQLScalarTypes& fieldType = field.getType();
+      GraphQLScalarTypes fieldType = field.getType();
       resultMap.data.insert({
         responseKey,
         executeField(field, fieldType, fields)
