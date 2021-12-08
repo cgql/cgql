@@ -1,6 +1,7 @@
+#include "../../cgqlPch.h"
+
 #include "parser.h"
 #include "../../logger/logger.h"
-#include <vector>
 
 using std::vector;
 

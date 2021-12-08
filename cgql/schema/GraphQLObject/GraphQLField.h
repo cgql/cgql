@@ -1,7 +1,6 @@
+#include "../../cgqlPch.h"
+
 #include "../GraphQLTypes.h"
-#include <variant>
-#include <string>
-#include <functional>
 
 using std::variant;
 using std::string;

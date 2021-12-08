@@ -1,6 +1,7 @@
+#include "../../cgqlPch.h"
+
 #include "../Document.h"
 #include "tokenizer.h"
-#include <string>
 
 using std::string;
 

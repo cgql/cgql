@@ -1,6 +1,7 @@
+#include "../../cgqlPch.h"
+
 #include "tokenizer.h"
 #include "../../logger/logger.h"
-#include <cctype>
 
 // InvalidTokenType
 InvalidTokenType::InvalidTokenType(

@@ -1,5 +1,4 @@
 #include "GraphQLObject.h"
-#include <vector>
 
 GraphQLObject::GraphQLObject(
   string name,

@@ -1,5 +1,4 @@
-#include <functional>
-#include <string>
+#include "../cgqlPch.h"
 
 using std::string;
 using std::function;
@@ -18,7 +17,7 @@ public:
     const SerializeFunc<T>& serialize
   ): name(name), serialize(serialize) {};
   ~GraphQLTypesBase() {};
+  SerializeFunc<T> serialize;
 private:
   string name;
-  SerializeFunc<T> serialize;
 };

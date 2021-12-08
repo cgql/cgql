@@ -1,9 +1,5 @@
 #include "execute.h"
 #include "cgql/logger/logger.h"
-#include <variant>
-
-using std::visit;
-using std::holds_alternative;
 
 GraphQLField& findGraphQLFieldByName(
   const GraphQLObject& objectType,
@@ -44,13 +40,56 @@ GroupedField collectFields(
   return groupedFields;
 }
 
-GraphQLReturnTypes executeField(
+SelectionSet mergeSelectionSet(
+  const vector<Field>& fields
+) {
+  SelectionSet mergedSelectionSet;
+  for(Field field : fields) {
+    SelectionSet fieldSelectionSet = field.getSelectionSet();
+    if(fieldSelectionSet.empty()) continue;
+    for(Selection subField : fieldSelectionSet) {
+      mergedSelectionSet.push_back(subField);
+    }
+  }
+  return mergedSelectionSet;
+}
+
+Data completeValue(
+  const GraphQLScalarTypes& fieldType,
+  const vector<Field>& fields,
+  const GraphQLReturnTypes& result
+) {
+  Data completedValue;
+  logger::success(fieldType.index());
+  if(fieldType.index() == 3) {
+    GraphQLObject* obj =
+      std::get<GraphQLObject*>(result);
+    SelectionSet mergedSelectionSet =
+      mergeSelectionSet(fields);
+    ResultMap resultingValue = executeSelectionSet(
+      mergedSelectionSet,
+      *obj
+    );
+    completedValue = std::make_shared<ResultMap>(resultingValue);
+  } else {
+    std::visit([&](GraphQLReturnTypes&& arg) {
+      if(arg.index() == 0) {
+        completedValue = std::get<Int>(arg);
+      } else {
+        completedValue = std::get<String>(arg);
+      }
+    }, result);
+  }
+  return completedValue;
+}
+
+Data executeField(
   const GraphQLField& field,
   const GraphQLScalarTypes& fieldType,
   const vector<Field>& fields
 ) {
   GraphQLReturnTypes result = field.getResolver()();
-  return result;
+  return completeValue(fieldType, fields, result);
 }
 
 ResultMap executeSelectionSet(
@@ -63,21 +102,16 @@ ResultMap executeSelectionSet(
     selectionSet
   );
   for(auto const& [responseKey, fields] : groupedFieldSet) {
-    const string& fieldName = fields[0].getName();
     try {
       const GraphQLField& field =
         findGraphQLFieldByName(
           objectType,
-          fieldName
+          responseKey
         );
       const GraphQLScalarTypes& fieldType = field.getType();
-      resultMap.insert({
+      resultMap.data.insert({
         responseKey,
-        executeField(
-          field,
-          fieldType,
-          fields
-        )
+        executeField(field, fieldType, fields)
       });
     } catch (string& fieldName) {}
   }

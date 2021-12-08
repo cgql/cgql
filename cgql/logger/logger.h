@@ -1,7 +1,8 @@
 #ifndef LOGGER_H
 #define LOGGER_H
 
-#include <iostream>
+#include "../cgqlPch.h"
+
 namespace logger {
   #define INFO "\u001b[38;5;226m"
   #define SUCCESS "\u001b[38;5;48m"

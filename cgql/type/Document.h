@@ -1,9 +1,7 @@
 #ifndef DOCUMENT_H
 #define DOCUMENT_H
 
-#include <string>
-#include <variant>
-#include <vector>
+#include "../cgqlPch.h"
 
 #include "../logger/logger.h"
 

@@ -1,5 +1,6 @@
+#include "../../cgqlPch.h"
+
 #include "GraphQLField.h"
-#include <vector>
 
 using std::string;
 using std::vector;

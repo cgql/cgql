@@ -19,3 +19,8 @@ target_include_directories(cgqlSource
   PUBLIC
   ../
 )
+
+target_precompile_headers(cgqlSource
+  PRIVATE
+  cgqlPch.h
+)

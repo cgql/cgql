@@ -3,9 +3,24 @@
 #include "cgql/schema/GraphQLDefinition.h"
 #include "cgql/execute/execute.h"
 
+void printRM(const ResultMap& rm) {
+  for(auto const& [key, value] : rm.data) {
+    if(value.index() == 0) {
+      auto rg = std::get<GraphQLReturnTypes>(value);
+      if(rg.index() == 0) {
+        logger::info(std::get<Int>(rg));
+      } else if(rg.index() == 1) {
+        logger::info(std::get<String>(rg));
+      }
+    } else {
+      printRM(*std::get<shared_ptr<ResultMap>>(value));
+    }
+  }
+}
+
 int main() {
-  GraphQLObject root {
-    "Query",
+  GraphQLObject* person = new GraphQLObject(
+    "Person",
     {
       {
         "name",
@@ -22,6 +37,18 @@ int main() {
         }
       }
     }
+  );
+  GraphQLObject root {
+    "Query",
+    {
+      {
+        "person",
+        GraphQLTypes::GraphQLObjectType,
+        [&]() -> GraphQLObject* {
+          return person;
+        }
+      }
+    }
   };
 
   GraphQLSchema schema {
@@ -30,14 +57,14 @@ int main() {
 
   Document ast = parse(
     "{"
-    "  name"
-    "  age"
+    "  person {"
+    "    name"
+    "    age"
+    "  }"
     "}"
   );
 
   printDocumentNode(ast);
-  for(auto e : execute(schema, ast)) {
-  }
-
+  ResultMap r = execute(schema, ast);
   return 0;
 }
