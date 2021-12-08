@@ -3,23 +3,27 @@
 #include "cgql/schema/GraphQLDefinition.h"
 #include "cgql/execute/execute.h"
 
-void printRM(const ResultMap& rm) {
+void printRM(const ResultMap& rm, int level) {
+  string indentation;
+  for(auto i = 0; i < level; i++) indentation += "  ";
   for(auto const& [key, value] : rm.data) {
     if(value.index() == 0) {
       auto rg = std::get<GraphQLReturnTypes>(value);
       if(rg.index() == 0) {
-        logger::info(std::get<Int>(rg));
+        string v = indentation + std::to_string(std::get<Int>(rg));
+        logger::info(v);
       } else if(rg.index() == 1) {
-        logger::info(std::get<String>(rg));
+        string v = indentation + std::get<String>(rg);
+        logger::info(v);
       }
     } else {
-      printRM(*std::get<shared_ptr<ResultMap>>(value));
+      printRM(*std::get<shared_ptr<ResultMap>>(value), level + 1);
     }
   }
 }
 
 int main() {
-  GraphQLObject* person = new GraphQLObject(
+  GraphQLObject person (
     "Person",
     {
       {
@@ -35,17 +39,37 @@ int main() {
         []() -> Int {
           return 14;
         }
+      },
+      {
+        "address",
+        GraphQLTypes::GraphQLObjectType,
+        []() -> shared_ptr<GraphQLObject> {
+          GraphQLObject a (
+            "Address",
+            {
+              {
+                "place",
+                GraphQLTypes::GraphQLString,
+                []() -> String {
+                  return "World";
+                }
+              }
+            }
+          );
+          return std::make_shared<GraphQLObject>(a);
+        }
       }
     }
   );
+  shared_ptr<GraphQLObject> person_ = std::make_shared<GraphQLObject>(person);
   GraphQLObject root {
     "Query",
     {
       {
         "person",
         GraphQLTypes::GraphQLObjectType,
-        [&]() -> GraphQLObject* {
-          return person;
+        [&]() -> shared_ptr<GraphQLObject> {
+          return person_;
         }
       }
     }
@@ -60,11 +84,15 @@ int main() {
     "  person {"
     "    name"
     "    age"
+    "    address {"
+    "      place"
+    "    }"
     "  }"
     "}"
   );
 
   printDocumentNode(ast);
   ResultMap r = execute(schema, ast);
+  printRM(r, 0);
   return 0;
 }
