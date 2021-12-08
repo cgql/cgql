@@ -4,19 +4,20 @@
 
 using std::variant;
 using std::string;
+using std::shared_ptr;
 
 class GraphQLObject;
 
 using GraphQLScalarTypes = variant<
   GraphQLTypesBase<Int>,
   GraphQLTypesBase<String>,
-  GraphQLTypesBase<GraphQLObject*>
+  GraphQLTypesBase<shared_ptr<GraphQLObject>>
 >;
 
 using GraphQLReturnTypes = variant<
   Int,
   String,
-  GraphQLObject*
+  shared_ptr<GraphQLObject>
 >;
 
 using ResolverFunc = function<
@@ -31,9 +32,9 @@ public:
     ResolverFunc resolve
   );
   ~GraphQLField();
-  inline string getName() const { return this->name; };
-  inline GraphQLScalarTypes getType() const { return this->type; };
-  inline ResolverFunc getResolver() const { return this->resolve; };
+  inline const string& getName() const { return this->name; };
+  inline const GraphQLScalarTypes& getType() const { return this->type; };
+  inline const ResolverFunc& getResolver() const { return this->resolve; };
 private:
   string name;
   GraphQLScalarTypes type;
