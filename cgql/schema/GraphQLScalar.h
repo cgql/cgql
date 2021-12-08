@@ -18,6 +18,7 @@ public:
   ): name(name), serialize(serialize) {};
   ~GraphQLTypesBase() {};
   SerializeFunc<T> serialize;
+  inline string getTypeName() const { return this->name; };
 private:
   string name;
 };
