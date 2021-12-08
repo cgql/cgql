@@ -20,7 +20,7 @@ struct ResultMap {
   unordered_map<string, Data> data;
 };
 
-GraphQLField& findGraphQLFieldByName(
+GraphQLField findGraphQLFieldByName(
   const GraphQLObject& objectType,
   const string& fieldName
 );
