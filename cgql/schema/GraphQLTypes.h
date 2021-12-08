@@ -1,5 +1,7 @@
 #include "./GraphQLScalar.h"
 
+using std::shared_ptr;
+
 class GraphQLObject;
 
 namespace GraphQLTypes {
@@ -15,9 +17,9 @@ namespace GraphQLTypes {
       return value;
     }
   );
-  inline GraphQLTypesBase<GraphQLObject*> GraphQLObjectType(
+  inline GraphQLTypesBase<shared_ptr<GraphQLObject>> GraphQLObjectType(
     "Object",
-    [](GraphQLObject* value) -> GraphQLObject* {
+    [](shared_ptr<GraphQLObject> value) -> shared_ptr<GraphQLObject> {
       return value;
     }
   );
