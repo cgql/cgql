@@ -3,6 +3,9 @@
 #include "../Document.h"
 #include "tokenizer.h"
 
+namespace cgql {
+namespace internal {
+
 using std::string;
 
 class Parser {
@@ -18,6 +21,7 @@ private:
   string document;
   Tokenizer tokenizer;
 
+  Definition parseDefinition();
   OperationDefinition parseOperationDefinition();
   SelectionSet parseSelectionSet();
   Selection parseSelection();
@@ -25,5 +29,7 @@ private:
 
   string parseName();
 };
+} // internal
 
-Document parse(const char* source);
+internal::Document parse(const char* source);
+} // cgql

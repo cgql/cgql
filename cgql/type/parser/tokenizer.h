@@ -2,6 +2,9 @@
 
 #include "utils.h"
 
+namespace cgql {
+namespace internal {
+
 #define enumToStr(enumValue) #enumValue
 
 using std::string;
@@ -71,3 +74,6 @@ private:
 
 Token generateToken(TokenType type, string value);
 Token generateToken(TokenType type);
+
+} // internal
+} // cgql

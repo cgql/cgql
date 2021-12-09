@@ -3,6 +3,9 @@
 #include "tokenizer.h"
 #include "../../logger/logger.h"
 
+namespace cgql {
+namespace internal {
+
 // InvalidTokenType
 InvalidTokenType::InvalidTokenType(
   TokenType expected,
@@ -91,3 +94,6 @@ void Tokenizer::advanceCursor(int8_t amount) {
     this->cursor += amount;
   }
 }
+
+} // internal
+} // cgql

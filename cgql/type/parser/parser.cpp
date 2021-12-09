@@ -3,6 +3,9 @@
 #include "parser.h"
 #include "../../logger/logger.h"
 
+namespace cgql {
+namespace internal {
+
 using std::vector;
 
 Parser::Parser(const char* document)
@@ -76,18 +79,28 @@ OperationDefinition Parser::parseOperationDefinition() {
   };
 }
 
+Definition Parser::parseDefinition() {
+  if(this->checkType(TokenType::CURLY_BRACES_L)) {
+    return this->parseOperationDefinition();
+  }
+
+  throw this->tokenizer.current;
+}
+
 Document Parser::parseDocument() {
-  vector<OperationDefinition> definitions;
+  vector<Definition> definitions;
   this->move(TokenType::START_OF_QUERY);
   do {
-    definitions.push_back(this->parseOperationDefinition());
+    definitions.push_back(this->parseDefinition());
   } while (this->checkType(TokenType::END_OF_QUERY));
   return {
     definitions
   };
 };
+} // internal
 
-Document parse(const char *document) {
-  Parser parser(document);
+internal::Document parse(const char *document) {
+  internal::Parser parser(document);
   return parser.parseDocument();
 };
+} // cgql

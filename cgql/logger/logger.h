@@ -3,6 +3,7 @@
 
 #include "../cgqlPch.h"
 
+namespace cgql {
 namespace logger {
   #define INFO "\u001b[38;5;226m"
   #define SUCCESS "\u001b[38;5;48m"
@@ -26,6 +27,7 @@ namespace logger {
   inline void error(T msg) {
     print<T>(ERROR, msg);
   }
-};
+} // logger
+} // cgql
 
 #endif

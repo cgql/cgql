@@ -1,5 +1,8 @@
 #include "../../cgqlPch.h"
 
+namespace cgql {
+namespace internal {
+
 using std::string;
 
 inline bool isLetter(uint32_t value) {
@@ -26,3 +29,6 @@ inline bool isNameStart(uint32_t value) {
 inline bool isNameContinue(uint32_t value) {
   return isLetter(value) || isDigit(value) || value == 0x005F;
 }
+
+} // internal
+} // cgql
