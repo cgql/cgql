@@ -10,13 +10,19 @@ void printRM(const ResultMap& rm, int level) {
     if(value.index() == 0) {
       auto rg = std::get<GraphQLReturnTypes>(value);
       if(rg.index() == 0) {
-        string v = indentation + std::to_string(std::get<Int>(rg));
+        string v = indentation +
+          key +
+          " " + std::to_string(std::get<Int>(rg));
         logger::info(v);
       } else if(rg.index() == 1) {
-        string v = indentation + std::get<String>(rg);
+        string v = indentation +
+          key +
+          " " + std::get<String>(rg);
         logger::info(v);
       }
     } else {
+      string v = indentation + key;
+      logger::info(v);
       printRM(*std::get<shared_ptr<ResultMap>>(value), level + 1);
     }
   }
@@ -83,15 +89,14 @@ int main() {
     "{"
     "  person {"
     "    name"
-    "    age"
     "    address {"
     "      place"
     "    }"
     "  }"
+    "  person"
     "}"
   );
 
-  printDocumentNode(ast);
   ResultMap r = execute(schema, ast);
   printRM(r, 0);
   return 0;
