@@ -1,6 +1,9 @@
 #include "execute.h"
 #include "cgql/logger/logger.h"
 
+namespace cgql {
+namespace internal {
+
 GraphQLField findGraphQLFieldByName(
   const GraphQLObject& objectType,
   const string& fieldName
@@ -97,21 +100,21 @@ ResultMap executeSelectionSet(
   const GraphQLObject &objectType
 ) {
   ResultMap resultMap;
-  GroupedField groupedFieldSet = collectFields(
+  GroupedField groupedFieldSet = cgql::internal::collectFields(
     objectType,
     selectionSet
   );
   for(auto const& [responseKey, fields] : groupedFieldSet) {
     try {
       GraphQLField field =
-        findGraphQLFieldByName(
+        cgql::internal::findGraphQLFieldByName(
           objectType,
           responseKey
         );
       GraphQLScalarTypes fieldType = field.getType();
       resultMap.data.insert({
         responseKey,
-        executeField(field, fieldType, fields)
+        cgql::internal::executeField(field, fieldType, fields)
       });
     } catch (string& fieldName) {}
   }
@@ -124,23 +127,33 @@ ResultMap executeQuery(
 ) {
   const GraphQLObject& queryType = schema.getQuery();
   const SelectionSet& selection = query.getSelectionSet();
-  return executeSelectionSet(selection, queryType);
+  return cgql::internal::executeSelectionSet(selection, queryType);
 }
 
 OperationDefinition getOperation(
   const Document& document,
   OperationType operationName
 ) {
-  for(auto opDef : document.getDefinitions()) {
-    if(opDef.getOperationType() == operationName) {
-      return opDef;
+  for(auto def : document.getDefinitions()) {
+    if(def.index() == 0) {
+      OperationDefinition opDef = std::get<OperationDefinition>(def);
+      if(opDef.getOperationType() == operationName) {
+        return opDef;
+      }
     }
   }
   throw operationName;
 }
+} // internal
 
-ResultMap execute(const GraphQLSchema &schema, const Document &document) {
+ResultMap execute(
+  const GraphQLSchema &schema,
+  const internal::Document &document
+) {
   // get operation
-  OperationDefinition operation = getOperation(document);
-  return executeQuery(operation, schema);
+  internal::OperationDefinition operation =
+    cgql::internal::getOperation(document);
+  return internal::executeQuery(operation, schema);
 }
+
+} // cgql

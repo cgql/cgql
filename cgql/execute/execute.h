@@ -5,10 +5,12 @@
 #include "../type/Document.h"
 #include "../schema/GraphQLDefinition.h"
 
+namespace cgql {
+
 using std::unordered_map;
 using std::shared_ptr;
 
-typedef unordered_map<string, vector<Field>> GroupedField;
+typedef unordered_map<string, vector<internal::Field>> GroupedField;
 
 struct ResultMap;
 typedef variant<
@@ -19,6 +21,8 @@ typedef variant<
 struct ResultMap {
   unordered_map<string, Data> data;
 };
+
+namespace internal {
 
 GraphQLField findGraphQLFieldByName(
   const GraphQLObject& objectType,
@@ -49,9 +53,13 @@ OperationDefinition getOperation(
   const Document& document,
   OperationType operationName = OperationType::QUERY
 );
+
+} // internal 
+
 ResultMap execute(
   const GraphQLSchema& schema,
-  const Document& document
+  const internal::Document& document
 );
 
+}
 #endif

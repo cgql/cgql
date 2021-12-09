@@ -5,6 +5,9 @@
 
 #include "../logger/logger.h"
 
+namespace cgql {
+namespace internal {
+
 using std::vector;
 using std::variant;
 using std::string;
@@ -50,18 +53,24 @@ private:
   SelectionSet selectionSet;
 };
 
+using Definition = variant<
+  OperationDefinition
+>;
+
 class Document {
 public:
   Document(
-    const vector<OperationDefinition>& definitions
+    const vector<Definition>& definitions
   );
   ~Document();
-  inline vector<OperationDefinition> getDefinitions() const { return this->definitions; }
+  inline vector<Definition> getDefinitions() const { return this->definitions; }
 private:
-  vector<OperationDefinition> definitions;
+  vector<Definition> definitions;
 };
+} // internal
 
-void printSelectionSet(SelectionSet selectionSet, int level);
-void printDocumentNode(Document& doc);
+void printSelectionSet(internal::SelectionSet selectionSet, int level);
+void printDocumentNode(internal::Document& doc);
+} // cgql
 
 #endif
