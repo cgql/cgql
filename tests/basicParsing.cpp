@@ -3,6 +3,8 @@
 #include "cgql/schema/GraphQLDefinition.h"
 #include "cgql/execute/execute.h"
 
+using namespace cgql;
+
 void printRM(const ResultMap& rm, int level) {
   string indentation;
   for(auto i = 0; i < level; i++) indentation += "  ";
@@ -85,7 +87,7 @@ int main() {
     root
   };
 
-  Document ast = parse(
+  auto ast = parse(
     "{"
     "  person {"
     "    name"
