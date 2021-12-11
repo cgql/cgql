@@ -84,6 +84,9 @@ Token Tokenizer::nextToken() {
       case 0x007D:
         this->advanceCursor(1);
         return generateToken(TokenType::CURLY_BRACES_R);
+      case 0x003A:
+        this->advanceCursor(1);
+        return generateToken(TokenType::COLON);
     }
   }
   return generateToken(TokenType::END_OF_QUERY);
