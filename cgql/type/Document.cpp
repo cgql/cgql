@@ -1,4 +1,5 @@
 #include "Document.h"
+#include "cgql/logger/logger.h"
 
 namespace cgql {
 namespace internal {
@@ -63,11 +64,27 @@ void printSelectionSet(internal::SelectionSet selectionSet, int level) {
   }
 }
 
+void printGQLObj(const GraphQLObject& obj, int level) {
+  string indentation;
+  for(int i = 0; i < level; i++) indentation += " ";
+  logger::info(indentation + obj.getName());
+  for(auto field : obj.getFields()) {
+    logger::info(indentation + field.getName());
+  }
+}
+
 void printDocumentNode(internal::Document &doc) {
   for(internal::Definition def : doc.getDefinitions()) {
     if(internal::OperationDefinition* opDef = std::get_if<internal::OperationDefinition>(&def)) {
       logger::info(opDef->getOperationType());
       printSelectionSet(opDef->getSelectionSet(), 0);
+    } else if(internal::TypeDefinition* typeDef =
+      std::get_if<internal::TypeDefinition>(&def)) {
+      if(typeDef->index() == 0) {
+        GraphQLObject obj =
+          std::get<GraphQLObject>(*typeDef);
+        printGQLObj(obj, 0);
+      }
     }
   }
 }
