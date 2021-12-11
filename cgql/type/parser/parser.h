@@ -1,3 +1,6 @@
+#ifndef PARSER_H
+#define PARSER_H
+
 #include "../../cgqlPch.h"
 
 #include "../Document.h"
@@ -28,8 +31,14 @@ private:
   Field* parseField();
 
   string parseName();
+
+  GraphQLScalarTypes parseType();
+  GraphQLObject parseObjectTypeDefinition();
+  GraphQLField parseFieldTypeDefinition();
 };
 } // internal
 
 internal::Document parse(const char* source);
 } // cgql
+
+#endif
