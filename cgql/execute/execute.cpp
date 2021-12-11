@@ -8,7 +8,7 @@ GraphQLField findGraphQLFieldByName(
   const GraphQLObject& objectType,
   const string& fieldName
 ) {
-  for(GraphQLField& field : objectType.getFields()) {
+  for(const GraphQLField& field : objectType.getFields()) {
     if(fieldName == field.getName()) {
       return field;
     }
@@ -91,7 +91,8 @@ Data executeField(
   const GraphQLScalarTypes& fieldType,
   const vector<Field>& fields
 ) {
-  GraphQLReturnTypes result = field.getResolver()();
+  GraphQLReturnTypes result = field.getResolver().has_value() ?
+    field.getResolver().value()() : 0;
   return completeValue(fieldType, fields, result);
 }
 
