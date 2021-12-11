@@ -12,7 +12,8 @@ public:
     const vector<GraphQLField>& fields
   );
   ~GraphQLObject();
-  inline vector<GraphQLField> getFields() const { return this->fields; };
+  inline const string& getName() const { return this->name; };
+  inline const vector<GraphQLField>& getFields() const { return this->fields; };
 private:
   string name;
   vector<GraphQLField> fields;
