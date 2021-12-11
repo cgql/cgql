@@ -1,3 +1,6 @@
+#ifndef TOKENIZER_H
+#define TOKENIZER_H
+
 #include "../../cgqlPch.h"
 
 #include "utils.h"
@@ -24,7 +27,9 @@ enum TokenType {
   CURLY_BRACES_R = 8,
 
   START_OF_QUERY = 9,
-  END_OF_QUERY = 10
+  END_OF_QUERY = 10,
+
+  COLON = 11
 };
 
 class InvalidTokenType : public exception {
@@ -77,3 +82,5 @@ Token generateToken(TokenType type);
 
 } // internal
 } // cgql
+
+#endif
