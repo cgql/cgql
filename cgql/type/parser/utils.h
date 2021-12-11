@@ -1,3 +1,6 @@
+#ifndef CGQL_UTILS_H
+#define CGQL_UTILS_H
+
 #include "../../cgqlPch.h"
 
 namespace cgql {
@@ -32,3 +35,5 @@ inline bool isNameContinue(uint32_t value) {
 
 } // internal
 } // cgql
+
+#endif
