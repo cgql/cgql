@@ -5,6 +5,7 @@
 using std::variant;
 using std::string;
 using std::shared_ptr;
+using std::optional;
 
 class GraphQLObject;
 
@@ -29,14 +30,14 @@ public:
   GraphQLField(
     string name,
     GraphQLScalarTypes type,
-    ResolverFunc resolve
+    optional<ResolverFunc> resolve
   );
   ~GraphQLField();
   inline const string& getName() const { return this->name; };
   inline const GraphQLScalarTypes& getType() const { return this->type; };
-  inline const ResolverFunc& getResolver() const { return this->resolve; };
+  inline const optional<ResolverFunc>& getResolver() const { return this->resolve; };
 private:
   string name;
   GraphQLScalarTypes type;
-  ResolverFunc resolve;
+  optional<ResolverFunc> resolve;
 };
