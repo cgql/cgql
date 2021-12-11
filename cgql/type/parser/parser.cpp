@@ -79,9 +79,59 @@ OperationDefinition Parser::parseOperationDefinition() {
   };
 }
 
+GraphQLScalarTypes Parser::parseType() {
+  Token type = this->move(TokenType::NAME);
+  string name = type.getValue();
+  if(name == "String") {
+    return GraphQLTypes::GraphQLString;
+  } else if(name == "Int") {
+    return GraphQLTypes::GraphQLInt;
+  } else {
+    // the type should be an object by now
+    return GraphQLTypes::GraphQLObjectType;
+  }
+}
+
+GraphQLField Parser::parseFieldTypeDefinition() {
+  string name = this->parseName();
+  this->move(TokenType::COLON);
+  GraphQLScalarTypes type = this->parseType();
+  return {
+    name,
+    type,
+    {}
+  };
+}
+
+GraphQLObject Parser::parseObjectTypeDefinition() {
+  string name = this->parseName();
+  vector<GraphQLField> fields;
+  if(this->checkType(TokenType::CURLY_BRACES_L)) {
+    this->tokenizer.advance();
+    do {
+      fields.push_back(
+        this->parseFieldTypeDefinition()
+      );
+    } while(!this->checkType(TokenType::CURLY_BRACES_R));
+  }
+  return {
+    name,
+    fields
+  };
+}
+
 Definition Parser::parseDefinition() {
   if(this->checkType(TokenType::CURLY_BRACES_L)) {
     return this->parseOperationDefinition();
+  }
+
+  if(this->checkType(TokenType::NAME)) {
+    string currentValue =
+      this->tokenizer.current.getValue();
+    this->tokenizer.advance();
+    if(currentValue == "type") {
+      return this->parseObjectTypeDefinition();
+    }
   }
 
   throw this->tokenizer.current;
