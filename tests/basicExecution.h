@@ -5,7 +5,7 @@
 
 using namespace cgql;
 
-void printRM(const ResultMap& rm, int level) {
+inline void printRM(const ResultMap& rm, int level) {
   string indentation;
   for(auto i = 0; i < level; i++) indentation += "  ";
   for(auto const& [key, value] : rm.data) {
@@ -30,7 +30,7 @@ void printRM(const ResultMap& rm, int level) {
   }
 }
 
-int main() {
+inline void runBasicExecution() {
   GraphQLObject person (
     "Person",
     {
@@ -101,5 +101,4 @@ int main() {
 
   ResultMap r = execute(schema, ast);
   printRM(r, 0);
-  return 0;
 }

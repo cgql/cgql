@@ -2,7 +2,9 @@ project(cgqlTests)
 
 add_executable(
   cgqlTests
-  basicParsing.cpp
+  ./basicExecution.h
+  ./advancedParsing.h
+  ./test.cpp
 )
 
 target_link_libraries(
