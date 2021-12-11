@@ -4,6 +4,7 @@
 #include "../cgqlPch.h"
 
 #include "../logger/logger.h"
+#include "../schema/GraphQLDefinition.h"
 
 namespace cgql {
 namespace internal {
@@ -53,8 +54,13 @@ private:
   SelectionSet selectionSet;
 };
 
+using TypeDefinition = variant<
+  GraphQLObject
+>;
+
 using Definition = variant<
-  OperationDefinition
+  OperationDefinition,
+  TypeDefinition
 >;
 
 class Document {
