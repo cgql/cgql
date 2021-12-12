@@ -30,71 +30,74 @@ inline void printRM(const ResultMap& rm, int level) {
 }
 
 inline void runBasicExecution() {
-  GraphQLObject person (
-    "Person",
-    {
+  for(int i = 0; i < 50000; i++) {
+    GraphQLObject person (
+      "Person",
       {
-        "name",
-        GraphQLTypes::GraphQLString,
-        []() -> String {
-          return "cw3dv";
-        }
-      },
-      {
-        "age",
-        GraphQLTypes::GraphQLInt,
-        []() -> Int {
-          return 14;
-        }
-      },
-      {
-        "address",
-        GraphQLTypes::GraphQLObjectType,
-        []() -> std::shared_ptr<GraphQLObject> {
-          GraphQLObject a (
-            "Address",
-            {
+        {
+          "name",
+          GraphQLTypes::GraphQLString,
+          []() -> String {
+            return "cw3dv";
+          }
+        },
+        {
+          "age",
+          GraphQLTypes::GraphQLInt,
+          []() -> Int {
+            return 14;
+          }
+        },
+        {
+          "address",
+          GraphQLTypes::GraphQLObjectType,
+          []() -> std::shared_ptr<GraphQLObject> {
+            GraphQLObject a (
+              "Address",
               {
-                "place",
-                GraphQLTypes::GraphQLString,
-                []() -> String {
-                  return "World";
+                {
+                  "place",
+                  GraphQLTypes::GraphQLString,
+                  []() -> String {
+                    return "World";
+                  }
                 }
               }
-            }
-          );
-          return std::make_shared<GraphQLObject>(a);
+            );
+            return std::make_shared<GraphQLObject>(a);
+          }
         }
       }
-    }
-  );
-  std::shared_ptr<GraphQLObject> person_ = std::make_shared<GraphQLObject>(person);
-  GraphQLObject root {
-    "Query",
-    {
+    );
+    std::shared_ptr<GraphQLObject> person_ = std::make_shared<GraphQLObject>(person);
+    GraphQLObject root {
+      "Query",
       {
-        "person",
-        GraphQLTypes::GraphQLObjectType,
-        [&]() -> Data {
-          return person_;
+        {
+          "person",
+          GraphQLTypes::GraphQLObjectType,
+          [&]() -> Data {
+            return person_;
+          }
         }
       }
-    }
-  };
+    };
 
-  GraphQLSchema schema {
-    root
-  };
+    GraphQLSchema schema {
+      root
+    };
 
-  auto ast = parse(
-    "{"
-    "  person {"
-    "    name"
-    "    age"
-    "  }"
-    "}"
-  );
+    auto ast = parse(
+      "{"
+      "  person {"
+      "    name"
+      "    age"
+      "  }"
+      "}"
+    );
+    // printDocumentNode(ast);
 
-  ResultMap r = execute(schema, ast);
-  printRM(r, 0);
+    ResultMap r = execute(schema, ast);
+    // printRM(r, 0);
+  }
 }

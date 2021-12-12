@@ -47,7 +47,7 @@ namespace internal {
   class Field;
 }
 
-typedef std::unordered_map<std::string, std::vector<internal::Field>> GroupedField;
+typedef std::unordered_map<string, std::vector<internal::Field>> GroupedField;
 
 struct ResultMap;
 typedef std::variant<
@@ -56,7 +56,7 @@ typedef std::variant<
 > Data;
 
 struct ResultMap {
-  std::unordered_map<std::string, Data> data;
+  std::unordered_map<string, Data> data;
 };
 
 using ResolverFunc = function<

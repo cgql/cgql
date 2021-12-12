@@ -115,7 +115,7 @@ GraphQLObject Parser::parseObjectTypeDefinition() {
     } while(!this->checkType(TokenType::CURLY_BRACES_R));
   }
   return {
-    name,
+    name.data(),
     fields
   };
 }

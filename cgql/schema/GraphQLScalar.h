@@ -16,14 +16,14 @@ template<typename T>
 class GraphQLTypesBase {
 public:
   GraphQLTypesBase(
-    const string& name,
+    String name,
     const SerializeFunc<T>& serialize
   ): name(name), serialize(serialize) {};
   ~GraphQLTypesBase() {};
   SerializeFunc<T> serialize;
-  inline string getTypeName() const { return this->name; };
+  inline String getTypeName() const { return this->name; };
 private:
-  string name;
+  String name;
 };
 
 #endif

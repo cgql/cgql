@@ -138,7 +138,9 @@ ResultMap executeSelectionSet(
           {}
         )
       });
-    } catch (string fieldName) {}
+    } catch(string& fieldName) {
+      // logger::error(fieldName);
+    }
   }
   return resultMap;
 }

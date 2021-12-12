@@ -11,7 +11,7 @@ using std::vector;
 class GraphQLObject {
 public:
   GraphQLObject(
-    string name,
+    const char* name,
     const vector<GraphQLField>& fields
   );
   ~GraphQLObject();
