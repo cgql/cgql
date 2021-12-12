@@ -1,12 +1,13 @@
 #include "execute.h"
 #include "cgql/logger/logger.h"
+#include "defaultResolver.h"
 
 namespace cgql {
 namespace internal {
 
 GraphQLField findGraphQLFieldByName(
   const GraphQLObject& objectType,
-  const string& fieldName
+  string fieldName
 ) {
   for(const GraphQLField& field : objectType.getFields()) {
     if(fieldName == field.getName()) {
@@ -27,8 +28,8 @@ GroupedField collectFields(
         // holds a Field*
         Field* field = std::get<Field*>(arg);
 
-        const string& responseKey = field->getName();
-
+        string responseKey = field->getName();
+  
         GroupedField::iterator it =
           groupedFields.find(responseKey);
         if(it != groupedFields.end()) {
@@ -61,17 +62,21 @@ SelectionSet mergeSelectionSet(
 Data completeValue(
   const GraphQLScalarTypes& fieldType,
   const vector<Field>& fields,
-  const GraphQLReturnTypes& result
+  const Data& result,
+  const std::optional<ResultMap>& source 
 ) {
   Data completedValue;
   if(fieldType.index() == 2) {
-    shared_ptr<GraphQLObject> obj =
-      std::get<shared_ptr<GraphQLObject>>(result);
+    std::shared_ptr<GraphQLObject> obj =
+      std::get<std::shared_ptr<GraphQLObject>>(
+        std::get<GraphQLReturnTypes>(result)
+      );
     SelectionSet mergedSelectionSet =
       mergeSelectionSet(fields);
     ResultMap resultingValue = executeSelectionSet(
       mergedSelectionSet,
-      *obj
+      *obj,
+      source
     );
     completedValue = std::make_shared<ResultMap>(resultingValue);
   } else {
@@ -81,7 +86,7 @@ Data completeValue(
       } else {
         completedValue = std::get<String>(arg);
       }
-    }, result);
+    }, std::get<GraphQLReturnTypes>(result));
   }
   return completedValue;
 }
@@ -89,16 +94,27 @@ Data completeValue(
 Data executeField(
   const GraphQLField& field,
   const GraphQLScalarTypes& fieldType,
-  const vector<Field>& fields
+  const vector<Field>& fields,
+  const std::optional<ResultMap>& source 
 ) {
-  GraphQLReturnTypes result = field.getResolver().has_value() ?
-    field.getResolver().value()() : 0;
-  return completeValue(fieldType, fields, result);
+  Data result = field.getResolver().has_value() ?
+    field.getResolver().value()() :
+    defaultFieldResolver(
+      source.value(),
+      field.getName()
+    );
+  return completeValue(
+    fieldType,
+    fields,
+    result,
+    source
+  );
 }
 
 ResultMap executeSelectionSet(
   const SelectionSet &selectionSet,
-  const GraphQLObject &objectType
+  const GraphQLObject &objectType,
+  const std::optional<ResultMap>& source 
 ) {
   ResultMap resultMap;
   GroupedField groupedFieldSet = cgql::internal::collectFields(
@@ -115,9 +131,16 @@ ResultMap executeSelectionSet(
       GraphQLScalarTypes fieldType = field.getType();
       resultMap.data.insert({
         responseKey,
-        cgql::internal::executeField(field, fieldType, fields)
+        executeField(
+          field,
+          fieldType,
+          fields,
+          {}
+        )
       });
-    } catch (string& fieldName) {}
+    } catch(string& fieldName) {
+      // logger::error(fieldName);
+    }
   }
   return resultMap;
 }
@@ -128,7 +151,7 @@ ResultMap executeQuery(
 ) {
   const GraphQLObject& queryType = schema.getQuery();
   const SelectionSet& selection = query.getSelectionSet();
-  return cgql::internal::executeSelectionSet(selection, queryType);
+  return cgql::internal::executeSelectionSet(selection, queryType, {});
 }
 
 OperationDefinition getOperation(

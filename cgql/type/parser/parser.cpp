@@ -51,7 +51,7 @@ Field* Parser::parseField() {
     this->tokenizer.advance();
   }
   Field* field = new Field(
-    name,
+    name.data(),
     selections
   );
   return field;
@@ -115,7 +115,7 @@ GraphQLObject Parser::parseObjectTypeDefinition() {
     } while(!this->checkType(TokenType::CURLY_BRACES_R));
   }
   return {
-    name,
+    name.data(),
     fields
   };
 }

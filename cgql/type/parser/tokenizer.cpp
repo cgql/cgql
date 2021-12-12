@@ -46,7 +46,7 @@ Token generateToken(TokenType type, string value) {
 
 Token Tokenizer::tokenizeName() {
   uint16_t *i = &this->cursor;
-  string value;
+  string value; 
   for(; *i < this->source.length();) {
     if(
       isNameContinue(this->source[*i])
