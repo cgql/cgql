@@ -51,7 +51,7 @@ Field* Parser::parseField() {
     this->tokenizer.advance();
   }
   Field* field = new Field(
-    name,
+    name.data(),
     selections
   );
   return field;

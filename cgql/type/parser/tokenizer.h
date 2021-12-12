@@ -56,7 +56,7 @@ public:
   ~Token();
 
   inline TokenType getType() const { return this->type; }
-  inline string getValue() const { return this->value; }
+  inline const string& getValue() const { return this->value; }
 private:
   TokenType type;
   string value;

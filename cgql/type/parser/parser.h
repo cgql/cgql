@@ -4,6 +4,8 @@
 #include "../../cgqlPch.h"
 
 #include "../Document.h"
+#include "cgql/schema/GraphQLObject/GraphQLField.h"
+#include "cgql/schema/GraphQLTypes.h"
 #include "tokenizer.h"
 
 namespace cgql {

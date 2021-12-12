@@ -1,6 +1,8 @@
-#include "./GraphQLScalar.h"
+#ifndef GRAPHQL_TYPES_H
+#define GRAPHQL_TYPES_H
 
-using std::shared_ptr;
+#include "../cgqlPch.h"
+#include "./GraphQLScalar.h"
 
 class GraphQLObject;
 
@@ -17,10 +19,51 @@ namespace GraphQLTypes {
       return value;
     }
   );
-  inline GraphQLTypesBase<shared_ptr<GraphQLObject>> GraphQLObjectType(
+  inline GraphQLTypesBase<std::shared_ptr<GraphQLObject>> GraphQLObjectType(
     "Object",
-    [](shared_ptr<GraphQLObject> value) -> shared_ptr<GraphQLObject> {
+    [](std::shared_ptr<GraphQLObject> value) -> std::shared_ptr<GraphQLObject> {
       return value;
     }
   );
 }
+
+class GraphQLObject;
+
+using GraphQLScalarTypes = std::variant<
+  GraphQLTypesBase<Int>,
+  GraphQLTypesBase<String>,
+  GraphQLTypesBase<std::shared_ptr<GraphQLObject>>
+>;
+
+using GraphQLReturnTypes = std::variant<
+  Int,
+  String,
+  std::shared_ptr<GraphQLObject>
+>;
+
+namespace cgql {
+
+namespace internal {
+  class Field;
+}
+
+typedef std::unordered_map<std::string, std::vector<internal::Field>> GroupedField;
+
+struct ResultMap;
+typedef std::variant<
+  GraphQLReturnTypes,
+  std::shared_ptr<ResultMap>
+> Data;
+
+struct ResultMap {
+  std::unordered_map<std::string, Data> data;
+};
+
+using ResolverFunc = function<
+  Data()
+>;
+
+}
+
+
+#endif

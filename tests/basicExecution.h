@@ -1,7 +1,6 @@
 #include <cgql/type/parser/parser.h>
 #include <cgql/logger/logger.h>
-#include "cgql/schema/GraphQLDefinition.h"
-#include "cgql/execute/execute.h"
+#include <cgql/execute/execute.h>
 
 using namespace cgql;
 
@@ -13,19 +12,19 @@ inline void printRM(const ResultMap& rm, int level) {
       auto rg = std::get<GraphQLReturnTypes>(value);
       if(rg.index() == 0) {
         string v = indentation +
-          key +
+          key.data() +
           " " + std::to_string(std::get<Int>(rg));
         logger::info(v);
       } else if(rg.index() == 1) {
         string v = indentation +
-          key +
-          " " + std::get<String>(rg);
+          key.data() +
+          " " + std::get<String>(rg).data();
         logger::info(v);
       }
     } else {
-      string v = indentation + key;
+      string v = indentation + key.data();
       logger::info(v);
-      printRM(*std::get<shared_ptr<ResultMap>>(value), level + 1);
+      printRM(*std::get<std::shared_ptr<ResultMap>>(value), level + 1);
     }
   }
 }
@@ -51,7 +50,7 @@ inline void runBasicExecution() {
       {
         "address",
         GraphQLTypes::GraphQLObjectType,
-        []() -> shared_ptr<GraphQLObject> {
+        []() -> std::shared_ptr<GraphQLObject> {
           GraphQLObject a (
             "Address",
             {
@@ -69,14 +68,14 @@ inline void runBasicExecution() {
       }
     }
   );
-  shared_ptr<GraphQLObject> person_ = std::make_shared<GraphQLObject>(person);
+  std::shared_ptr<GraphQLObject> person_ = std::make_shared<GraphQLObject>(person);
   GraphQLObject root {
     "Query",
     {
       {
         "person",
         GraphQLTypes::GraphQLObjectType,
-        [&]() -> shared_ptr<GraphQLObject> {
+        [&]() -> Data {
           return person_;
         }
       }
@@ -91,11 +90,8 @@ inline void runBasicExecution() {
     "{"
     "  person {"
     "    name"
-    "    address {"
-    "      place"
-    "    }"
+    "    age"
     "  }"
-    "  person"
     "}"
   );
 

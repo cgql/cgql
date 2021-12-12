@@ -3,7 +3,7 @@
 GraphQLField::GraphQLField(
   string name,
   GraphQLScalarTypes type,
-  optional<ResolverFunc> resolve
+  std::optional<cgql::ResolverFunc> resolve
 ): name(name), type(type), resolve(resolve) {}
 
 GraphQLField::~GraphQLField() {}

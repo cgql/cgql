@@ -29,12 +29,12 @@ typedef vector<Selection> SelectionSet;
 class Field {
 public:
   Field(
-    const string& name,
+    string name,
     const SelectionSet& selectionSet
   );
   ~Field();
-  inline string getName() const { return this->name; }
-  inline SelectionSet getSelectionSet() const { return this->selectionSet; }
+  inline const string getName() const { return this->name; }
+  inline const SelectionSet& getSelectionSet() const { return this->selectionSet; }
 private:
   string name;
   SelectionSet selectionSet;
@@ -47,8 +47,8 @@ public:
     const SelectionSet& selectionSet
   );
   ~OperationDefinition();
-  inline OperationType getOperationType() const { return this->operationType; }
-  inline SelectionSet getSelectionSet() const { return this->selectionSet; }
+  inline const OperationType& getOperationType() const { return this->operationType; }
+  inline const SelectionSet& getSelectionSet() const { return this->selectionSet; }
 private:
   OperationType operationType;
   SelectionSet selectionSet;
@@ -69,7 +69,7 @@ public:
     const vector<Definition>& definitions
   );
   ~Document();
-  inline vector<Definition> getDefinitions() const { return this->definitions; }
+  inline const vector<Definition>& getDefinitions() const { return this->definitions; }
 private:
   vector<Definition> definitions;
 };

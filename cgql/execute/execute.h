@@ -2,31 +2,15 @@
 #define EXECUTE_H
 
 #include "../cgqlPch.h"
-#include "../type/Document.h"
 #include "../schema/GraphQLDefinition.h"
+#include "../type/Document.h"
 
 namespace cgql {
-
-using std::unordered_map;
-using std::shared_ptr;
-
-typedef unordered_map<string, vector<internal::Field>> GroupedField;
-
-struct ResultMap;
-typedef variant<
-  GraphQLReturnTypes,
-  shared_ptr<ResultMap>
-> Data;
-
-struct ResultMap {
-  unordered_map<string, Data> data;
-};
-
 namespace internal {
 
 GraphQLField findGraphQLFieldByName(
   const GraphQLObject& objectType,
-  const string& fieldName
+  string fieldName
 );
 
 GroupedField collectFields(
@@ -37,12 +21,14 @@ GroupedField collectFields(
 Data executeField(
   const GraphQLField& field,
   const GraphQLScalarTypes& fieldType,
-  const vector<Field>& fields
+  const vector<Field>& fields,
+  const std::optional<ResultMap>& source 
 );
 
 ResultMap executeSelectionSet(
   const SelectionSet& selectionSet,
-  const GraphQLObject& objectType
+  const GraphQLObject& objectType,
+  const std::optional<ResultMap>& source 
 );
 
 ResultMap executeQuery(

@@ -8,7 +8,7 @@ using std::ostream;
 
 // Field
 Field::Field(
-  const string& name,
+  string name,
   const SelectionSet& selectionSet
 ): name(name), selectionSet(selectionSet) {}
 
@@ -49,7 +49,7 @@ ostream& operator<<(ostream& out, OperationType type) {
 
 void printSelectionSet(internal::SelectionSet selectionSet, int level) {
   for(auto s : selectionSet) {
-    internal::string v;
+    string v;
     for(int i = 0; i < level; i++) v += "  ";
     std::visit([&v](internal::Selection&& args) {
       if(std::holds_alternative<internal::Field*>(args)) {
@@ -67,9 +67,9 @@ void printSelectionSet(internal::SelectionSet selectionSet, int level) {
 void printGQLObj(const GraphQLObject& obj, int level) {
   string indentation;
   for(int i = 0; i < level; i++) indentation += " ";
-  logger::info(indentation + obj.getName());
+  logger::info(indentation + obj.getName().data());
   for(auto field : obj.getFields()) {
-    logger::info(indentation + field.getName());
+    logger::info(indentation + field.getName().data());
   }
 }
 

@@ -1,3 +1,6 @@
+#ifndef GRAPHQL_SCALAR_H
+#define GRAPHQL_SCALAR_H
+
 #include "../cgqlPch.h"
 
 using std::string;
@@ -7,7 +10,7 @@ template<typename T>
 using SerializeFunc = function<T(T)>;
 
 typedef int64_t Int;
-typedef std::string String;
+typedef std::string_view String;
 
 template<typename T>
 class GraphQLTypesBase {
@@ -22,3 +25,5 @@ public:
 private:
   string name;
 };
+
+#endif
