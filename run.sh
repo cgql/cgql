@@ -6,7 +6,7 @@ function build() {
   make
 
   chmod +x tests/cgqlTests
-  ./tests/cgqlTests
+  time ./tests/cgqlTests
 }
 
-time build
+build
