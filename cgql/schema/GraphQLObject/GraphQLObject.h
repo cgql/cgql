@@ -18,14 +18,6 @@ public:
   ~GraphQLObject();
   inline const string& getName() const { return this->name; };
   inline const vector<GraphQLField>& getFields() const { return this->fields; };
-  inline const GraphQLField findFieldByName(string name) const {
-    for(auto field : this->getFields()) {
-      if(field.getName() == name) {
-        return field;
-      }
-    }
-    throw name;
-  };
   inline vector<GraphQLField>& getMutableFields() {
     return this->fields;
   }

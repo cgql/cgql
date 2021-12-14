@@ -18,6 +18,7 @@ public:
     string name,
     GraphQLScalarTypes type
   );
+  GraphQLField() = default;
   ~GraphQLField();
   inline const string& getName() const { return this->name; };
   inline const GraphQLScalarTypes& getType() const { return this->type; };

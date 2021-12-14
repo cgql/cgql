@@ -67,11 +67,11 @@ Data completeValue(
 ) {
   Data completedValue;
   if(fieldType.index() == 2) {
-    std::shared_ptr<ResultMap> v =
-      std::get<std::shared_ptr<ResultMap>>(result);
+    cgqlSPtr<ResultMap> v =
+      std::get<cgqlSPtr<ResultMap>>(result);
     GraphQLObject obj;
-    std::shared_ptr<GraphQLObject> schemaObj =
-      std::get<std::shared_ptr<GraphQLObject>>(fieldType);
+    cgqlSPtr<GraphQLObject> schemaObj =
+      std::get<cgqlSPtr<GraphQLObject>>(fieldType);
     for(auto const& elem : v->data) {
       for(auto field : schemaObj->getFields()) {
         if(field.getName() == elem.first) {
@@ -84,7 +84,7 @@ Data completeValue(
     }
     SelectionSet mergedSelectionSet =
       mergeSelectionSet(fields);
-    completedValue = std::make_shared<ResultMap>(
+    completedValue = cgqlSMakePtr<ResultMap>(
       executeSelectionSet(
         mergedSelectionSet,
         obj,

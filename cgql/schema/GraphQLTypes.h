@@ -26,13 +26,13 @@ class GraphQLObject;
 using GraphQLScalarTypes = std::variant<
   GraphQLTypesBase<Int>,
   GraphQLTypesBase<String>,
-  std::shared_ptr<GraphQLObject>
+  cgql::internal::cgqlSPtr<GraphQLObject>
 >;
 
 using GraphQLReturnTypes = std::variant<
   Int,
   String,
-  std::shared_ptr<GraphQLObject>
+  cgql::internal::cgqlSPtr<GraphQLObject>
 >;
 
 namespace cgql {
@@ -46,7 +46,7 @@ typedef std::unordered_map<string, std::vector<internal::Field>> GroupedField;
 struct ResultMap;
 typedef std::variant<
   GraphQLReturnTypes,
-  std::shared_ptr<ResultMap>
+  cgql::internal::cgqlSPtr<ResultMap>
 > Data;
 
 struct ResultMap {
