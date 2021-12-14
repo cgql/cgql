@@ -19,12 +19,6 @@ namespace GraphQLTypes {
       return value;
     }
   );
-  inline GraphQLTypesBase<std::shared_ptr<GraphQLObject>> GraphQLObjectType(
-    "Object",
-    [](std::shared_ptr<GraphQLObject> value) -> std::shared_ptr<GraphQLObject> {
-      return value;
-    }
-  );
 }
 
 class GraphQLObject;
@@ -32,7 +26,7 @@ class GraphQLObject;
 using GraphQLScalarTypes = std::variant<
   GraphQLTypesBase<Int>,
   GraphQLTypesBase<String>,
-  GraphQLTypesBase<std::shared_ptr<GraphQLObject>>
+  std::shared_ptr<GraphQLObject>
 >;
 
 using GraphQLReturnTypes = std::variant<

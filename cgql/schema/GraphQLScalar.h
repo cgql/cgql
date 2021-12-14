@@ -19,6 +19,7 @@ public:
     String name,
     const SerializeFunc<T>& serialize
   ): name(name), serialize(serialize) {};
+  GraphQLTypesBase() = default;
   ~GraphQLTypesBase() {};
   SerializeFunc<T> serialize;
   inline String getTypeName() const { return this->name; };

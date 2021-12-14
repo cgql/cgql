@@ -36,36 +36,11 @@ inline void runBasicExecution() {
       {
         {
           "name",
-          GraphQLTypes::GraphQLString,
-          []() -> String {
-            return "cw3dv";
-          }
+          GraphQLTypes::GraphQLString
         },
         {
           "age",
-          GraphQLTypes::GraphQLInt,
-          []() -> Int {
-            return 14;
-          }
-        },
-        {
-          "address",
-          GraphQLTypes::GraphQLObjectType,
-          []() -> std::shared_ptr<GraphQLObject> {
-            GraphQLObject a (
-              "Address",
-              {
-                {
-                  "place",
-                  GraphQLTypes::GraphQLString,
-                  []() -> String {
-                    return "World";
-                  }
-                }
-              }
-            );
-            return std::make_shared<GraphQLObject>(a);
-          }
+          GraphQLTypes::GraphQLInt
         }
       }
     );
@@ -75,9 +50,15 @@ inline void runBasicExecution() {
       {
         {
           "person",
-          GraphQLTypes::GraphQLObjectType,
+          person_,
           [&]() -> Data {
-            return person_;
+            ResultMap p {
+              {
+                { "name", "cw3dv" },
+                { "age", 14 }
+              }
+            };
+            return std::make_shared<ResultMap>(p);
           }
         }
       }
@@ -89,6 +70,8 @@ inline void runBasicExecution() {
 
     auto ast = parse(
       "{"
+      "  name"
+      "  age"
       "  person {"
       "    name"
       "    age"

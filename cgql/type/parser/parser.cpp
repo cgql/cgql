@@ -88,8 +88,9 @@ GraphQLScalarTypes Parser::parseType() {
     return GraphQLTypes::GraphQLInt;
   } else {
     // the type should be an object by now
-    return GraphQLTypes::GraphQLObjectType;
+    // return GraphQLTypes::GraphQLObjectType;
   }
+  throw type;
 }
 
 GraphQLField Parser::parseFieldTypeDefinition() {

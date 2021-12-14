@@ -14,6 +14,10 @@ public:
     GraphQLScalarTypes type,
     std::optional<cgql::ResolverFunc> resolve
   );
+  GraphQLField(
+    string name,
+    GraphQLScalarTypes type
+  );
   ~GraphQLField();
   inline const string& getName() const { return this->name; };
   inline const GraphQLScalarTypes& getType() const { return this->type; };

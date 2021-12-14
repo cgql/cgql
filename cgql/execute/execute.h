@@ -22,13 +22,13 @@ Data executeField(
   const GraphQLField& field,
   const GraphQLScalarTypes& fieldType,
   const vector<Field>& fields,
-  const std::optional<ResultMap>& source 
+  const std::optional<ResultMap> source
 );
 
 ResultMap executeSelectionSet(
   const SelectionSet& selectionSet,
   const GraphQLObject& objectType,
-  const std::optional<ResultMap>& source 
+  const std::optional<ResultMap>& source
 );
 
 ResultMap executeQuery(

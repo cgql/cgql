@@ -14,6 +14,7 @@ public:
     const char* name,
     const vector<GraphQLField>& fields
   );
+  GraphQLObject() = default;
   ~GraphQLObject();
   inline const string& getName() const { return this->name; };
   inline const vector<GraphQLField>& getFields() const { return this->fields; };
@@ -25,6 +26,9 @@ public:
     }
     throw name;
   };
+  inline vector<GraphQLField>& getMutableFields() {
+    return this->fields;
+  }
 private:
   string name;
   vector<GraphQLField> fields;

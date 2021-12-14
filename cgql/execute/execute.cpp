@@ -63,30 +63,36 @@ Data completeValue(
   const GraphQLScalarTypes& fieldType,
   const vector<Field>& fields,
   const Data& result,
-  const std::optional<ResultMap>& source 
+  const std::optional<ResultMap> source
 ) {
   Data completedValue;
   if(fieldType.index() == 2) {
-    std::shared_ptr<GraphQLObject> obj =
-      std::get<std::shared_ptr<GraphQLObject>>(
-        std::get<GraphQLReturnTypes>(result)
-      );
+    std::shared_ptr<ResultMap> v =
+      std::get<std::shared_ptr<ResultMap>>(result);
+    GraphQLObject obj;
+    std::shared_ptr<GraphQLObject> schemaObj =
+      std::get<std::shared_ptr<GraphQLObject>>(fieldType);
+    for(auto const& elem : v->data) {
+      for(auto field : schemaObj->getFields()) {
+        if(field.getName() == elem.first) {
+          obj.getMutableFields().push_back({
+            elem.first,
+            field.getType()
+          });
+        }
+      }
+    }
     SelectionSet mergedSelectionSet =
       mergeSelectionSet(fields);
-    ResultMap resultingValue = executeSelectionSet(
-      mergedSelectionSet,
-      *obj,
-      source
+    completedValue = std::make_shared<ResultMap>(
+      executeSelectionSet(
+        mergedSelectionSet,
+        obj,
+        *v
+      )
     );
-    completedValue = std::make_shared<ResultMap>(resultingValue);
   } else {
-    std::visit([&](GraphQLReturnTypes&& arg) {
-      if(arg.index() == 0) {
-        completedValue = std::get<Int>(arg);
-      } else {
-        completedValue = std::get<String>(arg);
-      }
-    }, std::get<GraphQLReturnTypes>(result));
+    completedValue = result;
   }
   return completedValue;
 }
@@ -95,14 +101,15 @@ Data executeField(
   const GraphQLField& field,
   const GraphQLScalarTypes& fieldType,
   const vector<Field>& fields,
-  const std::optional<ResultMap>& source 
+  const std::optional<ResultMap> source
 ) {
-  Data result = field.getResolver().has_value() ?
-    field.getResolver().value()() :
-    defaultFieldResolver(
-      source.value(),
-      field.getName()
-    );
+  Data result;
+  bool hasResolver = field.getResolver().has_value();
+  if(hasResolver) {
+    result = field.getResolver().value()();
+  } else {
+    result = defaultFieldResolver(source.value(), field.getName());
+  }
   return completeValue(
     fieldType,
     fields,
@@ -135,7 +142,7 @@ ResultMap executeSelectionSet(
           field,
           fieldType,
           fields,
-          {}
+          source
         )
       });
     } catch(string& fieldName) {

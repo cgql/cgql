@@ -10,3 +10,5 @@
 #include <string>
 
 #include <exception>
+
+#include <type_traits>
