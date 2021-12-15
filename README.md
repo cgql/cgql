@@ -26,6 +26,7 @@ tar -xzvf <file-name>.tar.gz
 Download the tarball file from release page and untar it using the above command.
 
 - Using CGQL
+
 CGQL is a statically linked library for Graphql which you can use on your own project to work with GraphQL in C++.
 That means you will have to link the library with your project
 
@@ -72,7 +73,8 @@ target_link_libraries(
 )
 ```
 
-**Yeah that's it now you can use CGQL in your project**
+**Yeah that's it now you can use CGQL in your project**.
+
 An example of executing a basic request
 ```cpp
 #include <cgql/schema/GraphQLDefinition.h>
@@ -137,5 +139,21 @@ int main() {
   */ 
 }
 ```
+
+Finally run:
+```bash
+cmake -B ./build/
+cmake --build ./build/
+chmod +x build/src/Source
+./build/src/Source
+```
+
+Output:
+```bash
+person
+  name cw3dv
+  age 14
+```
+
 And there you go, you have a working GraphQL service... :)
 More to come like networking stuff, better error management, etc...
