@@ -10,31 +10,43 @@ namespace internal {
 
 GraphQLField findGraphQLFieldByName(
   const GraphQLObject& objectType,
-  string fieldName
+  const string& fieldName
 );
 
 GroupedField collectFields(
-  const GraphQLObject& objectType,
-  const SelectionSet& selectionSet
+  const GraphQLObject &objectType,
+  const SelectionSet &selectionSet
+);
+
+SelectionSet mergeSelectionSet(
+  const vector<Field>& fields
+);
+
+Data completeValue(
+  const GraphQLScalarTypes& fieldType,
+  const vector<Field>& fields,
+  const Data& result,
+  const std::optional<ResultMap>& source
 );
 
 Data executeField(
   const GraphQLField& field,
   const GraphQLScalarTypes& fieldType,
   const vector<Field>& fields,
-  const std::optional<ResultMap> source
+  const std::optional<ResultMap>& source
 );
 
 ResultMap executeSelectionSet(
-  const SelectionSet& selectionSet,
-  const GraphQLObject& objectType,
-  const std::optional<ResultMap>& source
+  const SelectionSet &selectionSet,
+  const GraphQLObject &objectType,
+  const std::optional<ResultMap>& source 
 );
 
 ResultMap executeQuery(
   OperationDefinition& query,
   const GraphQLSchema& schema
 );
+
 OperationDefinition getOperation(
   const Document& document,
   OperationType operationName = OperationType::QUERY

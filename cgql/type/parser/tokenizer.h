@@ -51,8 +51,8 @@ public:
 
 class Token {
 public:
-  Token(TokenType type);
-  Token(TokenType type, string value);
+  Token(const TokenType& type);
+  Token(const TokenType& type, const string& value);
   ~Token();
 
   inline TokenType getType() const { return this->type; }
@@ -64,7 +64,7 @@ private:
 
 class Tokenizer {
 public:
-  Tokenizer(string source);
+  Tokenizer(const char* source);
   ~Tokenizer();
   Token nextToken();
   Token current;
@@ -77,7 +77,7 @@ private:
   Token tokenizeName();
 };
 
-Token generateToken(TokenType type, string value);
+Token generateToken(TokenType type, const string& value);
 Token generateToken(TokenType type);
 
 } // internal

@@ -10,10 +10,10 @@ using std::vector;
 
 Parser::Parser(const char* document)
   : document(document),
-    tokenizer(this->document) {}
+    tokenizer(document) {}
 Parser::~Parser() {}
 
-Token Parser::move(TokenType type) {
+Token Parser::move(const TokenType& type) {
   if(checkType(type)) {
     Token returnToken = this->tokenizer.current;
     this->tokenizer.advance();
@@ -24,7 +24,7 @@ Token Parser::move(TokenType type) {
   throw new InvalidTokenType(type, this->tokenizer.current.getType());
 }
 
-bool Parser::moveUntil(TokenType type) {
+bool Parser::moveUntil(const TokenType& type) {
   if(!this->checkType(type)) {
     this->tokenizer.advance();
     return true;
@@ -32,7 +32,7 @@ bool Parser::moveUntil(TokenType type) {
   return false;
 }
 
-bool Parser::checkType(TokenType type) {
+bool Parser::checkType(const TokenType& type) {
   if(this->tokenizer.current.getType() == type)
     return true;
   return false;

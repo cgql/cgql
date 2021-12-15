@@ -29,7 +29,7 @@ typedef vector<Selection> SelectionSet;
 class Field {
 public:
   Field(
-    string name,
+    const string& name,
     const SelectionSet& selectionSet
   );
   ~Field();
@@ -43,7 +43,7 @@ private:
 class OperationDefinition {
 public:
   OperationDefinition(
-    OperationType operationType,
+    const OperationType& operationType,
     const SelectionSet& selectionSet
   );
   ~OperationDefinition();

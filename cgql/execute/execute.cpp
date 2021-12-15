@@ -7,7 +7,7 @@ namespace internal {
 
 GraphQLField findGraphQLFieldByName(
   const GraphQLObject& objectType,
-  string fieldName
+  const string& fieldName
 ) {
   for(const GraphQLField& field : objectType.getFields()) {
     if(fieldName == field.getName()) {
@@ -26,7 +26,8 @@ GroupedField collectFields(
     std::visit([&groupedFields](Selection&& arg) {
       if(std::holds_alternative<Field*>(arg)) {
         // holds a Field*
-        Field* field = std::get<Field*>(arg);
+        Field* field =
+          std::get<Field*>(arg);
 
         string responseKey = field->getName();
   
@@ -63,7 +64,7 @@ Data completeValue(
   const GraphQLScalarTypes& fieldType,
   const vector<Field>& fields,
   const Data& result,
-  const std::optional<ResultMap> source
+  const std::optional<ResultMap>& source
 ) {
   Data completedValue;
   if(fieldType.index() == 2) {
@@ -101,7 +102,7 @@ Data executeField(
   const GraphQLField& field,
   const GraphQLScalarTypes& fieldType,
   const vector<Field>& fields,
-  const std::optional<ResultMap> source
+  const std::optional<ResultMap>& source
 ) {
   Data result;
   bool hasResolver = field.getResolver().has_value();

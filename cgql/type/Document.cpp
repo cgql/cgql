@@ -8,7 +8,7 @@ using std::ostream;
 
 // Field
 Field::Field(
-  string name,
+  const string& name,
   const SelectionSet& selectionSet
 ): name(name), selectionSet(selectionSet) {}
 
@@ -16,7 +16,7 @@ Field::~Field() {}
 
 // OperationDefinition
 OperationDefinition::OperationDefinition(
-  OperationType operationType,
+  const OperationType& operationType,
   const SelectionSet& selectionSet
 ): operationType(operationType), selectionSet(selectionSet) {}
 

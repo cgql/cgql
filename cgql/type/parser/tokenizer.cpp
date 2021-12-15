@@ -18,14 +18,14 @@ InvalidTokenType::InvalidTokenType(
   ) {}
 
 // Token
-Token::Token(TokenType type)
+Token::Token(const TokenType& type)
   : type(type) {}
-Token::Token(TokenType type, string value)
+Token::Token(const TokenType& type, const string& value)
   : type(type), value(value) {}
 Token::~Token() {}
 
 // Tokenizer
-Tokenizer::Tokenizer(string source)
+Tokenizer::Tokenizer(const char* source)
   : source(source),
     cursor(0),
     current(generateToken(TokenType::START_OF_QUERY)) {}
@@ -39,13 +39,13 @@ Token generateToken(TokenType type) {
   Token generatedToken(type);
   return generatedToken;
 }
-Token generateToken(TokenType type, string value) {
+Token generateToken(TokenType type, const string& value) {
   Token generatedToken(type, value);
   return generatedToken;
 }
 
 Token Tokenizer::tokenizeName() {
-  uint16_t *i = &this->cursor;
+  uint16_t* i = &this->cursor;
   string value; 
   for(; *i < this->source.length();) {
     if(

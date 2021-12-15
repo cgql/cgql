@@ -10,13 +10,13 @@ using std::string;
 class GraphQLField {
 public:
   GraphQLField(
-    string name,
-    GraphQLScalarTypes type,
-    std::optional<cgql::ResolverFunc> resolve
+    const string& name,
+    const GraphQLScalarTypes& type,
+    const std::optional<cgql::ResolverFunc>& resolve
   );
   GraphQLField(
-    string name,
-    GraphQLScalarTypes type
+    const string& name,
+    const GraphQLScalarTypes& type
   );
   GraphQLField() = default;
   ~GraphQLField();

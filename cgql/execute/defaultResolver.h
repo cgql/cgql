@@ -11,10 +11,10 @@ using std::string;
 
 inline Data defaultFieldResolver(
   const ResultMap& source,
-  string name
+  const string& name
 ) {
-  auto it = source.data.find(name);
-  return it->second;
+  // auto it = source.data.find(name);
+  return source.data.at(name);
 }
 
 } // internal

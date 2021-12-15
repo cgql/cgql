@@ -19,9 +19,9 @@ public:
   ~Parser();
   Document parseDocument();
 private:
-  Token move(TokenType type);
-  bool moveUntil(TokenType type);
-  bool checkType(TokenType type);
+  Token move(const TokenType& type);
+  bool moveUntil(const TokenType& type);
+  bool checkType(const TokenType& type);
 
   string document;
   Tokenizer tokenizer;
