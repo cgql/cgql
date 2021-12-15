@@ -77,6 +77,7 @@ private:
 
 void printSelectionSet(internal::SelectionSet selectionSet, int level);
 void printDocumentNode(internal::Document& doc);
+void printResultMap(const ResultMap& rm, uint8_t level = 0);
 } // cgql
 
 #endif

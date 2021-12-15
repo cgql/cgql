@@ -88,4 +88,30 @@ void printDocumentNode(internal::Document &doc) {
     }
   }
 }
+
+void printResultMap(const ResultMap& rm, uint8_t level) {
+  string indentation;
+  for(auto i = 0; i < level; i++) indentation += "  ";
+  for(auto const& [key, value] : rm.data) {
+    if(value.index() == 0) {
+      auto rg = std::get<GraphQLReturnTypes>(value);
+      if(rg.index() == 0) {
+        string v = indentation +
+          key.data() +
+          " " + std::to_string(std::get<Int>(rg));
+        logger::info(v);
+      } else if(rg.index() == 1) {
+        string v = indentation +
+          key.data() +
+          " " + std::get<String>(rg).data();
+        logger::info(v);
+      }
+    } else {
+      string v = indentation + key.data();
+      logger::info(v);
+      printResultMap(*std::get<std::shared_ptr<ResultMap>>(value), level + 1);
+    }
+  }
+}
+
 } // cgql
