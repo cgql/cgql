@@ -3,6 +3,8 @@
 
 #include "../cgqlPch.h"
 
+namespace cgql {
+
 using std::string;
 using std::function;
 
@@ -26,5 +28,7 @@ public:
 private:
   String name;
 };
+
+} // cgql
 
 #endif

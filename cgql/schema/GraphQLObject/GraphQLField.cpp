@@ -1,5 +1,7 @@
 #include "GraphQLField.h"
 
+namespace cgql {
+
 GraphQLField::GraphQLField(
   const string& name,
   const GraphQLScalarTypes& type,
@@ -12,3 +14,5 @@ GraphQLField::GraphQLField(
 ): name(name), type(type) {}
 
 GraphQLField::~GraphQLField() {}
+
+} // cgql

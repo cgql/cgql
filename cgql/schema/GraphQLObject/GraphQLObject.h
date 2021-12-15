@@ -5,6 +5,8 @@
 
 #include "GraphQLField.h"
 
+namespace cgql {
+
 using std::string;
 using std::vector;
 
@@ -25,5 +27,7 @@ private:
   string name;
   vector<GraphQLField> fields;
 };
+
+} // cgql
 
 #endif

@@ -30,7 +30,20 @@ inline void printRM(const ResultMap& rm, int level) {
 }
 
 inline void runBasicExecution() {
-  for(int i = 0; i < 50000; i++) {
+  for(int i = 0; i < 1; i++) {
+    GraphQLObject address {
+      "Address",
+      {
+        {
+          "city",
+          GraphQLTypes::GraphQLString
+        },
+        {
+          "houseName",
+          GraphQLTypes::GraphQLString
+        }
+      }
+    };
     GraphQLObject person (
       "Person",
       {
@@ -41,6 +54,10 @@ inline void runBasicExecution() {
         {
           "age",
           GraphQLTypes::GraphQLInt
+        },
+        {
+          "address",
+          cgqlSMakePtr<GraphQLObject>(address)
         }
       }
     );
@@ -51,11 +68,18 @@ inline void runBasicExecution() {
         {
           "person",
           person_,
-          [&]() -> Data {
+          [&]() -> Data  {
+            ResultMap a {
+              {
+                { "city", "0xFF Park" },
+                { "houseName", "cw3dv's homeeeee" }
+              }
+            };
             ResultMap p {
               {
                 { "name", "cw3dv" },
-                { "age", 14 }
+                { "age", 14 },
+                { "address", cgqlSMakePtr<ResultMap>(a) }
               }
             };
             return std::make_shared<ResultMap>(p);
@@ -73,6 +97,9 @@ inline void runBasicExecution() {
       "  person {"
       "    name"
       "    age"
+      "    address {"
+      "      city"
+      "    }"
       "  }"
       "}"
     );

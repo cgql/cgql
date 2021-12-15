@@ -4,6 +4,8 @@
 #include "../cgqlPch.h"
 #include "./GraphQLScalar.h"
 
+namespace cgql {
+
 class GraphQLObject;
 
 namespace GraphQLTypes {
@@ -21,32 +23,31 @@ namespace GraphQLTypes {
   );
 }
 
-class GraphQLObject;
-
 using GraphQLScalarTypes = std::variant<
   GraphQLTypesBase<Int>,
   GraphQLTypesBase<String>,
-  cgql::internal::cgqlSPtr<GraphQLObject>
+  cgqlSPtr<GraphQLObject>
 >;
 
 using GraphQLReturnTypes = std::variant<
   Int,
   String,
-  cgql::internal::cgqlSPtr<GraphQLObject>
+  cgqlSPtr<GraphQLObject>
 >;
+
+}
 
 namespace cgql {
 
 namespace internal {
   class Field;
+  typedef std::unordered_map<string, std::vector<internal::Field>> GroupedField;
 }
-
-typedef std::unordered_map<string, std::vector<internal::Field>> GroupedField;
 
 struct ResultMap;
 typedef std::variant<
   GraphQLReturnTypes,
-  cgql::internal::cgqlSPtr<ResultMap>
+  cgqlSPtr<ResultMap>
 > Data;
 
 struct ResultMap {

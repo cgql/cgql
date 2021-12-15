@@ -2,6 +2,8 @@
 #define GRAPHQL_DEFINITION_H
 #include "GraphQLObject/GraphQLObject.h"
 
+namespace cgql {
+
 class GraphQLSchema {
 public:
   GraphQLSchema(
@@ -14,5 +16,7 @@ public:
 private:
   GraphQLObject query;
 };
+
+} // cgql
 
 #endif

@@ -5,6 +5,8 @@
 
 #include "../GraphQLTypes.h"
 
+namespace cgql {
+
 using std::string;
 
 class GraphQLField {
@@ -28,5 +30,7 @@ private:
   GraphQLScalarTypes type;
   std::optional<cgql::ResolverFunc> resolve;
 };
+
+} // cgql
 
 #endif
