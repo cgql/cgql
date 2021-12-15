@@ -23,25 +23,23 @@ GroupedField collectFields(
 ) {
   GroupedField groupedFields;
   for(Selection selection : selectionSet) {
-    std::visit([&groupedFields](Selection&& arg) {
-      if(std::holds_alternative<Field*>(arg)) {
-        // holds a Field*
-        Field* field =
-          std::get<Field*>(arg);
+    if(selection.index() == 0) {
+      // holds a Field*
+      Field* field =
+        std::get<Field*>(selection);
 
-        string responseKey = field->getName();
-  
-        GroupedField::iterator it =
-          groupedFields.find(responseKey);
-        if(it != groupedFields.end()) {
-          it->second.push_back(*field);
-        } else {
-          groupedFields.insert({ responseKey, { *field } });
-        }
+      string responseKey = field->getName();
 
-        delete field;
+      GroupedField::iterator it =
+        groupedFields.find(responseKey);
+      if(it != groupedFields.end()) {
+        it->second.push_back(*field);
+      } else {
+        groupedFields.insert({ responseKey, { *field } });
       }
-    }, selection);
+
+      delete field;
+    }
   }
   return groupedFields;
 }

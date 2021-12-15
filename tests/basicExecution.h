@@ -70,8 +70,6 @@ inline void runBasicExecution() {
 
     auto ast = parse(
       "{"
-      "  name"
-      "  age"
       "  person {"
       "    name"
       "    age"
