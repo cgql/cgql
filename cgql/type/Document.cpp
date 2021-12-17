@@ -67,7 +67,7 @@ void printSelectionSet(internal::SelectionSet selectionSet, int level) {
 void printGQLObj(const GraphQLObject& obj, int level) {
   string indentation;
   for(int i = 0; i < level; i++) indentation += " ";
-  logger::info(indentation + obj.getName().data());
+  logger::info(obj.getName().data());
   for(auto field : obj.getFields()) {
     logger::info(indentation + field.getName().data());
   }
@@ -83,7 +83,7 @@ void printDocumentNode(internal::Document &doc) {
       if(typeDef->index() == 0) {
         GraphQLObject obj =
           std::get<GraphQLObject>(*typeDef);
-        printGQLObj(obj, 0);
+        printGQLObj(obj, 2);
       }
     }
   }

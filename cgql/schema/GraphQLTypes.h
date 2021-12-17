@@ -11,13 +11,13 @@ class GraphQLObject;
 namespace GraphQLTypes {
   inline GraphQLTypesBase<Int> GraphQLInt(
     "Int",
-    [](Int value) -> Int {
+    [](const Int& value) -> Int {
       return value;
     }
   );
   inline GraphQLTypesBase<String> GraphQLString(
     "String",
-    [](String value) -> String {
+    [](const String& value) -> String {
       return value;
     }
   );

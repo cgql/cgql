@@ -39,7 +39,8 @@ bool Parser::checkType(const TokenType& type) {
 }
 
 string Parser::parseName() {
-  return this->move(TokenType::NAME).getValue();
+  string name = this->move(TokenType::NAME).getValue();
+  return name;
 }
 
 Field* Parser::parseField() {
@@ -48,7 +49,6 @@ Field* Parser::parseField() {
   SelectionSet selections;
   if(hasSelectionSet) {
     selections = this->parseSelectionSet();
-    this->tokenizer.advance();
   }
   Field* field = new Field(
     name.data(),
@@ -67,6 +67,7 @@ SelectionSet Parser::parseSelectionSet() {
   do {
     selections.push_back(this->parseSelection());
   } while(!this->checkType(TokenType::CURLY_BRACES_R));
+  this->tokenizer.advance();
   return {
     selections
   };
@@ -88,9 +89,8 @@ GraphQLScalarTypes Parser::parseType() {
     return GraphQLTypes::GraphQLInt;
   } else {
     // the type should be an object by now
-    // return GraphQLTypes::GraphQLObjectType;
+    return cgqlSPtr<GraphQLObject>();
   }
-  throw type;
 }
 
 GraphQLField Parser::parseFieldTypeDefinition() {
@@ -105,6 +105,7 @@ GraphQLField Parser::parseFieldTypeDefinition() {
 }
 
 GraphQLObject Parser::parseObjectTypeDefinition() {
+  this->tokenizer.advance();
   string name = this->parseName();
   vector<GraphQLField> fields;
   if(this->checkType(TokenType::CURLY_BRACES_L)) {
@@ -115,6 +116,7 @@ GraphQLObject Parser::parseObjectTypeDefinition() {
       );
     } while(!this->checkType(TokenType::CURLY_BRACES_R));
   }
+  this->tokenizer.advance();
   return {
     name.data(),
     fields
@@ -129,7 +131,6 @@ Definition Parser::parseDefinition() {
   if(this->checkType(TokenType::NAME)) {
     string currentValue =
       this->tokenizer.current.getValue();
-    this->tokenizer.advance();
     if(currentValue == "type") {
       return this->parseObjectTypeDefinition();
     }
@@ -143,7 +144,7 @@ Document Parser::parseDocument() {
   this->move(TokenType::START_OF_QUERY);
   do {
     definitions.push_back(this->parseDefinition());
-  } while (this->checkType(TokenType::END_OF_QUERY));
+  } while (!this->checkType(TokenType::END_OF_QUERY));
   return {
     definitions
   };
