@@ -6,7 +6,7 @@ using namespace cgql;
 
 inline void runBasicExecution() {
   for(int i = 0; i < 1; i++) {
-    GraphQLObject address {
+    /* GraphQLObject address {
       "Address",
       {
         {
@@ -82,6 +82,6 @@ inline void runBasicExecution() {
     // printDocumentNode(ast);
 
     ResultMap r = execute(schema, ast);
-    printResultMap(r);
+    printResultMap(r); */
   }
 }

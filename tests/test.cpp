@@ -2,7 +2,7 @@
 #include "advancedParsing.h"
 
 int main() {
-  runBasicExecution();
+  // runBasicExecution();
   runAdvancedParsing();
   return 0;
 }

@@ -22,6 +22,10 @@ OperationDefinition::OperationDefinition(
 
 OperationDefinition::~OperationDefinition() {}
 
+FieldDefinition::~FieldDefinition() {}
+
+ObjectTypeDefinition::~ObjectTypeDefinition() {}
+
 // Document
 Document::Document(
   const vector<Definition>& definitions
@@ -64,7 +68,7 @@ void printSelectionSet(internal::SelectionSet selectionSet, int level) {
   }
 }
 
-void printGQLObj(const GraphQLObject& obj, int level) {
+void printGQLObj(const internal::ObjectTypeDefinition& obj, int level) {
   string indentation;
   for(int i = 0; i < level; i++) indentation += " ";
   logger::info(obj.getName().data());
@@ -81,8 +85,8 @@ void printDocumentNode(internal::Document &doc) {
     } else if(internal::TypeDefinition* typeDef =
       std::get_if<internal::TypeDefinition>(&def)) {
       if(typeDef->index() == 0) {
-        GraphQLObject obj =
-          std::get<GraphQLObject>(*typeDef);
+        internal::ObjectTypeDefinition obj =
+          std::get<internal::ObjectTypeDefinition>(*typeDef);
         printGQLObj(obj, 2);
       }
     }

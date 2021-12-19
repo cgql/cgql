@@ -62,7 +62,8 @@ Data completeValue(
   const GraphQLScalarTypes& fieldType,
   const vector<Field>& fields,
   const Data& result,
-  const std::optional<ResultMap>& source
+  const std::optional<ResultMap>& source,
+  const ResolverMap& resolverMap
 ) {
   Data completedValue;
   if(fieldType.index() == 2) {
@@ -87,7 +88,8 @@ Data completeValue(
       executeSelectionSet(
         mergedSelectionSet,
         obj,
-        *v
+        *v,
+        resolverMap
       )
     );
   } else {
@@ -100,12 +102,13 @@ Data executeField(
   const GraphQLField& field,
   const GraphQLScalarTypes& fieldType,
   const vector<Field>& fields,
-  const std::optional<ResultMap>& source
+  const std::optional<ResultMap>& source,
+  const ResolverMap& resolverMap
 ) {
   Data result;
-  bool hasResolver = field.getResolver().has_value();
-  if(hasResolver) {
-    result = field.getResolver().value()();
+  auto it = resolverMap.find(field.getName());
+  if(it != resolverMap.end()) {
+    result = it->second();
   } else {
     result = defaultFieldResolver(source.value(), field.getName());
   }
@@ -113,14 +116,16 @@ Data executeField(
     fieldType,
     fields,
     result,
-    source
+    source,
+    resolverMap
   );
 }
 
 ResultMap executeSelectionSet(
   const SelectionSet &selectionSet,
   const GraphQLObject &objectType,
-  const std::optional<ResultMap>& source 
+  const std::optional<ResultMap>& source,
+  const ResolverMap& resolverMap
 ) {
   ResultMap resultMap;
   GroupedField groupedFieldSet = cgql::internal::collectFields(
@@ -141,7 +146,8 @@ ResultMap executeSelectionSet(
           field,
           fieldType,
           fields,
-          source
+          source,
+          resolverMap
         )
       });
     } catch(string& fieldName) {
@@ -153,11 +159,18 @@ ResultMap executeSelectionSet(
 
 ResultMap executeQuery(
   OperationDefinition& query,
-  const GraphQLSchema& schema
+  const GraphQLSchema& schema,
+  const ResolverMap& resolverMap
+
 ) {
   const GraphQLObject& queryType = schema.getQuery();
   const SelectionSet& selection = query.getSelectionSet();
-  return cgql::internal::executeSelectionSet(selection, queryType, {});
+  return cgql::internal::executeSelectionSet(
+    selection,
+    queryType,
+    {},
+    resolverMap
+  );
 }
 
 OperationDefinition getOperation(
@@ -178,12 +191,17 @@ OperationDefinition getOperation(
 
 ResultMap execute(
   const GraphQLSchema &schema,
-  const internal::Document &document
+  const internal::Document &document,
+  const ResolverMap& resolverMap
 ) {
   // get operation
   internal::OperationDefinition operation =
     cgql::internal::getOperation(document);
-  return internal::executeQuery(operation, schema);
+  return internal::executeQuery(
+    operation,
+    schema,
+    resolverMap
+  );
 }
 
 } // cgql

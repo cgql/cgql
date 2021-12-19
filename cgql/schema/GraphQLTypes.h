@@ -58,6 +58,8 @@ using ResolverFunc = function<
   Data()
 >;
 
+typedef std::unordered_map<string, ResolverFunc> ResolverMap;
+
 }
 
 

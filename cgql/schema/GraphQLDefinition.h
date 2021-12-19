@@ -9,9 +9,13 @@ public:
   GraphQLSchema(
     GraphQLObject& query
   ): query(query) {};
+  GraphQLSchema() = default;
   ~GraphQLSchema() {};
   inline const GraphQLObject& getQuery() const {
     return this->query;
+  }
+  inline void setQuery(const GraphQLObject& query) {
+    this->query = query;
   }
 private:
   GraphQLObject query;

@@ -1,5 +1,6 @@
 #include "../../cgqlPch.h"
 
+#include "cgql/type/parser/documentToSchema.h"
 #include "parser.h"
 #include "../../logger/logger.h"
 
@@ -80,47 +81,44 @@ OperationDefinition Parser::parseOperationDefinition() {
   };
 }
 
-GraphQLScalarTypes Parser::parseType() {
+string Parser::parseType() {
   Token type = this->move(TokenType::NAME);
   string name = type.getValue();
   if(name == "String") {
-    return GraphQLTypes::GraphQLString;
+    return "String";
   } else if(name == "Int") {
-    return GraphQLTypes::GraphQLInt;
+    return "Int";
   } else {
     // the type should be an object by now
-    return cgqlSPtr<GraphQLObject>();
+    return name.c_str();
   }
 }
 
-GraphQLField Parser::parseFieldTypeDefinition() {
+FieldDefinition Parser::parseFieldTypeDefinition() {
   string name = this->parseName();
   this->move(TokenType::COLON);
-  GraphQLScalarTypes type = this->parseType();
-  return {
-    name,
-    type,
-    {}
-  };
+  string type = this->parseType();
+  FieldDefinition field;
+  field.setName(name);
+  field.setType(type);
+  return field;
 }
 
-GraphQLObject Parser::parseObjectTypeDefinition() {
+ObjectTypeDefinition Parser::parseObjectTypeDefinition() {
   this->tokenizer.advance();
   string name = this->parseName();
-  vector<GraphQLField> fields;
+  ObjectTypeDefinition obj;
+  obj.setName(name);
   if(this->checkType(TokenType::CURLY_BRACES_L)) {
     this->tokenizer.advance();
     do {
-      fields.push_back(
+      obj.addField(
         this->parseFieldTypeDefinition()
       );
     } while(!this->checkType(TokenType::CURLY_BRACES_R));
   }
   this->tokenizer.advance();
-  return {
-    name.data(),
-    fields
-  };
+  return obj;
 }
 
 Definition Parser::parseDefinition() {
@@ -149,10 +147,37 @@ Document Parser::parseDocument() {
     definitions
   };
 };
+
+GraphQLSchema documentToSchema(const internal::Document& doc) {
+  std::unordered_map<std::string, TypeDefinition> typeMap;
+  for(auto def : doc.getDefinitions()) {
+    if(def.index() == 1) {
+      TypeDefinition objDef =
+        std::get<TypeDefinition>(def);
+      AbstractTypeDefinition abstractTypeDef =
+        std::get<ObjectTypeDefinition>(objDef);
+      typeMap.insert({
+        abstractTypeDef.getName(),
+        objDef
+      });
+    }
+  }
+
+  DocToSchemaParser docToSchemaParser;
+  return docToSchemaParser.docToSchemaImpl(typeMap);
+}
+
 } // internal
 
 internal::Document parse(const char *document) {
   internal::Parser parser(document);
   return parser.parseDocument();
 };
+
+GraphQLSchema parseSchema(const char *source) {
+  internal::Parser parser(source);
+  internal::Document doc = parser.parseDocument();
+  return internal::documentToSchema(doc);
+}
+
 } // cgql

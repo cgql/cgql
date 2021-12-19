@@ -13,6 +13,7 @@ using std::vector;
 using std::variant;
 using std::string;
 
+
 enum OperationType {
   QUERY,
   MUTATION,
@@ -54,8 +55,36 @@ private:
   SelectionSet selectionSet;
 };
 
+class FieldDefinition : public AbstractTypeDefinition {
+public:
+  FieldDefinition() = default;
+  ~FieldDefinition();
+  inline void setType(const string& type) {
+    this->type = type;
+  }
+  inline const string& getType() const {
+    return this->type;
+  }
+private:
+  string type;
+};
+
+class ObjectTypeDefinition : public AbstractTypeDefinition {
+public:
+  ObjectTypeDefinition() = default;
+  ~ObjectTypeDefinition();
+  inline void addField(const FieldDefinition& field) {
+    this->fields.push_back(field);
+  }
+  inline const vector<FieldDefinition>& getFields() const {
+    return this->fields;
+  }
+private:
+  vector<FieldDefinition> fields;
+};
+
 using TypeDefinition = variant<
-  GraphQLObject
+  ObjectTypeDefinition
 >;
 
 using Definition = variant<

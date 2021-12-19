@@ -34,13 +34,14 @@ private:
 
   string parseName();
 
-  GraphQLScalarTypes parseType();
-  GraphQLObject parseObjectTypeDefinition();
-  GraphQLField parseFieldTypeDefinition();
+  string parseType();
+  ObjectTypeDefinition parseObjectTypeDefinition();
+  FieldDefinition parseFieldTypeDefinition();
 };
 } // internal
 
 internal::Document parse(const char* source);
+GraphQLSchema parseSchema(const char* source);
 } // cgql
 
 #endif

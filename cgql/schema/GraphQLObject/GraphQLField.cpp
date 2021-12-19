@@ -6,12 +6,16 @@ GraphQLField::GraphQLField(
   const string& name,
   const GraphQLScalarTypes& type,
   const std::optional<cgql::ResolverFunc>& resolve
-): name(name), type(type), resolve(resolve) {}
+): type(type), resolve(resolve) {
+  this->setName(name);
+}
 
 GraphQLField::GraphQLField(
   const string& name,
   const GraphQLScalarTypes& type
-): name(name), type(type) {}
+): type(type) {
+  this->setName(name);
+}
 
 GraphQLField::~GraphQLField() {}
 

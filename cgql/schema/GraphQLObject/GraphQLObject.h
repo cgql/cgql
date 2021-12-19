@@ -4,13 +4,14 @@
 #include "../../cgqlPch.h"
 
 #include "GraphQLField.h"
+#include "../../type/abstractType.h"
 
 namespace cgql {
 
 using std::string;
 using std::vector;
 
-class GraphQLObject {
+class GraphQLObject : public internal::AbstractTypeDefinition {
 public:
   GraphQLObject(
     const char* name,
@@ -18,13 +19,11 @@ public:
   );
   GraphQLObject() = default;
   ~GraphQLObject();
-  inline const string& getName() const { return this->name; };
   inline const vector<GraphQLField>& getFields() const { return this->fields; };
   inline vector<GraphQLField>& getMutableFields() {
     return this->fields;
   }
 private:
-  string name;
   vector<GraphQLField> fields;
 };
 

@@ -26,25 +26,29 @@ Data completeValue(
   const GraphQLScalarTypes& fieldType,
   const vector<Field>& fields,
   const Data& result,
-  const std::optional<ResultMap>& source
+  const std::optional<ResultMap>& source,
+  const ResolverMap& resolverMap
 );
 
 Data executeField(
   const GraphQLField& field,
   const GraphQLScalarTypes& fieldType,
   const vector<Field>& fields,
-  const std::optional<ResultMap>& source
+  const std::optional<ResultMap>& source,
+  const ResolverMap& resolverMap
 );
 
 ResultMap executeSelectionSet(
   const SelectionSet &selectionSet,
   const GraphQLObject &objectType,
-  const std::optional<ResultMap>& source 
+  const std::optional<ResultMap>& source,
+  const ResolverMap& resolverMap
 );
 
 ResultMap executeQuery(
   OperationDefinition& query,
-  const GraphQLSchema& schema
+  const GraphQLSchema& schema,
+  const ResolverMap& resolverMap
 );
 
 OperationDefinition getOperation(
@@ -56,7 +60,8 @@ OperationDefinition getOperation(
 
 ResultMap execute(
   const GraphQLSchema& schema,
-  const internal::Document& document
+  const internal::Document& document,
+  const ResolverMap& resolverMap
 );
 
 }

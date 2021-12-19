@@ -1,12 +1,17 @@
 #!/usr/bin/env bash
 
-function build() {
-  cd build
-  cmake .. -DCMAKE_EXPORT_COMPILE_COMMANDS=1
-  make
+BUILD_TYPE=Release
 
-  chmod +x tests/cgqlTests
-  time ./tests/cgqlTests
+if [ ! -d build ]; then
+  mkdir build
+fi
+
+function build() {
+  cmake -B build/ -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
+    -DCMAKE_EXPORT_COMPILE_COMMANDS=1
+  cmake --build build/ --config $BUILD_TYPE
+  chmod +x build/tests/cgqlTests
+  time build/tests/cgqlTests
 }
 
 build
