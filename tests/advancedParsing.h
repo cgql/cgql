@@ -18,14 +18,8 @@ inline void runAdvancedParsing() {
       "  address: Address"
       "}"
       ""
-      "type University {"
-      "  universityName: String"
-      "  address: Address"
-      "}"
-      ""
       "type Query {"
       "  person: Person"
-      "  university: University"
       "}"
     );
     auto doc = parse(
@@ -36,11 +30,6 @@ inline void runAdvancedParsing() {
       "    address {"
       "      city"
       "      houseName"
-      "    }"
-      "  }"
-      "  university {"
-      "    address {"
-      "      city"
       "    }"
       "  }"
       "}"
@@ -63,24 +52,6 @@ inline void runAdvancedParsing() {
             }
           };
           return std::make_shared<ResultMap>(p);
-        }
-      },
-      {
-        "university",
-        []() -> Data {
-          ResultMap a {
-            {
-              { "city", "Washington" },
-              { "houseName", "uni-homeeeee" }
-            }
-          };
-          ResultMap u {
-            {
-              { "universityName", "Harvard" },
-              { "address", cgqlSMakePtr<ResultMap>(a) }
-            }
-          };
-          return cgqlSMakePtr<ResultMap>(u);
         }
       }
     };

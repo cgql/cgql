@@ -9,24 +9,19 @@
 namespace cgql {
   namespace internal {
     struct DocToSchemaParser {
-      GraphQLScalarTypes buildType(
-        const string& typeName,
-        const std::unordered_map<string, TypeDefinition>& typeMap
-      );
+      GraphQLScalarTypes buildType(const string& typeName);
       std::vector<GraphQLField> buildFields(
-        const ObjectTypeDefinition& objDef,
-        const std::unordered_map<string, TypeDefinition>& typeMap
+        const ObjectTypeDefinition& objDef
       );
       GraphQLObject buildObject(
         const string& name,
-        const ObjectTypeDefinition& objDef,
-        const std::unordered_map<string, TypeDefinition>& typeMap
+        const ObjectTypeDefinition& objDef
       );
       GraphQLSchema docToSchemaImpl(
         const std::unordered_map<std::string, TypeDefinition>& typeMap
       );
       // data
-      std::unordered_map<string, GraphQLObject> typeMapCache;
+      std::unordered_map<std::string, TypeDefinition> typeMap;
     };
   }
 }
