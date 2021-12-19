@@ -14,6 +14,7 @@
 
 #include <exception>
 
+#include <algorithm>
 #include <type_traits>
 
 namespace cgql {
