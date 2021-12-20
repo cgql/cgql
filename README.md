@@ -77,44 +77,36 @@ target_link_libraries(
 
 An example of executing a basic request
 ```cpp
-#include <cgql/schema/GraphQLDefinition.h>
+#include <cgql/execute/execute.h>
 #include <cgql/type/parser/parser.h>
+
+using namespace cgql;
 
 int main() {
   // schema
-  GraphQLObject person {
-    "Person", // name of object
+  auto typeDef = parseSchema(
+    "type Person {"
+    "  name: String"
+    "  age: Int"
+    "}"
+    ""
+    "type Query {"
+    "  person: Person"
+    "}"
+  );
+
+  // resolvers
+  ResolverMap resolvers {
     {
-      { // a field
-        "name", // name of field
-        GraphQLTypes::GraphQLString // datatype of field
-      },
-      {
-        "age",
-        GraphQLTypes::GraphQLInt
+      "person",
+      []() -> Data {
+        ResultMap p {
+          { "name", "cw3dv" },
+          { "age", 14 }
+        };
+        return cgqlSMakePtr<ResultMap>(p);
       }
     }
-  };
-  GraphQLObject root {
-    "Query",
-    {
-      {
-        "person",
-        cgqlSMakePtr<GraphQLObject>(person),
-        []() -> Data {
-          ResultMap result {
-            {
-              { "name", "cw3dv" },
-              { "age", 14 }
-            }
-          };
-          return cgqlSMakePtr<ResultMap>(result);
-        }
-      }
-    }
-  };
-  GraphQLSchema schema {
-    root
   };
 
   // query
@@ -128,7 +120,7 @@ int main() {
   );
 
   // execution
-  ResultMap executionResult = execute(schema, query);
+  auto executionResult = execute(schema, query, resolvers);
   printResultMap(executionResult);
   /* prints result to stdout
 
