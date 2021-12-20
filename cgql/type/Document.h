@@ -47,6 +47,7 @@ public:
     const OperationType& operationType,
     const SelectionSet& selectionSet
   );
+  OperationDefinition() = default;
   ~OperationDefinition();
   inline const OperationType& getOperationType() const { return this->operationType; }
   inline const SelectionSet& getSelectionSet() const { return this->selectionSet; }

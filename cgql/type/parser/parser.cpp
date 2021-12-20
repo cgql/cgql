@@ -1,6 +1,7 @@
 #include "../../cgqlPch.h"
 
 #include "cgql/type/parser/documentToSchema.h"
+#include "cgql/utilities/assert.h"
 #include "parser.h"
 #include "../../logger/logger.h"
 
@@ -15,14 +16,19 @@ Parser::Parser(const char* document)
 Parser::~Parser() {}
 
 Token Parser::move(const TokenType& type) {
-  if(checkType(type)) {
-    Token returnToken = this->tokenizer.current;
-    this->tokenizer.advance();
-    return returnToken;
+  bool isValidType = this->checkType(type);
+  if(!isValidType) {
+    std::string errorMsg;
+    errorMsg += "Required token ";
+    errorMsg += tokenTypeToCharArray(type);
+    errorMsg += ", but got ";
+    errorMsg += tokenTypeToCharArray(this->tokenizer.current.getType());
+
+    cgqlAssert(isValidType, errorMsg.c_str());
   }
-  logger::error(type);
-  logger::error(this->tokenizer.current.getType());
-  throw new InvalidTokenType(type, this->tokenizer.current.getType());
+  Token returnToken = this->tokenizer.current;
+  this->tokenizer.advance();
+  return returnToken;
 }
 
 bool Parser::moveUntil(const TokenType& type) {
@@ -90,7 +96,7 @@ string Parser::parseType() {
     return "Int";
   } else {
     // the type should be an object by now
-    return name.c_str();
+    return name;
   }
 }
 
@@ -122,19 +128,22 @@ ObjectTypeDefinition Parser::parseObjectTypeDefinition() {
 }
 
 Definition Parser::parseDefinition() {
+  Definition definition;
   if(this->checkType(TokenType::CURLY_BRACES_L)) {
-    return this->parseOperationDefinition();
-  }
-
-  if(this->checkType(TokenType::NAME)) {
+    definition = this->parseOperationDefinition();
+  } else if(this->checkType(TokenType::NAME)) {
     string currentValue =
       this->tokenizer.current.getValue();
     if(currentValue == "type") {
-      return this->parseObjectTypeDefinition();
+      definition = this->parseObjectTypeDefinition();
     }
+  } else {
+    std::string errorMsg;
+    errorMsg += "Unexpected token ";
+    errorMsg += tokenTypeToCharArray(this->tokenizer.current.getType());
+    cgqlAssert(false, errorMsg.c_str());
   }
-
-  throw this->tokenizer.current;
+  return definition;
 }
 
 Document Parser::parseDocument() {
@@ -156,10 +165,10 @@ GraphQLSchema documentToSchema(const internal::Document& doc) {
         std::get<TypeDefinition>(def);
       AbstractTypeDefinition abstractTypeDef =
         std::get<ObjectTypeDefinition>(objDef);
-      typeMap.insert({
+      typeMap.emplace(
         abstractTypeDef.getName(),
         objDef
-      });
+      );
     }
   }
 

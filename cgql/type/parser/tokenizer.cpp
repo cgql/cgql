@@ -6,6 +6,48 @@
 namespace cgql {
 namespace internal {
 
+const char* tokenTypeToCharArray(const TokenType& type) {
+  switch (type) {
+    case TokenType::DOCUMENT:
+      return "DOCUMENT";
+      break;
+    case TokenType::OPERATION_DEFINITION:
+      return "OPERATION_DEFINITION";
+      break;
+    case TokenType::SELECTION_SET:
+      return "SELECTION_SET";
+      break;
+    case TokenType::FIELD:
+      return "FIELD";
+      break;
+    case TokenType::NAME:
+      return "NAME";
+      break;
+    case TokenType::INT:
+      return "INT";
+      break;
+    case TokenType::STRING:
+      return "STRING";
+      break;
+    case TokenType::CURLY_BRACES_L:
+      return "CURLY_BRACES_L";
+      break;
+    case TokenType::CURLY_BRACES_R:
+      return "CURLY_BRACES_R";
+      break;
+    case TokenType::START_OF_QUERY:
+      return "START_OF_QUERY";
+      break;
+    case TokenType::END_OF_QUERY:
+      return "END_OF_QUERY";
+      break;
+    case TokenType::COLON:
+      return "COLON";
+      break;
+  }
+  return "";
+}
+
 // InvalidTokenType
 InvalidTokenType::InvalidTokenType(
   TokenType expected,
@@ -51,7 +93,7 @@ Token Tokenizer::tokenizeName() {
     if(
       isNameContinue(this->source[*i])
     ) {
-      value.push_back(this->source[*i]);
+      value += this->source[*i];
       this->advanceCursor(1);
       continue;
     }

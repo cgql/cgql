@@ -32,6 +32,8 @@ enum TokenType {
   COLON = 11
 };
 
+const char* tokenTypeToCharArray(const TokenType& type);
+
 class InvalidTokenType : public exception {
 public:
   InvalidTokenType(TokenType expected, TokenType passed);
