@@ -13,6 +13,8 @@ file(GLOB SOURCES
   execute/*.h
   execute/*.cpp
   utilities/*.h
+  net/*.h
+  net/*.cpp
 )
 add_library(cgqlSource ${SOURCES})
 
