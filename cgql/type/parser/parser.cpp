@@ -24,7 +24,7 @@ Token Parser::move(const TokenType& type) {
     errorMsg += ", but got ";
     errorMsg += tokenTypeToCharArray(this->tokenizer.current.getType());
 
-    cgqlAssert(isValidType, errorMsg.c_str());
+    cgqlAssert(!isValidType, errorMsg.c_str());
   }
   Token returnToken = this->tokenizer.current;
   this->tokenizer.advance();
@@ -50,18 +50,28 @@ string Parser::parseName() {
   return name;
 }
 
-Field* Parser::parseField() {
-  string name = this->parseName();
+cgqlSPtr<Field> Parser::parseField() {
+  Field field;
+  string aliasOrName = this->parseName();
+  if(this->checkType(TokenType::COLON)) {
+    this->tokenizer.advance();
+    string name = this->parseName();
+    field.setAlias(aliasOrName); // alias
+    field.setName(name);
+  } else {
+    field.setName(aliasOrName);
+  }
   bool hasSelectionSet = this->checkType(TokenType::CURLY_BRACES_L);
   SelectionSet selections;
   if(hasSelectionSet) {
     selections = this->parseSelectionSet();
+    cgqlAssert(
+      selections.size() == 0,
+      "selectionSet should contain atleast one selection"
+    );
   }
-  Field* field = new Field(
-    name.data(),
-    selections
-  );
-  return field;
+  field.setSelectionSet(std::move(selections));
+  return cgqlSMakePtr<Field>(field);
 }
 
 Selection Parser::parseSelection() {

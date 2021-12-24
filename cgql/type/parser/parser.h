@@ -30,7 +30,7 @@ private:
   OperationDefinition parseOperationDefinition();
   SelectionSet parseSelectionSet();
   Selection parseSelection();
-  Field* parseField();
+  cgqlSPtr<Field> parseField();
 
   string parseName();
 
