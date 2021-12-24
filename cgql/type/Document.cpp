@@ -10,7 +10,9 @@ using std::ostream;
 Field::Field(
   const string& name,
   const SelectionSet& selectionSet
-): name(name), selectionSet(selectionSet) {}
+): selectionSet(selectionSet) {
+  this->setName(name);
+}
 
 Field::~Field() {}
 
@@ -51,17 +53,17 @@ ostream& operator<<(ostream& out, OperationType type) {
 }
 } // internal
 
-void printSelectionSet(internal::SelectionSet selectionSet, int level) {
+void printSelectionSet(const internal::SelectionSet selectionSet, int level) {
   for(auto s : selectionSet) {
     string v;
     for(int i = 0; i < level; i++) v += "  ";
     std::visit([&v](internal::Selection&& args) {
-      if(std::holds_alternative<internal::Field*>(args)) {
-        v += std::get<internal::Field*>(args)->getName();
+      if(std::holds_alternative<cgqlSPtr<internal::Field>>(args)) {
+        v += std::get<cgqlSPtr<internal::Field>>(args)->getName();
       }
     }, s);
     logger::info(v);
-    internal::Field* selection = std::get<internal::Field*>(s);
+    cgqlSPtr<internal::Field> selection = std::get<cgqlSPtr<internal::Field>>(s);
     if(!selection->getSelectionSet().empty()) {
       printSelectionSet(selection->getSelectionSet(), level + 1);
     }
@@ -77,7 +79,7 @@ void printGQLObj(const internal::ObjectTypeDefinition& obj, int level) {
   }
 }
 
-void printDocumentNode(internal::Document &doc) {
+void printDocumentNode(const internal::Document &doc) {
   for(internal::Definition def : doc.getDefinitions()) {
     if(internal::OperationDefinition* opDef = std::get_if<internal::OperationDefinition>(&def)) {
       logger::info(opDef->getOperationType());
