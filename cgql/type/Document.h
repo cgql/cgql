@@ -5,6 +5,7 @@
 
 #include "../logger/logger.h"
 #include "../schema/GraphQLDefinition.h"
+#include "cgql/utilities/assert.h"
 
 namespace cgql {
 namespace internal {
@@ -23,21 +24,38 @@ enum OperationType {
 class Field;
 
 using Selection = variant<
-  Field*
+  cgqlSPtr<Field>
 >;
 typedef vector<Selection> SelectionSet;
 
-class Field {
+class Field : public AbstractTypeDefinition {
 public:
   Field(
     const string& name,
     const SelectionSet& selectionSet
   );
+  Field() = default;
   ~Field();
-  inline const string getName() const { return this->name; }
+  inline void setAlias(const string& alias) {
+    cgqlAssert(
+      this->name == alias,
+      "field should contain an alias different from its name"
+    );
+    this->alias = alias;
+  }
+  inline const string& getAlias() const {
+    return this->alias;
+  }
+  inline void setSelectionSet(const SelectionSet& selectionSet) {
+    cgqlAssert(
+      this->selectionSet.size() != 0,
+      "selectionSet already contains fields"
+    );
+    this->selectionSet = std::move(selectionSet);
+  }
   inline const SelectionSet& getSelectionSet() const { return this->selectionSet; }
 private:
-  string name;
+  string alias;
   SelectionSet selectionSet;
 };
 
@@ -105,8 +123,8 @@ private:
 };
 } // internal
 
-void printSelectionSet(internal::SelectionSet selectionSet, int level);
-void printDocumentNode(internal::Document& doc);
+void printSelectionSet(const internal::SelectionSet selectionSet, int level);
+void printDocumentNode(const internal::Document& doc);
 void printResultMap(const ResultMap& rm, uint8_t level = 0);
 } // cgql
 
