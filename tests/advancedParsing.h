@@ -24,10 +24,10 @@ inline void runAdvancedParsing() {
     );
     auto doc = parse(
       "{"
-      "  person {"
+      "  cw3dv: person {"
       "    name"
       "    age"
-      "    address {"
+      "    addr: address {"
       "      city"
       "      houseName"
       "    }"
