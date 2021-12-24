@@ -33,6 +33,10 @@ enum TokenType {
 };
 
 const char* tokenTypeToCharArray(const TokenType& type);
+inline std::ostream& operator<<(std::ostream& os, const TokenType& type) {
+  os << tokenTypeToCharArray(type);
+  return os;
+}
 
 class InvalidTokenType : public exception {
 public:
