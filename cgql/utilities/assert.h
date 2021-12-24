@@ -30,7 +30,7 @@ inline void cgqlAssertImpl(
   int line,
   const char* msg = ""
 ) {
-  if(!expression) {
+  if(expression) {
     printf(
       "%sAssert failed%s: %s%s%s\n"
       "Expected: %s\n"
