@@ -25,20 +25,23 @@ GroupedField collectFields(
   for(Selection selection : selectionSet) {
     if(selection.index() == 0) {
       // holds a Field*
-      Field* field =
-        std::get<Field*>(selection);
+      cgqlSPtr<Field> field =
+        std::get<cgqlSPtr<Field>>(selection);
 
-      string responseKey = field->getName();
+      string responseKey =
+        field->getAlias().empty() ?
+          field->getName() : field->getAlias();
 
       GroupedField::iterator it =
         groupedFields.find(responseKey);
       if(it != groupedFields.end()) {
         it->second.push_back(*field);
       } else {
-        groupedFields.insert({ responseKey, { *field } });
+        std::vector<Field> fields { *field };
+        groupedFields.try_emplace(
+          responseKey, fields
+        );
       }
-
-      delete field;
     }
   }
   return groupedFields;
@@ -48,10 +51,10 @@ SelectionSet mergeSelectionSet(
   const vector<Field>& fields
 ) {
   SelectionSet mergedSelectionSet;
-  for(Field field : fields) {
-    SelectionSet fieldSelectionSet = field.getSelectionSet();
+  for(const Field& field : fields) {
+    const SelectionSet& fieldSelectionSet = field.getSelectionSet();
     if(fieldSelectionSet.empty()) continue;
-    for(Selection subField : fieldSelectionSet) {
+    for(const Selection& subField : fieldSelectionSet) {
       mergedSelectionSet.push_back(subField);
     }
   }
@@ -73,7 +76,7 @@ Data completeValue(
     cgqlSPtr<GraphQLObject> schemaObj =
       std::get<cgqlSPtr<GraphQLObject>>(fieldType);
     for(auto const& elem : v->data) {
-      for(auto field : schemaObj->getFields()) {
+      for(const GraphQLField& field : schemaObj->getFields()) {
         if(field.getName() == elem.first) {
           obj.getMutableFields().push_back({
             elem.first,
@@ -110,7 +113,10 @@ Data executeField(
   if(it != resolverMap.end()) {
     result = it->second();
   } else {
-    result = defaultFieldResolver(source.value(), field.getName());
+    result = defaultFieldResolver(
+      source.value(),
+      field.getName()
+    );
   }
   return completeValue(
     fieldType,
@@ -137,10 +143,10 @@ ResultMap executeSelectionSet(
       GraphQLField field =
         cgql::internal::findGraphQLFieldByName(
           objectType,
-          responseKey
+          fields[0].getName()
         );
       GraphQLScalarTypes fieldType = field.getType();
-      resultMap.data.insert({
+      resultMap.data.try_emplace(
         responseKey,
         executeField(
           field,
@@ -149,7 +155,7 @@ ResultMap executeSelectionSet(
           source,
           resolverMap
         )
-      });
+      );
     } catch(string& fieldName) {
       // logger::error(fieldName);
     }
@@ -177,7 +183,7 @@ OperationDefinition getOperation(
   const Document& document,
   OperationType operationName
 ) {
-  for(auto def : document.getDefinitions()) {
+  for(const Definition& def : document.getDefinitions()) {
     if(def.index() == 0) {
       OperationDefinition opDef = std::get<OperationDefinition>(def);
       if(opDef.getOperationType() == operationName) {
