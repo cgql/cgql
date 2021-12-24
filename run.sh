@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-BUILD_TYPE=Release
+BUILD_TYPE=Debug
 
 if [ ! -d build ]; then
   mkdir build
