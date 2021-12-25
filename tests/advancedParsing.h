@@ -19,12 +19,13 @@ inline void runAdvancedParsing() {
       "}"
       ""
       "type Query {"
-      "  person: Person"
+      "  person(id: Int): Person"
+      "  sum(x: Int, y: Int): Int"
       "}"
     );
     auto doc = parse(
       "{"
-      "  cw3dv: person {"
+      "  cw3dv: person(id: 65) {"
       "    name"
       "    age"
       "    addr: address {"
@@ -32,12 +33,14 @@ inline void runAdvancedParsing() {
       "      houseName"
       "    }"
       "  }"
+      "  sum(x: 15, y: 10)"
       "}"
     );
     ResolverMap root {
       {
         "person",
-        []() -> Data {
+        [](Args args) -> Data {
+          Int id = fromVariant<Int>(args["id"]);
           ResultMap a {
             {
               { "city", "0xFF-Park" },
@@ -47,11 +50,19 @@ inline void runAdvancedParsing() {
           ResultMap p {
             {
               { "name", "cw3dv" },
-              { "age", 14 },
+              { "age", id },
               { "address", cgqlSMakePtr<ResultMap>(a) }
             }
           };
           return std::make_shared<ResultMap>(p);
+        }
+      },
+      {
+        "sum",
+        [](Args args) -> Data {
+          Int x = fromVariant<Int>(args["x"]);
+          Int y = fromVariant<Int>(args["y"]);
+          return x + y;
         }
       }
     };
