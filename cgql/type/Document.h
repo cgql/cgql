@@ -21,6 +21,19 @@ enum OperationType {
   SUBSCRIPTION
 };
 
+class Argument : public AbstractTypeDefinition {
+public:
+  Argument() = default;
+  inline void setValue(const Arg& value) {
+    this->value = value;
+  }
+  inline const Arg& getValue() const {
+    return this->value;
+  }
+private:
+  Arg value;
+};
+
 class Field;
 
 using Selection = variant<
@@ -54,9 +67,16 @@ public:
     this->selectionSet = std::move(selectionSet);
   }
   inline const SelectionSet& getSelectionSet() const { return this->selectionSet; }
+  inline void addArgs(const Argument& arg) {
+    this->args.push_back(arg);
+  }
+  inline const vector<Argument>& getArgs() const {
+    return this->args;
+  }
 private:
   string alias;
   SelectionSet selectionSet;
+  std::vector<Argument> args;
 };
 
 class OperationDefinition {
@@ -74,6 +94,20 @@ private:
   SelectionSet selectionSet;
 };
 
+class ArgumentDefinitions : public AbstractTypeDefinition {
+public:
+  ArgumentDefinitions() = default;
+  ~ArgumentDefinitions();
+  inline void setType(const string& type) {
+    this->type = type;
+  }
+  inline const string& getType() const {
+    return this->type;
+  }
+private:
+  string type;
+};
+
 class FieldDefinition : public AbstractTypeDefinition {
 public:
   FieldDefinition() = default;
@@ -84,8 +118,15 @@ public:
   inline const string& getType() const {
     return this->type;
   }
+  inline void addArg(const ArgumentDefinitions& arg) {
+    this->args.push_back(arg);
+  }
+  inline const vector<ArgumentDefinitions>& getArgs() const {
+    return this->args;
+  }
 private:
   string type;
+  vector<ArgumentDefinitions> args;
 };
 
 class ObjectTypeDefinition : public AbstractTypeDefinition {

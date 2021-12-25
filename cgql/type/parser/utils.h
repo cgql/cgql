@@ -33,6 +33,18 @@ inline bool isNameContinue(uint32_t value) {
   return isLetter(value) || isDigit(value) || value == 0x005F;
 }
 
+inline uint8_t charToInt(const char& ch) {
+  return ch - 48;
+}
+
+inline int strToInt(const std::string& str) {
+  int tempQuotient = 0;
+  for(const char& ch : str) {
+    tempQuotient = tempQuotient * 10 + charToInt(ch);
+  }
+  return tempQuotient;
+}
+
 } // internal
 } // cgql
 

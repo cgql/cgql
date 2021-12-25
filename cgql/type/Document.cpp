@@ -24,6 +24,8 @@ OperationDefinition::OperationDefinition(
 
 OperationDefinition::~OperationDefinition() {}
 
+ArgumentDefinitions::~ArgumentDefinitions() {}
+
 FieldDefinition::~FieldDefinition() {}
 
 ObjectTypeDefinition::~ObjectTypeDefinition() {}

@@ -3,6 +3,7 @@
 
 #include "../../cgqlPch.h"
 
+#include "cgql/schema/GraphQLScalar.h"
 #include "utils.h"
 
 namespace cgql {
@@ -14,22 +15,24 @@ using std::string;
 using std::exception;
 
 enum TokenType {
-  DOCUMENT = 0,
-  OPERATION_DEFINITION = 1,
-  SELECTION_SET = 2,
-  FIELD = 3,
-  NAME = 4,
+  DOCUMENT,
+  OPERATION_DEFINITION,
+  SELECTION_SET,
+  FIELD,
+  NAME,
 
-  INT = 5,
-  STRING = 6,
+  INT,
+  STRING,
 
-  CURLY_BRACES_L = 7,
-  CURLY_BRACES_R = 8,
+  CURLY_BRACES_L,
+  CURLY_BRACES_R,
+  BRACES_L,
+  BRACES_R,
 
-  START_OF_QUERY = 9,
-  END_OF_QUERY = 10,
+  START_OF_QUERY,
+  END_OF_QUERY,
 
-  COLON = 11
+  COLON
 };
 
 const char* tokenTypeToCharArray(const TokenType& type);
@@ -81,6 +84,7 @@ private:
   void advanceCursor(int8_t amount);
 
   Token tokenizeName();
+  Token tokenizeDigits();
 };
 
 Token generateToken(TokenType type, const string& value);

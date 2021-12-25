@@ -31,12 +31,15 @@ private:
   SelectionSet parseSelectionSet();
   Selection parseSelection();
   cgqlSPtr<Field> parseField();
+  Argument parseArgument();
+  Arg parseValue();
 
   string parseName();
 
   string parseType();
   ObjectTypeDefinition parseObjectTypeDefinition();
   FieldDefinition parseFieldTypeDefinition();
+  ArgumentDefinitions parseArgumentDefinition();
 };
 } // internal
 

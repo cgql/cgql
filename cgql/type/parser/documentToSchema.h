@@ -13,6 +13,11 @@ namespace cgql {
         const string& typeName,
         const std::unordered_map<std::string, TypeDefinition>& typeMap
       );
+      void buildArguments(
+        GraphQLField& field,
+        const FieldDefinition& fieldDef,
+        const std::unordered_map<std::string, TypeDefinition>& typeMap
+      );
       std::vector<GraphQLField> buildFields(
         const ObjectTypeDefinition& objDef,
         const std::unordered_map<std::string, TypeDefinition>& typeMap

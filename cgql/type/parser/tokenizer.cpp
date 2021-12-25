@@ -35,6 +35,12 @@ const char* tokenTypeToCharArray(const TokenType& type) {
     case TokenType::CURLY_BRACES_R:
       return "CURLY_BRACES_R";
       break;
+    case TokenType::BRACES_L:
+      return "BRACES_L";
+      break;
+    case TokenType::BRACES_R:
+      return "BRACES_R";
+      break;
     case TokenType::START_OF_QUERY:
       return "START_OF_QUERY";
       break;
@@ -105,12 +111,32 @@ Token Tokenizer::tokenizeName() {
   );
 }
 
+Token Tokenizer::tokenizeDigits() {
+  uint16_t* i = &this->cursor;
+  std::string value;
+  for(; *i < this->source.length();) {
+    if(isDigit(this->source[*i])) {
+      value += this->source[*i];
+      this->advanceCursor(1);
+      continue;
+    }
+    break;
+  }
+  return generateToken(
+    TokenType::INT,
+    value
+  );
+}
+
 Token Tokenizer::nextToken() {
   uint16_t len = this->source.length();
 
   uint16_t* i = &this->cursor;
 
   for(; *i < len; *i = *i + 1) {
+    if(isDigit(this->source[*i])) {
+      return this->tokenizeDigits();
+    }
     if(isNameStart(this->source[*i])) {
       return this->tokenizeName();
     }
@@ -126,6 +152,12 @@ Token Tokenizer::nextToken() {
       case 0x007D:
         this->advanceCursor(1);
         return generateToken(TokenType::CURLY_BRACES_R);
+      case 0x0028:
+        this->advanceCursor(1);
+        return generateToken(TokenType::BRACES_L);
+      case 0x0029:
+        this->advanceCursor(1);
+        return generateToken(TokenType::BRACES_R);
       case 0x003A:
         this->advanceCursor(1);
         return generateToken(TokenType::COLON);

@@ -50,6 +50,35 @@ string Parser::parseName() {
   return name;
 }
 
+Arg Parser::parseValue() {
+  string valueAsStr;
+  TokenType curr = this->tokenizer.current.getType();
+  switch(curr) {
+    case TokenType::NAME:
+      valueAsStr = this->parseName();
+      break;
+    default:
+      valueAsStr = this->move(curr).getValue();
+  }
+  int start = charToInt(valueAsStr[0]);
+  if(start >= 0 && start <= 9) {
+    // potentially an integer
+    Int value = strToInt(valueAsStr);
+    return value;
+  }
+  return valueAsStr;
+}
+
+Argument Parser::parseArgument() {
+  Argument argument;
+  string name = this->parseName();
+  this->move(TokenType::COLON);
+  Arg value = this->parseValue();
+  argument.setName(name);
+  argument.setValue(value);
+  return argument;
+}
+
 cgqlSPtr<Field> Parser::parseField() {
   Field field;
   string aliasOrName = this->parseName();
@@ -61,16 +90,26 @@ cgqlSPtr<Field> Parser::parseField() {
   } else {
     field.setName(aliasOrName);
   }
+
+  if(this->checkType(TokenType::BRACES_L)) {
+    this->tokenizer.advance();
+    do {
+      field.addArgs(
+        this->parseArgument()
+      );
+    } while(!this->checkType(TokenType::BRACES_R));
+    this->tokenizer.advance();
+  }
+
   bool hasSelectionSet = this->checkType(TokenType::CURLY_BRACES_L);
-  SelectionSet selections;
   if(hasSelectionSet) {
-    selections = this->parseSelectionSet();
+    SelectionSet selections = this->parseSelectionSet();
+    field.setSelectionSet(std::move(selections));
     cgqlAssert(
       selections.size() == 0,
       "selectionSet should contain atleast one selection"
     );
   }
-  field.setSelectionSet(std::move(selections));
   return cgqlSMakePtr<Field>(field);
 }
 
@@ -110,11 +149,28 @@ string Parser::parseType() {
   }
 }
 
-FieldDefinition Parser::parseFieldTypeDefinition() {
+ArgumentDefinitions Parser::parseArgumentDefinition() {
   string name = this->parseName();
   this->move(TokenType::COLON);
   string type = this->parseType();
+  ArgumentDefinitions arg;
+  arg.setName(name);
+  arg.setType(type);
+  return arg;
+}
+
+FieldDefinition Parser::parseFieldTypeDefinition() {
   FieldDefinition field;
+  string name = this->parseName();
+  if(this->checkType(TokenType::BRACES_L)) {
+    this->tokenizer.advance();
+    do {
+      field.addArg(this->parseArgumentDefinition());
+    } while(!this->checkType(TokenType::BRACES_R));
+    this->tokenizer.advance();
+  }
+  this->move(TokenType::COLON);
+  string type = this->parseType();
   field.setName(name);
   field.setType(type);
   return field;
@@ -175,7 +231,7 @@ GraphQLSchema documentToSchema(const internal::Document& doc) {
         std::get<TypeDefinition>(def);
       AbstractTypeDefinition abstractTypeDef =
         std::get<ObjectTypeDefinition>(objDef);
-      typeMap.emplace(
+      typeMap.try_emplace(
         abstractTypeDef.getName(),
         objDef
       );
@@ -190,13 +246,15 @@ GraphQLSchema documentToSchema(const internal::Document& doc) {
 
 internal::Document parse(const char *document) {
   internal::Parser parser(document);
-  return parser.parseDocument();
+  internal::Document doc = parser.parseDocument();
+  return doc;
 };
 
 GraphQLSchema parseSchema(const char *source) {
   internal::Parser parser(source);
   internal::Document doc = parser.parseDocument();
-  return internal::documentToSchema(doc);
+  GraphQLSchema schema = internal::documentToSchema(doc);
+  return schema;
 }
 
 } // cgql

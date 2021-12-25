@@ -17,6 +17,18 @@ namespace cgql {
       GraphQLObject builtType = buildObject(typeName, type, typeMap);
       return cgqlSMakePtr<GraphQLObject>(builtType);
     }
+    void DocToSchemaParser::buildArguments(
+      GraphQLField& field,
+      const FieldDefinition& fieldDef,
+      const std::unordered_map<std::string, TypeDefinition>& typeMap
+    ) {
+      for(const ArgumentDefinitions& argDef : fieldDef.getArgs()) {
+        GraphQLArgument arg;
+        arg.setName(argDef.getName());
+        arg.setType(this->buildType(argDef.getType(), typeMap));
+        field.addArg(arg.getName(), arg);
+      }
+    }
     std::vector<GraphQLField> DocToSchemaParser::buildFields(
       const ObjectTypeDefinition& objDef,
       const std::unordered_map<std::string, TypeDefinition>& typeMap
@@ -27,6 +39,7 @@ namespace cgql {
         GraphQLField field;
         field.setName(fieldDef.getName());
         field.setType(this->buildType(fieldDef.getType(), typeMap));
+        this->buildArguments(field, fieldDef, typeMap);
         fields.push_back(field);
       }
       return fields;
