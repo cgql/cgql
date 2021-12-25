@@ -14,7 +14,12 @@ GraphQLField findGraphQLFieldByName(
       return field;
     }
   }
-  throw fieldName;
+  std::string msg;
+  msg += "Field with name ";
+  msg += fieldName;
+  msg += " cannot be found in fields";
+  cgqlAssert(true, msg.c_str());
+  /* silence compiler warning */ return {};
 }
 
 GroupedField collectFields(
@@ -101,6 +106,19 @@ Data completeValue(
   return completedValue;
 }
 
+Args buildArgumentMap(
+  const Field& field
+) {
+  Args arg;
+  for(const Argument& argDef : field.getArgs()) {
+    arg.argsMap.try_emplace(
+      argDef.getName(),
+      argDef.getValue()
+    );
+  }
+  return arg;
+}
+
 Data executeField(
   const GraphQLField& field,
   const GraphQLScalarTypes& fieldType,
@@ -111,7 +129,7 @@ Data executeField(
   Data result;
   auto it = resolverMap.find(field.getName());
   if(it != resolverMap.end()) {
-    result = it->second();
+    result = it->second(buildArgumentMap(fields[0]));
   } else {
     result = defaultFieldResolver(
       source.value(),

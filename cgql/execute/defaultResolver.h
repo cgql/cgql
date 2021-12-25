@@ -14,7 +14,8 @@ inline Data defaultFieldResolver(
   const string& name
 ) {
   // auto it = source.data.find(name);
-  return source.data.at(name);
+  Data result = source.data.at(name);
+  return result;
 }
 
 } // internal
