@@ -77,25 +77,15 @@ Data completeValue(
   if(fieldType.index() == 2) {
     cgqlSPtr<ResultMap> v =
       std::get<cgqlSPtr<ResultMap>>(result);
-    GraphQLObject obj;
     cgqlSPtr<GraphQLObject> schemaObj =
       std::get<cgqlSPtr<GraphQLObject>>(fieldType);
-    for(auto const& elem : v->data) {
-      for(const GraphQLField& field : schemaObj->getFields()) {
-        if(field.getName() == elem.first) {
-          obj.getMutableFields().push_back({
-            elem.first,
-            field.getType()
-          });
-        }
-      }
-    }
+
     SelectionSet mergedSelectionSet =
       mergeSelectionSet(fields);
     completedValue = cgqlSMakePtr<ResultMap>(
       executeSelectionSet(
         mergedSelectionSet,
-        obj,
+        *schemaObj,
         *v,
         resolverMap
       )
