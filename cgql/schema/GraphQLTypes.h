@@ -54,8 +54,30 @@ struct ResultMap {
   std::unordered_map<string, Data> data;
 };
 
+typedef std::variant<
+  Int,
+  String
+> Arg;
+typedef std::unordered_map<
+  std::string,
+  Arg
+> ArgsMap;
+struct Args {
+  ArgsMap argsMap;
+  inline Arg operator[](const std::string& argKey) {
+    return this->argsMap.at(argKey);
+  }
+};
+
+template<class T, class... Types>
+constexpr const T& fromVariant(
+  const std::variant<Types...>& v
+) {
+  return std::get<T>(v);
+}
+
 using ResolverFunc = function<
-  Data()
+  Data(Args)
 >;
 
 typedef std::unordered_map<string, ResolverFunc> ResolverMap;

@@ -2,6 +2,15 @@
 
 namespace cgql {
 
+GraphQLArgument::GraphQLArgument(
+  const string& name,
+  const GraphQLScalarTypes& type
+): type(type) {
+  this->setName(name);
+}
+
+GraphQLArgument::~GraphQLArgument() {}
+
 GraphQLField::GraphQLField(
   const string& name,
   const GraphQLScalarTypes& type,

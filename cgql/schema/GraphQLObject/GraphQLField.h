@@ -10,6 +10,25 @@ namespace cgql {
 
 using std::string;
 
+class GraphQLArgument : public internal::AbstractTypeDefinition {
+public:
+  GraphQLArgument(
+    const string& name,
+    const GraphQLScalarTypes& type
+  );
+  GraphQLArgument() = default;
+  ~GraphQLArgument();
+  inline void setType(const GraphQLScalarTypes& type) {
+    this->type = type;
+  }
+  inline const GraphQLScalarTypes& getType() const {
+    return this->type;
+  }
+private:
+  string name;
+  GraphQLScalarTypes type;
+};
+
 class GraphQLField : public internal::AbstractTypeDefinition {
 public:
   GraphQLField(
@@ -28,9 +47,16 @@ public:
   inline void setType(const GraphQLScalarTypes& type) {
     this->type = type;
   }
+  inline void addArg(const string& name, const GraphQLArgument& arg) {
+    this->args.push_back(arg);
+  }
+  inline const std::vector<GraphQLArgument>& getArgs() const {
+    return this->args;
+  };
 private:
   GraphQLScalarTypes type;
   std::optional<cgql::ResolverFunc> resolve;
+  std::vector<GraphQLArgument> args;
 };
 
 } // cgql
