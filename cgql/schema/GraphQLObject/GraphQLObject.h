@@ -5,6 +5,7 @@
 
 #include "GraphQLField.h"
 #include "../../type/abstractType.h"
+#include "cgql/utilities/cgqlDefs.h"
 
 namespace cgql {
 

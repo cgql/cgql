@@ -17,16 +17,4 @@
 #include <algorithm>
 #include <type_traits>
 
-namespace cgql {
-
-template<typename T>
-using cgqlSPtr = std::shared_ptr<T>;
-
-#define cgqlSMakePtr std::make_shared
-
-template<typename T>
-using cgqlContainer = std::vector<T>;
-
-} // cgql
-
 #endif

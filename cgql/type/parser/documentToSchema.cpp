@@ -34,7 +34,7 @@ namespace cgql {
       const std::unordered_map<std::string, TypeDefinition>& typeMap
     ) {
       cgqlContainer<GraphQLField> fields;
-      // fields.reserve(objDef.getFields().size());
+      fields.reserve(objDef.getFields().size());
       for(FieldDefinition fieldDef : objDef.getFields()) {
         GraphQLField field;
         field.setName(fieldDef.getName());
@@ -59,7 +59,7 @@ namespace cgql {
       const std::unordered_map<std::string, TypeDefinition>& typeMap
     ) {
       GraphQLSchema schema;
-      // this->typeNameCache.reserve(typeMap.size());
+      this->typeNameCache.reserve(typeMap.size());
       for(auto const& [ key, value ] : typeMap) {
         if(value.index() == 0) {
           if(std::find(

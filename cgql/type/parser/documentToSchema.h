@@ -5,6 +5,7 @@
 
 #include "cgql/schema/GraphQLDefinition.h"
 #include "cgql/type/Document.h"
+#include "cgql/utilities/cgqlDefs.h"
 
 namespace cgql {
   namespace internal {
