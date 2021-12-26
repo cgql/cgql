@@ -41,7 +41,7 @@ namespace cgql {
 
 namespace internal {
   class Field;
-  typedef std::unordered_map<string, std::vector<internal::Field>> GroupedField;
+  typedef std::unordered_map<string, cgqlContainer<internal::Field>> GroupedField;
 }
 
 struct ResultMap;

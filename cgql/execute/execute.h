@@ -19,12 +19,12 @@ GroupedField collectFields(
 );
 
 SelectionSet mergeSelectionSet(
-  const vector<Field>& fields
+  const cgqlContainer<Field>& fields
 );
 
 Data completeValue(
   const GraphQLScalarTypes& fieldType,
-  const vector<Field>& fields,
+  const cgqlContainer<Field>& fields,
   const Data& result,
   const std::optional<ResultMap>& source,
   const ResolverMap& resolverMap
@@ -33,7 +33,7 @@ Data completeValue(
 Data executeField(
   const GraphQLField& field,
   const GraphQLScalarTypes& fieldType,
-  const vector<Field>& fields,
+  const cgqlContainer<Field>& fields,
   const std::optional<ResultMap>& source,
   const ResolverMap& resolverMap
 );

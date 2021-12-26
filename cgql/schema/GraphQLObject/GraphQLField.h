@@ -50,13 +50,13 @@ public:
   inline void addArg(const string& name, const GraphQLArgument& arg) {
     this->args.push_back(arg);
   }
-  inline const std::vector<GraphQLArgument>& getArgs() const {
+  inline const cgqlContainer<GraphQLArgument>& getArgs() const {
     return this->args;
   };
 private:
   GraphQLScalarTypes type;
   std::optional<cgql::ResolverFunc> resolve;
-  std::vector<GraphQLArgument> args;
+  cgqlContainer<GraphQLArgument> args;
 };
 
 } // cgql

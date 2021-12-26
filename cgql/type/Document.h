@@ -10,7 +10,6 @@
 namespace cgql {
 namespace internal {
 
-using std::vector;
 using std::variant;
 using std::string;
 
@@ -39,7 +38,7 @@ class Field;
 using Selection = variant<
   cgqlSPtr<Field>
 >;
-typedef vector<Selection> SelectionSet;
+typedef cgqlContainer<Selection> SelectionSet;
 
 class Field : public AbstractTypeDefinition {
 public:
@@ -70,13 +69,13 @@ public:
   inline void addArgs(const Argument& arg) {
     this->args.push_back(arg);
   }
-  inline const vector<Argument>& getArgs() const {
+  inline const cgqlContainer<Argument>& getArgs() const {
     return this->args;
   }
 private:
   string alias;
   SelectionSet selectionSet;
-  std::vector<Argument> args;
+  cgqlContainer<Argument> args;
 };
 
 class OperationDefinition {
@@ -121,12 +120,12 @@ public:
   inline void addArg(const ArgumentDefinitions& arg) {
     this->args.push_back(arg);
   }
-  inline const vector<ArgumentDefinitions>& getArgs() const {
+  inline const cgqlContainer<ArgumentDefinitions>& getArgs() const {
     return this->args;
   }
 private:
   string type;
-  vector<ArgumentDefinitions> args;
+  cgqlContainer<ArgumentDefinitions> args;
 };
 
 class ObjectTypeDefinition : public AbstractTypeDefinition {
@@ -136,11 +135,11 @@ public:
   inline void addField(const FieldDefinition& field) {
     this->fields.push_back(field);
   }
-  inline const vector<FieldDefinition>& getFields() const {
+  inline const cgqlContainer<FieldDefinition>& getFields() const {
     return this->fields;
   }
 private:
-  vector<FieldDefinition> fields;
+  cgqlContainer<FieldDefinition> fields;
 };
 
 using TypeDefinition = variant<
@@ -155,12 +154,12 @@ using Definition = variant<
 class Document {
 public:
   Document(
-    const vector<Definition>& definitions
+    const cgqlContainer<Definition>& definitions
   );
   ~Document();
-  inline const vector<Definition>& getDefinitions() const { return this->definitions; }
+  inline const cgqlContainer<Definition>& getDefinitions() const { return this->definitions; }
 private:
-  vector<Definition> definitions;
+  cgqlContainer<Definition> definitions;
 };
 } // internal
 

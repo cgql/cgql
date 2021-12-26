@@ -8,8 +8,6 @@
 namespace cgql {
 namespace internal {
 
-using std::vector;
-
 Parser::Parser(const char* document)
   : document(document),
     tokenizer(document) {}
@@ -213,7 +211,7 @@ Definition Parser::parseDefinition() {
 }
 
 Document Parser::parseDocument() {
-  vector<Definition> definitions;
+  cgqlContainer<Definition> definitions;
   this->move(TokenType::START_OF_QUERY);
   do {
     definitions.push_back(this->parseDefinition());

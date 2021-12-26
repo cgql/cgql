@@ -4,7 +4,7 @@ namespace cgql {
 
 GraphQLObject::GraphQLObject(
   const char* name,
-  const vector<GraphQLField>& fields
+  const cgqlContainer<GraphQLField>& fields
 ): fields(fields) {
   this->setName(name);
 }

@@ -32,7 +32,7 @@ ObjectTypeDefinition::~ObjectTypeDefinition() {}
 
 // Document
 Document::Document(
-  const vector<Definition>& definitions
+  const cgqlContainer<Definition>& definitions
 ): definitions(definitions) {}
 
 Document::~Document() {}

@@ -9,22 +9,21 @@
 namespace cgql {
 
 using std::string;
-using std::vector;
 
 class GraphQLObject : public internal::AbstractTypeDefinition {
 public:
   GraphQLObject(
     const char* name,
-    const vector<GraphQLField>& fields
+    const cgqlContainer<GraphQLField>& fields
   );
   GraphQLObject() = default;
   ~GraphQLObject();
-  inline const vector<GraphQLField>& getFields() const { return this->fields; };
-  inline vector<GraphQLField>& getMutableFields() {
+  inline const cgqlContainer<GraphQLField>& getFields() const { return this->fields; };
+  inline cgqlContainer<GraphQLField>& getMutableFields() {
     return this->fields;
   }
 private:
-  vector<GraphQLField> fields;
+  cgqlContainer<GraphQLField> fields;
 };
 
 } // cgql

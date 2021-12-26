@@ -42,7 +42,7 @@ GroupedField collectFields(
       if(it != groupedFields.end()) {
         it->second.push_back(*field);
       } else {
-        std::vector<Field> fields { *field };
+        cgqlContainer<Field> fields { *field };
         groupedFields.try_emplace(
           responseKey, fields
         );
@@ -53,7 +53,7 @@ GroupedField collectFields(
 }
 
 SelectionSet mergeSelectionSet(
-  const vector<Field>& fields
+  const cgqlContainer<Field>& fields
 ) {
   SelectionSet mergedSelectionSet;
   for(const Field& field : fields) {
@@ -68,7 +68,7 @@ SelectionSet mergeSelectionSet(
 
 Data completeValue(
   const GraphQLScalarTypes& fieldType,
-  const vector<Field>& fields,
+  const cgqlContainer<Field>& fields,
   const Data& result,
   const std::optional<ResultMap>& source,
   const ResolverMap& resolverMap
@@ -112,7 +112,7 @@ Args buildArgumentMap(
 Data executeField(
   const GraphQLField& field,
   const GraphQLScalarTypes& fieldType,
-  const vector<Field>& fields,
+  const cgqlContainer<Field>& fields,
   const std::optional<ResultMap>& source,
   const ResolverMap& resolverMap
 ) {

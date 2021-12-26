@@ -18,7 +18,7 @@ namespace cgql {
         const FieldDefinition& fieldDef,
         const std::unordered_map<std::string, TypeDefinition>& typeMap
       );
-      std::vector<GraphQLField> buildFields(
+      cgqlContainer<GraphQLField> buildFields(
         const ObjectTypeDefinition& objDef,
         const std::unordered_map<std::string, TypeDefinition>& typeMap
       );
@@ -31,7 +31,7 @@ namespace cgql {
         const std::unordered_map<std::string, TypeDefinition>& typeMap
       );
       // data
-      std::vector<std::string> typeNameCache;
+      cgqlContainer<std::string> typeNameCache;
     };
   }
 }
