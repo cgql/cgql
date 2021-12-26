@@ -1,13 +1,13 @@
-#include "execute.h"
+#include "cgql/execute/execute.h"
+#include "cgql/execute/defaultResolver.h"
 #include "cgql/logger/logger.h"
-#include "defaultResolver.h"
 
 namespace cgql {
 namespace internal {
 
 GraphQLField findGraphQLFieldByName(
   const GraphQLObject& objectType,
-  const string& fieldName
+  const std::string& fieldName
 ) {
   for(const GraphQLField& field : objectType.getFields()) {
     if(fieldName == field.getName()) {
@@ -27,13 +27,13 @@ GroupedField collectFields(
   const SelectionSet &selectionSet
 ) {
   GroupedField groupedFields;
-  for(Selection selection : selectionSet) {
+  for(const Selection& selection : selectionSet) {
     if(selection.index() == 0) {
       // holds a Field*
       cgqlSPtr<Field> field =
-        std::get<cgqlSPtr<Field>>(selection);
+        fromVariant<cgqlSPtr<Field>>(selection);
 
-      string responseKey =
+      std::string responseKey =
         field->getAlias().empty() ?
           field->getName() : field->getAlias();
 
@@ -76,9 +76,9 @@ Data completeValue(
   Data completedValue;
   if(fieldType.index() == 2) {
     cgqlSPtr<ResultMap> v =
-      std::get<cgqlSPtr<ResultMap>>(result);
+      fromVariant<cgqlSPtr<ResultMap>>(result);
     cgqlSPtr<GraphQLObject> schemaObj =
-      std::get<cgqlSPtr<GraphQLObject>>(fieldType);
+      fromVariant<cgqlSPtr<GraphQLObject>>(fieldType);
 
     SelectionSet mergedSelectionSet =
       mergeSelectionSet(fields);
@@ -91,7 +91,23 @@ Data completeValue(
       )
     );
   } else {
-    completedValue = result;
+    if(fieldType.index() == 0) {
+      GraphQLTypesBase<Int> checker =
+        fromVariant<GraphQLTypesBase<Int>>(fieldType);
+      GraphQLReturnTypes variedValue =
+        fromVariant<GraphQLReturnTypes>(result);
+      Int value =
+        fromVariant<Int>(variedValue);
+      completedValue = checker.serialize(value);
+    } else if(fieldType.index() == 1) {
+      GraphQLTypesBase<String> checker =
+        fromVariant<GraphQLTypesBase<String>>(fieldType);
+      GraphQLReturnTypes variedValue =
+        fromVariant<GraphQLReturnTypes>(result);
+      String value =
+        fromVariant<String>(variedValue);
+      completedValue = checker.serialize(value);
+    }
   }
   return completedValue;
 }
@@ -164,7 +180,7 @@ ResultMap executeSelectionSet(
           resolverMap
         )
       );
-    } catch(string& fieldName) {
+    } catch(std::string& fieldName) {
       // logger::error(fieldName);
     }
   }
@@ -193,7 +209,7 @@ OperationDefinition getOperation(
 ) {
   for(const Definition& def : document.getDefinitions()) {
     if(def.index() == 0) {
-      OperationDefinition opDef = std::get<OperationDefinition>(def);
+      OperationDefinition opDef = fromVariant<OperationDefinition>(def);
       if(opDef.getOperationType() == operationName) {
         return opDef;
       }

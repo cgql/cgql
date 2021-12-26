@@ -1,9 +1,9 @@
-#include "documentToSchema.h"
+#include "cgql/type/parser/documentToSchema.h"
 
 namespace cgql {
   namespace internal {
     GraphQLScalarTypes DocToSchemaParser::buildType(
-      const string& typeName,
+      const std::string& typeName,
       const std::unordered_map<std::string, TypeDefinition>& typeMap
     ) {
       if(typeName == "String") {
@@ -13,7 +13,7 @@ namespace cgql {
       }
       auto it = typeMap.find(typeName);
       ObjectTypeDefinition type =
-        std::get<ObjectTypeDefinition>(it->second);
+        fromVariant<ObjectTypeDefinition>(it->second);
       GraphQLObject builtType = buildObject(typeName, type, typeMap);
       return cgqlSMakePtr<GraphQLObject>(builtType);
     }
@@ -45,7 +45,7 @@ namespace cgql {
       return fields;
     }
     GraphQLObject DocToSchemaParser::buildObject(
-      const string& name,
+      const std::string& name,
       const ObjectTypeDefinition& typeDef,
       const std::unordered_map<std::string, TypeDefinition>& typeMap
     ) {
@@ -70,7 +70,7 @@ namespace cgql {
           GraphQLObject obj;
           obj = buildObject(
             key,
-            std::get<ObjectTypeDefinition>(value),
+            fromVariant<ObjectTypeDefinition>(value),
             typeMap
           );
           if(obj.getName() == "Query") {

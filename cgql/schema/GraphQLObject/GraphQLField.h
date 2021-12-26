@@ -1,20 +1,18 @@
 #ifndef GRAPHQL_FIELD_H
 #define GRAPHQL_FIELD_H
 
-#include "../../cgqlPch.h"
+#include "cgql/cgqlPch.h"
 
-#include "../GraphQLTypes.h"
-#include "../../type/abstractType.h"
+#include "cgql/schema/GraphQLTypes.h"
+#include "cgql/type/abstractType.h"
 #include "cgql/utilities/cgqlDefs.h"
 
 namespace cgql {
 
-using std::string;
-
 class GraphQLArgument : public internal::AbstractTypeDefinition {
 public:
   GraphQLArgument(
-    const string& name,
+    const std::string& name,
     const GraphQLScalarTypes& type
   );
   GraphQLArgument() = default;
@@ -26,19 +24,19 @@ public:
     return this->type;
   }
 private:
-  string name;
+  std::string name;
   GraphQLScalarTypes type;
 };
 
 class GraphQLField : public internal::AbstractTypeDefinition {
 public:
   GraphQLField(
-    const string& name,
+    const std::string& name,
     const GraphQLScalarTypes& type,
     const std::optional<cgql::ResolverFunc>& resolve
   );
   GraphQLField(
-    const string& name,
+    const std::string& name,
     const GraphQLScalarTypes& type
   );
   GraphQLField() = default;
@@ -48,7 +46,10 @@ public:
   inline void setType(const GraphQLScalarTypes& type) {
     this->type = type;
   }
-  inline void addArg(const string& name, const GraphQLArgument& arg) {
+  inline void addArg(
+    const std::string& name,
+    const GraphQLArgument& arg
+  ) {
     this->args.push_back(arg);
   }
   inline const cgqlContainer<GraphQLArgument>& getArgs() const {

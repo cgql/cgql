@@ -36,11 +36,11 @@ inline void cgqlAssertImpl(
       "Expected: %s\n"
       "From file: %s\n"
       "At line: %d\n",
-      ERROR,
-      RESET,
-      INFO,
+      logger::ERROR,
+      logger::RESET,
+      logger::INFO,
       msg,
-      RESET,
+      logger::RESET,
       expressionStr,
       filePath,
       line

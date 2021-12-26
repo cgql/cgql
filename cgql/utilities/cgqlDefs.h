@@ -16,6 +16,13 @@ constexpr cgqlSPtr<T> cgqlSMakePtr(Args&& ... args) {
 template<typename T>
 using cgqlContainer = std::vector<T>;
 
+namespace internal {
+  enum GRAPHQL_INT_LIMITS {
+    MAX = 2147483647,
+    MIN = -2147483648
+  };
+}
+
 } // cgql
 
 #endif /* ifndef CGQL_DEFS_H */

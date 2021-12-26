@@ -1,7 +1,7 @@
 #ifndef DOCUMENT_TO_SCHEMA_H
 #define DOCUMENT_TO_SCHEMA_H
 
-#include "../../cgqlPch.h"
+#include "cgql/cgqlPch.h"
 
 #include "cgql/schema/GraphQLDefinition.h"
 #include "cgql/type/Document.h"
@@ -11,7 +11,7 @@ namespace cgql {
   namespace internal {
     struct DocToSchemaParser {
       GraphQLScalarTypes buildType(
-        const string& typeName,
+        const std::string& typeName,
         const std::unordered_map<std::string, TypeDefinition>& typeMap
       );
       void buildArguments(
@@ -24,7 +24,7 @@ namespace cgql {
         const std::unordered_map<std::string, TypeDefinition>& typeMap
       );
       GraphQLObject buildObject(
-        const string& name,
+        const std::string& name,
         const ObjectTypeDefinition& objDef,
         const std::unordered_map<std::string, TypeDefinition>& typeMap
       );

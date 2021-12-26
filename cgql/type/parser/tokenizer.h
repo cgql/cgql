@@ -1,18 +1,15 @@
 #ifndef TOKENIZER_H
 #define TOKENIZER_H
 
-#include "../../cgqlPch.h"
+#include "cgql/cgqlPch.h"
 
 #include "cgql/schema/GraphQLScalar.h"
-#include "utils.h"
+#include "cgql/type/parser/utils.h"
 
 namespace cgql {
 namespace internal {
 
 #define enumToStr(enumValue) #enumValue
-
-using std::string;
-using std::exception;
 
 enum TokenType {
   DOCUMENT,
@@ -41,34 +38,17 @@ inline std::ostream& operator<<(std::ostream& os, const TokenType& type) {
   return os;
 }
 
-class InvalidTokenType : public exception {
-public:
-  InvalidTokenType(TokenType expected, TokenType passed);
-  virtual const char* what() const throw() {
-    return this->msg.c_str();
-  }
-private:
-  string msg;
-};
-
-class UnexpectedEnd : public exception {
-public:
-  virtual const char* what() const throw() {
-    return "Unexpected end of input";
-  }
-};
-
 class Token {
 public:
   Token(const TokenType& type);
-  Token(const TokenType& type, const string& value);
+  Token(const TokenType& type, const std::string& value);
   ~Token();
 
   inline TokenType getType() const { return this->type; }
-  inline const string& getValue() const { return this->value; }
+  inline const std::string& getValue() const { return this->value; }
 private:
   TokenType type;
-  string value;
+  std::string value;
 };
 
 class Tokenizer {
@@ -79,7 +59,7 @@ public:
   Token current;
   Token advance();
 private:
-  string source;
+  std::string source;
   uint16_t cursor;
   void advanceCursor(int8_t amount);
 
@@ -87,7 +67,7 @@ private:
   Token tokenizeDigits();
 };
 
-Token generateToken(TokenType type, const string& value);
+Token generateToken(TokenType type, const std::string& value);
 Token generateToken(TokenType type);
 
 } // internal

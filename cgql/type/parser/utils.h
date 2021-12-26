@@ -1,12 +1,10 @@
 #ifndef CGQL_UTILS_H
 #define CGQL_UTILS_H
 
-#include "../../cgqlPch.h"
+#include "cgql/cgqlPch.h"
 
 namespace cgql {
 namespace internal {
-
-using std::string;
 
 inline bool isLetter(uint32_t value) {
   if(

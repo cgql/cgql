@@ -1,17 +1,15 @@
 #ifndef PARSER_H
 #define PARSER_H
 
-#include "../../cgqlPch.h"
+#include "cgql/cgqlPch.h"
 
-#include "../Document.h"
+#include "cgql/type/Document.h"
 #include "cgql/schema/GraphQLObject/GraphQLField.h"
 #include "cgql/schema/GraphQLTypes.h"
-#include "tokenizer.h"
+#include "cgql/type/parser/tokenizer.h"
 
 namespace cgql {
 namespace internal {
-
-using std::string;
 
 class Parser {
 public:
@@ -23,7 +21,7 @@ private:
   bool moveUntil(const TokenType& type);
   bool checkType(const TokenType& type);
 
-  string document;
+  std::string document;
   Tokenizer tokenizer;
 
   Definition parseDefinition();
@@ -34,9 +32,9 @@ private:
   Argument parseArgument();
   Arg parseValue();
 
-  string parseName();
+  std::string parseName();
 
-  string parseType();
+  std::string parseType();
   ObjectTypeDefinition parseObjectTypeDefinition();
   FieldDefinition parseFieldTypeDefinition();
   ArgumentDefinitions parseArgumentDefinition();

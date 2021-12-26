@@ -1,9 +1,10 @@
-#include "../../cgqlPch.h"
+#include "cgql/cgqlPch.h"
 
 #include "cgql/type/parser/documentToSchema.h"
+#include "cgql/type/parser/parser.h"
 #include "cgql/utilities/assert.h"
-#include "parser.h"
-#include "../../logger/logger.h"
+#include "cgql/logger/logger.h"
+#include "cgql/type/parser/parser.h"
 
 namespace cgql {
 namespace internal {
@@ -43,13 +44,13 @@ bool Parser::checkType(const TokenType& type) {
   return false;
 }
 
-string Parser::parseName() {
-  string name = this->move(TokenType::NAME).getValue();
+std::string Parser::parseName() {
+  std::string name = this->move(TokenType::NAME).getValue();
   return name;
 }
 
 Arg Parser::parseValue() {
-  string valueAsStr;
+  std::string valueAsStr;
   TokenType curr = this->tokenizer.current.getType();
   switch(curr) {
     case TokenType::NAME:
@@ -69,7 +70,7 @@ Arg Parser::parseValue() {
 
 Argument Parser::parseArgument() {
   Argument argument;
-  string name = this->parseName();
+  std::string name = this->parseName();
   this->move(TokenType::COLON);
   Arg value = this->parseValue();
   argument.setName(name);
@@ -79,10 +80,10 @@ Argument Parser::parseArgument() {
 
 cgqlSPtr<Field> Parser::parseField() {
   Field field;
-  string aliasOrName = this->parseName();
+  std::string aliasOrName = this->parseName();
   if(this->checkType(TokenType::COLON)) {
     this->tokenizer.advance();
-    string name = this->parseName();
+    std::string name = this->parseName();
     field.setAlias(aliasOrName); // alias
     field.setName(name);
   } else {
@@ -134,9 +135,9 @@ OperationDefinition Parser::parseOperationDefinition() {
   };
 }
 
-string Parser::parseType() {
+std::string Parser::parseType() {
   Token type = this->move(TokenType::NAME);
-  string name = type.getValue();
+  std::string name = type.getValue();
   if(name == "String") {
     return "String";
   } else if(name == "Int") {
@@ -148,9 +149,9 @@ string Parser::parseType() {
 }
 
 ArgumentDefinitions Parser::parseArgumentDefinition() {
-  string name = this->parseName();
+  std::string name = this->parseName();
   this->move(TokenType::COLON);
-  string type = this->parseType();
+  std::string type = this->parseType();
   ArgumentDefinitions arg;
   arg.setName(name);
   arg.setType(type);
@@ -159,7 +160,7 @@ ArgumentDefinitions Parser::parseArgumentDefinition() {
 
 FieldDefinition Parser::parseFieldTypeDefinition() {
   FieldDefinition field;
-  string name = this->parseName();
+  std::string name = this->parseName();
   if(this->checkType(TokenType::BRACES_L)) {
     this->tokenizer.advance();
     do {
@@ -168,7 +169,7 @@ FieldDefinition Parser::parseFieldTypeDefinition() {
     this->tokenizer.advance();
   }
   this->move(TokenType::COLON);
-  string type = this->parseType();
+  std::string type = this->parseType();
   field.setName(name);
   field.setType(type);
   return field;
@@ -176,7 +177,7 @@ FieldDefinition Parser::parseFieldTypeDefinition() {
 
 ObjectTypeDefinition Parser::parseObjectTypeDefinition() {
   this->tokenizer.advance();
-  string name = this->parseName();
+  std::string name = this->parseName();
   ObjectTypeDefinition obj;
   obj.setName(name);
   if(this->checkType(TokenType::CURLY_BRACES_L)) {
@@ -196,7 +197,7 @@ Definition Parser::parseDefinition() {
   if(this->checkType(TokenType::CURLY_BRACES_L)) {
     definition = this->parseOperationDefinition();
   } else if(this->checkType(TokenType::NAME)) {
-    string currentValue =
+    std::string currentValue =
       this->tokenizer.current.getValue();
     if(currentValue == "type") {
       definition = this->parseObjectTypeDefinition();
@@ -226,9 +227,9 @@ GraphQLSchema documentToSchema(const internal::Document& doc) {
   for(auto def : doc.getDefinitions()) {
     if(def.index() == 1) {
       TypeDefinition objDef =
-        std::get<TypeDefinition>(def);
+        fromVariant<TypeDefinition>(def);
       AbstractTypeDefinition abstractTypeDef =
-        std::get<ObjectTypeDefinition>(objDef);
+        fromVariant<ObjectTypeDefinition>(objDef);
       typeMap.try_emplace(
         abstractTypeDef.getName(),
         objDef

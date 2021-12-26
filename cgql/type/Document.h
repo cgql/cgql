@@ -1,18 +1,14 @@
 #ifndef DOCUMENT_H
 #define DOCUMENT_H
 
-#include "../cgqlPch.h"
+#include "cgql/cgqlPch.h"
 
-#include "../logger/logger.h"
-#include "../schema/GraphQLDefinition.h"
+#include "cgql/logger/logger.h"
+#include "cgql/schema/GraphQLDefinition.h"
 #include "cgql/utilities/assert.h"
 
 namespace cgql {
 namespace internal {
-
-using std::variant;
-using std::string;
-
 
 enum OperationType {
   QUERY,
@@ -35,7 +31,7 @@ private:
 
 class Field;
 
-using Selection = variant<
+using Selection = std::variant<
   cgqlSPtr<Field>
 >;
 typedef cgqlContainer<Selection> SelectionSet;
@@ -43,19 +39,19 @@ typedef cgqlContainer<Selection> SelectionSet;
 class Field : public AbstractTypeDefinition {
 public:
   Field(
-    const string& name,
+    const std::string& name,
     const SelectionSet& selectionSet
   );
   Field() = default;
   ~Field();
-  inline void setAlias(const string& alias) {
+  inline void setAlias(const std::string& alias) {
     cgqlAssert(
       this->name == alias,
       "field should contain an alias different from its name"
     );
     this->alias = alias;
   }
-  inline const string& getAlias() const {
+  inline const std::string& getAlias() const {
     return this->alias;
   }
   inline void setSelectionSet(const SelectionSet& selectionSet) {
@@ -73,7 +69,7 @@ public:
     return this->args;
   }
 private:
-  string alias;
+  std::string alias;
   SelectionSet selectionSet;
   cgqlContainer<Argument> args;
 };
@@ -97,24 +93,24 @@ class ArgumentDefinitions : public AbstractTypeDefinition {
 public:
   ArgumentDefinitions() = default;
   ~ArgumentDefinitions();
-  inline void setType(const string& type) {
+  inline void setType(const std::string& type) {
     this->type = type;
   }
-  inline const string& getType() const {
+  inline const std::string& getType() const {
     return this->type;
   }
 private:
-  string type;
+  std::string type;
 };
 
 class FieldDefinition : public AbstractTypeDefinition {
 public:
   FieldDefinition() = default;
   ~FieldDefinition();
-  inline void setType(const string& type) {
+  inline void setType(const std::string& type) {
     this->type = type;
   }
-  inline const string& getType() const {
+  inline const std::string& getType() const {
     return this->type;
   }
   inline void addArg(const ArgumentDefinitions& arg) {
@@ -124,7 +120,7 @@ public:
     return this->args;
   }
 private:
-  string type;
+  std::string type;
   cgqlContainer<ArgumentDefinitions> args;
 };
 
@@ -142,11 +138,11 @@ private:
   cgqlContainer<FieldDefinition> fields;
 };
 
-using TypeDefinition = variant<
+using TypeDefinition = std::variant<
   ObjectTypeDefinition
 >;
 
-using Definition = variant<
+using Definition = std::variant<
   OperationDefinition,
   TypeDefinition
 >;

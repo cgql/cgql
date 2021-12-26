@@ -1,6 +1,6 @@
 #ifndef GRAPHQL_DEFINITION_H
 #define GRAPHQL_DEFINITION_H
-#include "GraphQLObject/GraphQLObject.h"
+#include "cgql/schema/GraphQLObject/GraphQLObject.h"
 
 namespace cgql {
 

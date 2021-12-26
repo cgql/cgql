@@ -1,9 +1,9 @@
-#include "GraphQLField.h"
+#include "cgql/schema/GraphQLObject/GraphQLField.h"
 
 namespace cgql {
 
 GraphQLArgument::GraphQLArgument(
-  const string& name,
+  const std::string& name,
   const GraphQLScalarTypes& type
 ): type(type) {
   this->setName(name);
@@ -12,7 +12,7 @@ GraphQLArgument::GraphQLArgument(
 GraphQLArgument::~GraphQLArgument() {}
 
 GraphQLField::GraphQLField(
-  const string& name,
+  const std::string& name,
   const GraphQLScalarTypes& type,
   const std::optional<cgql::ResolverFunc>& resolve
 ): type(type), resolve(resolve) {
@@ -20,7 +20,7 @@ GraphQLField::GraphQLField(
 }
 
 GraphQLField::GraphQLField(
-  const string& name,
+  const std::string& name,
   const GraphQLScalarTypes& type
 ): type(type) {
   this->setName(name);

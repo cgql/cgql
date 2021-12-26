@@ -1,4 +1,4 @@
-#include "GraphQLObject.h"
+#include "cgql/schema/GraphQLObject/GraphQLObject.h"
 
 namespace cgql {
 

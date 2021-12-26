@@ -1,15 +1,13 @@
 #ifndef GRAPHQL_OBJECT_H
 #define GRAPHQL_OBJECT_H
 
-#include "../../cgqlPch.h"
+#include "cgql/cgqlPch.h"
 
-#include "GraphQLField.h"
-#include "../../type/abstractType.h"
+#include "cgql/schema/GraphQLObject/GraphQLField.h"
+#include "cgql/type/abstractType.h"
 #include "cgql/utilities/cgqlDefs.h"
 
 namespace cgql {
-
-using std::string;
 
 class GraphQLObject : public internal::AbstractTypeDefinition {
 public:

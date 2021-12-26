@@ -1,14 +1,12 @@
-#include "Document.h"
+#include "cgql/type/Document.h"
 #include "cgql/logger/logger.h"
 
 namespace cgql {
 namespace internal {
 
-using std::ostream;
-
 // Field
 Field::Field(
-  const string& name,
+  const std::string& name,
   const SelectionSet& selectionSet
 ): selectionSet(selectionSet) {
   this->setName(name);
@@ -37,8 +35,8 @@ Document::Document(
 
 Document::~Document() {}
 
-ostream& operator<<(ostream& out, OperationType type) {
-  string outStr;
+std::ostream& operator<<(std::ostream& out, OperationType type) {
+  std::string outStr;
   switch(type) {
     case OperationType::QUERY:
       outStr = "QUERY";
@@ -57,15 +55,15 @@ ostream& operator<<(ostream& out, OperationType type) {
 
 void printSelectionSet(const internal::SelectionSet selectionSet, int level) {
   for(auto s : selectionSet) {
-    string v;
+    std::string v;
     for(int i = 0; i < level; i++) v += "  ";
     std::visit([&v](internal::Selection&& args) {
       if(std::holds_alternative<cgqlSPtr<internal::Field>>(args)) {
-        v += std::get<cgqlSPtr<internal::Field>>(args)->getName();
+        v += fromVariant<cgqlSPtr<internal::Field>>(args)->getName();
       }
     }, s);
     logger::info(v);
-    cgqlSPtr<internal::Field> selection = std::get<cgqlSPtr<internal::Field>>(s);
+    cgqlSPtr<internal::Field> selection = fromVariant<cgqlSPtr<internal::Field>>(s);
     if(!selection->getSelectionSet().empty()) {
       printSelectionSet(selection->getSelectionSet(), level + 1);
     }
@@ -73,7 +71,7 @@ void printSelectionSet(const internal::SelectionSet selectionSet, int level) {
 }
 
 void printGQLObj(const internal::ObjectTypeDefinition& obj, int level) {
-  string indentation;
+  std::string indentation;
   for(int i = 0; i < level; i++) indentation += " ";
   logger::info(obj.getName().data());
   for(auto field : obj.getFields()) {
@@ -82,15 +80,18 @@ void printGQLObj(const internal::ObjectTypeDefinition& obj, int level) {
 }
 
 void printDocumentNode(const internal::Document &doc) {
-  for(internal::Definition def : doc.getDefinitions()) {
-    if(internal::OperationDefinition* opDef = std::get_if<internal::OperationDefinition>(&def)) {
-      logger::info(opDef->getOperationType());
-      printSelectionSet(opDef->getSelectionSet(), 0);
-    } else if(internal::TypeDefinition* typeDef =
-      std::get_if<internal::TypeDefinition>(&def)) {
-      if(typeDef->index() == 0) {
+  for(const internal::Definition& def : doc.getDefinitions()) {
+    if(def.index() == 0) {
+      internal::OperationDefinition opDef =
+        fromVariant<internal::OperationDefinition>(def);
+      logger::info(opDef.getOperationType());
+      printSelectionSet(opDef.getSelectionSet(), 0);
+    } else if(def.index() == 1) {
+      internal::TypeDefinition typeDef =
+        fromVariant<internal::TypeDefinition>(def);
+      if(typeDef.index() == 0) {
         internal::ObjectTypeDefinition obj =
-          std::get<internal::ObjectTypeDefinition>(*typeDef);
+          fromVariant<internal::ObjectTypeDefinition>(typeDef);
         printGQLObj(obj, 2);
       }
     }
@@ -98,26 +99,26 @@ void printDocumentNode(const internal::Document &doc) {
 }
 
 void printResultMap(const ResultMap& rm, uint8_t level) {
-  string indentation;
+  std::string indentation;
   for(auto i = 0; i < level; i++) indentation += "  ";
   for(auto const& [key, value] : rm.data) {
     if(value.index() == 0) {
-      auto rg = std::get<GraphQLReturnTypes>(value);
+      auto rg = fromVariant<GraphQLReturnTypes>(value);
       if(rg.index() == 0) {
-        string v = indentation +
+        std::string v = indentation +
           key.data() +
-          " " + std::to_string(std::get<Int>(rg));
+          " " + std::to_string(fromVariant<Int>(rg));
         logger::info(v);
       } else if(rg.index() == 1) {
-        string v = indentation +
+        std::string v = indentation +
           key.data() +
-          " " + std::get<String>(rg).data();
+          " " + fromVariant<String>(rg).data();
         logger::info(v);
       }
     } else {
-      string v = indentation + key.data();
+      std::string v = indentation + key.data();
       logger::info(v);
-      printResultMap(*std::get<std::shared_ptr<ResultMap>>(value), level + 1);
+      printResultMap(*fromVariant<std::shared_ptr<ResultMap>>(value), level + 1);
     }
   }
 }

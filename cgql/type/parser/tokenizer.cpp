@@ -1,7 +1,7 @@
-#include "../../cgqlPch.h"
+#include "cgql/cgqlPch.h"
 
-#include "tokenizer.h"
-#include "../../logger/logger.h"
+#include "cgql/type/parser/tokenizer.h"
+#include "cgql/logger/logger.h"
 
 namespace cgql {
 namespace internal {
@@ -54,21 +54,10 @@ const char* tokenTypeToCharArray(const TokenType& type) {
   return "";
 }
 
-// InvalidTokenType
-InvalidTokenType::InvalidTokenType(
-  TokenType expected,
-  TokenType passed
-): msg(
-    string("Expected token type ") +
-    enumToStr(expected) +
-    string(" but got ") +
-    enumToStr(passed)
-  ) {}
-
 // Token
 Token::Token(const TokenType& type)
   : type(type) {}
-Token::Token(const TokenType& type, const string& value)
+Token::Token(const TokenType& type, const std::string& value)
   : type(type), value(value) {}
 Token::~Token() {}
 
@@ -87,14 +76,14 @@ Token generateToken(TokenType type) {
   Token generatedToken(type);
   return generatedToken;
 }
-Token generateToken(TokenType type, const string& value) {
+Token generateToken(TokenType type, const std::string& value) {
   Token generatedToken(type, value);
   return generatedToken;
 }
 
 Token Tokenizer::tokenizeName() {
   uint16_t* i = &this->cursor;
-  string value; 
+  std::string value; 
   for(; *i < this->source.length();) {
     if(
       isNameContinue(this->source[*i])

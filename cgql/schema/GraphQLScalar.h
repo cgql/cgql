@@ -1,15 +1,13 @@
 #ifndef GRAPHQL_SCALAR_H
 #define GRAPHQL_SCALAR_H
 
-#include "../cgqlPch.h"
+#include "cgql/cgqlPch.h"
+#include "cgql/logger/logger.h"
 
 namespace cgql {
 
-using std::string;
-using std::function;
-
 template<typename T>
-using SerializeFunc = function<T(T)>;
+using SerializeFunc = std::function<T(T)>;
 
 typedef int64_t Int;
 typedef std::string_view String;

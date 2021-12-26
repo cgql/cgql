@@ -1,9 +1,9 @@
 #ifndef EXECUTE_H
 #define EXECUTE_H
 
-#include "../cgqlPch.h"
-#include "../schema/GraphQLDefinition.h"
-#include "../type/Document.h"
+#include "cgql/cgqlPch.h"
+#include "cgql/schema/GraphQLDefinition.h"
+#include "cgql/type/Document.h"
 #include "cgql/utilities/cgqlDefs.h"
 
 namespace cgql {
@@ -11,7 +11,7 @@ namespace internal {
 
 GraphQLField findGraphQLFieldByName(
   const GraphQLObject& objectType,
-  const string& fieldName
+  const std::string& fieldName
 );
 
 GroupedField collectFields(

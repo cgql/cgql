@@ -9,7 +9,7 @@ inline void runAdvancedParsing() {
     auto typedefs = parseSchema(
       "type Address {"
       "  city: String"
-      "  houseName: Int"
+      "  houseName: String"
       "}"
       ""
       "type Person {"
