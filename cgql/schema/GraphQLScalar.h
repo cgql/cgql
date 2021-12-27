@@ -9,7 +9,7 @@ namespace cgql {
 template<typename T>
 using SerializeFunc = std::function<T(T)>;
 
-typedef int64_t Int;
+typedef int32_t Int;
 typedef std::string_view String;
 
 template<typename T>
