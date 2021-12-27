@@ -23,6 +23,17 @@ SelectionSet mergeSelectionSet(
   const cgqlContainer<Field>& fields
 );
 
+template<typename T>
+Data coerceLeafValue(
+  const GraphQLScalarTypes& fieldType,
+  const Data& data
+);
+
+Data coerceVariedLeafValue(
+  const GraphQLScalarTypes& fieldType,
+  const Data& data
+);
+
 Data completeValue(
   const GraphQLScalarTypes& fieldType,
   const cgqlContainer<Field>& fields,

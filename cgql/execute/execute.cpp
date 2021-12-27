@@ -42,7 +42,8 @@ GroupedField collectFields(
       if(it != groupedFields.end()) {
         it->second.push_back(*field);
       } else {
-        cgqlContainer<Field> fields { *field };
+        cgqlContainer<Field> fields;
+        fields.push_back(*field);
         groupedFields.try_emplace(
           responseKey, fields
         );
@@ -64,6 +65,36 @@ SelectionSet mergeSelectionSet(
     }
   }
   return mergedSelectionSet;
+}
+
+template<typename T>
+Data coerceLeafValue(
+  const GraphQLScalarTypes& fieldType,
+  const Data& data
+) {
+  GraphQLTypesBase<T> type =
+    fromVariant<GraphQLTypesBase<T>>(fieldType);
+  GraphQLReturnTypes variedValue =
+    fromVariant<GraphQLReturnTypes>(data);
+  T value = fromVariant<T>(variedValue);
+  return type.serialize(value);
+}
+
+Data coerceVariedLeafValue(
+  const GraphQLScalarTypes& fieldType,
+  const Data& data
+) {
+  switch(fieldType.index()) {
+    case 0:
+      return coerceLeafValue<Int>(fieldType, data);
+      break;
+    case 1:
+      return coerceLeafValue<String>(fieldType, data);
+      break;
+    default:
+      cgqlAssert(true, "Unknown variant type");
+  }
+  /* silence compiler warning */ return 0;
 }
 
 Data completeValue(
@@ -91,23 +122,7 @@ Data completeValue(
       )
     );
   } else {
-    if(fieldType.index() == 0) {
-      GraphQLTypesBase<Int> checker =
-        fromVariant<GraphQLTypesBase<Int>>(fieldType);
-      GraphQLReturnTypes variedValue =
-        fromVariant<GraphQLReturnTypes>(result);
-      Int value =
-        fromVariant<Int>(variedValue);
-      completedValue = checker.serialize(value);
-    } else if(fieldType.index() == 1) {
-      GraphQLTypesBase<String> checker =
-        fromVariant<GraphQLTypesBase<String>>(fieldType);
-      GraphQLReturnTypes variedValue =
-        fromVariant<GraphQLReturnTypes>(result);
-      String value =
-        fromVariant<String>(variedValue);
-      completedValue = checker.serialize(value);
-    }
+    return coerceVariedLeafValue(fieldType, result);
   }
   return completedValue;
 }
@@ -163,26 +178,22 @@ ResultMap executeSelectionSet(
     selectionSet
   );
   for(auto const& [responseKey, fields] : groupedFieldSet) {
-    try {
-      GraphQLField field =
-        cgql::internal::findGraphQLFieldByName(
-          objectType,
-          fields[0].getName()
-        );
-      GraphQLScalarTypes fieldType = field.getType();
-      resultMap.data.try_emplace(
-        responseKey,
-        executeField(
-          field,
-          fieldType,
-          fields,
-          source,
-          resolverMap
-        )
+    GraphQLField field =
+      cgql::internal::findGraphQLFieldByName(
+        objectType,
+        fields[0].getName()
       );
-    } catch(std::string& fieldName) {
-      // logger::error(fieldName);
-    }
+    GraphQLScalarTypes fieldType = field.getType();
+    resultMap.data.try_emplace(
+      responseKey,
+      executeField(
+        field,
+        fieldType,
+        fields,
+        source,
+        resolverMap
+      )
+    );
   }
   return resultMap;
 }
