@@ -112,7 +112,7 @@ int main() {
   // query
   auto query = parse(
     "{"
-    "  person {"
+    "  cw3dv: person {"
     "    name"
     "    age"
     "  }"
@@ -124,7 +124,7 @@ int main() {
   printResultMap(executionResult);
   /* prints result to stdout
 
-  person
+  cw3dv
     name cw3dv
     age 14
 
