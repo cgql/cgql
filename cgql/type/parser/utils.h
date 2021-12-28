@@ -6,7 +6,7 @@
 namespace cgql {
 namespace internal {
 
-inline bool isLetter(uint32_t value) {
+constexpr inline bool isLetter(uint32_t value) {
   if(
     (value >= 0x0041 && value <= 0x005A) ||
     (value >= 0x0061 && value <= 0x007A)
@@ -16,29 +16,35 @@ inline bool isLetter(uint32_t value) {
   return false;
 }
 
-inline bool isDigit(uint32_t value) {
+constexpr inline bool isDigit(uint32_t value) {
   if(value >= 0x0030 && value <= 0x0039) {
     return true;
   }
   return false;
 }
 
-inline bool isNameStart(uint32_t value) {
+constexpr inline bool isAsciiDigit(uint8_t value) {
+  return value >= 0 && value <= 9;
+}
+
+constexpr inline bool isNameStart(uint32_t value) {
   return isLetter(value) || value == 0x005F;
 }
 
-inline bool isNameContinue(uint32_t value) {
+constexpr inline bool isNameContinue(uint32_t value) {
   return isLetter(value) || isDigit(value) || value == 0x005F;
 }
 
-inline uint8_t charToInt(const char& ch) {
+template<typename T>
+constexpr inline T charToInt(const char& ch) {
   return ch - 48;
 }
 
-inline int strToInt(const std::string& str) {
-  int tempQuotient = 0;
+template<typename T>
+constexpr inline T strToInt(const std::string& str) {
+  T tempQuotient = 0;
   for(const char& ch : str) {
-    tempQuotient = tempQuotient * 10 + charToInt(ch);
+    tempQuotient = tempQuotient * 10 + charToInt<uint8_t>(ch);
   }
   return tempQuotient;
 }

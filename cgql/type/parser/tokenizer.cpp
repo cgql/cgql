@@ -59,6 +59,7 @@ Token::Token(const TokenType& type)
   : type(type) {}
 Token::Token(const TokenType& type, const std::string& value)
   : type(type), value(value) {}
+
 Token::~Token() {}
 
 // Tokenizer

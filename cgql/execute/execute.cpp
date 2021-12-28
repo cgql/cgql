@@ -237,7 +237,7 @@ ResultMap execute(
 ) {
   // get operation
   internal::OperationDefinition operation =
-    cgql::internal::getOperation(document);
+    internal::getOperation(document);
   return internal::executeQuery(
     operation,
     schema,

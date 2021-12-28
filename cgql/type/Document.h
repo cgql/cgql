@@ -152,6 +152,7 @@ public:
   Document(
     const cgqlContainer<Definition>& definitions
   );
+  Document() = default;
   ~Document();
   inline const cgqlContainer<Definition>& getDefinitions() const { return this->definitions; }
 private:

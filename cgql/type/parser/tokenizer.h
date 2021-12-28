@@ -5,11 +5,10 @@
 
 #include "cgql/schema/GraphQLScalar.h"
 #include "cgql/type/parser/utils.h"
+#include "cgql/type/location.h"
 
 namespace cgql {
 namespace internal {
-
-#define enumToStr(enumValue) #enumValue
 
 enum TokenType {
   DOCUMENT,
@@ -44,8 +43,8 @@ public:
   Token(const TokenType& type, const std::string& value);
   ~Token();
 
-  inline TokenType getType() const { return this->type; }
-  inline const std::string& getValue() const { return this->value; }
+  constexpr inline TokenType getType() const { return this->type; }
+  constexpr inline const std::string& getValue() const { return this->value; }
 private:
   TokenType type;
   std::string value;

@@ -10,9 +10,12 @@ inline Data defaultFieldResolver(
   const ResultMap& source,
   const std::string& name
 ) {
-  // auto it = source.data.find(name);
-  Data result = source.data.at(name);
-  return result;
+  auto it = source.data.find(name);
+  if(it != source.data.end()) {
+    return it->second;
+  }
+  cgqlAssert(it == source.data.end(), "Cannot find value for given key in result map");
+  /* silence compiler warning */ return 0;
 }
 
 } // internal

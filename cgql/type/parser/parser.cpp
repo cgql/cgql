@@ -59,11 +59,10 @@ Arg Parser::parseValue() {
     default:
       valueAsStr = this->move(curr).getValue();
   }
-  int start = charToInt(valueAsStr[0]);
-  if(start >= 0 && start <= 9) {
+  uint8_t start = charToInt<uint8_t>(valueAsStr[0]);
+  if(isAsciiDigit(start)) {
     // potentially an integer
-    Int value = strToInt(valueAsStr);
-    return value;
+    return strToInt<Int>(valueAsStr);
   }
   return valueAsStr;
 }
