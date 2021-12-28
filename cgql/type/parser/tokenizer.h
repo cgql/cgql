@@ -5,7 +5,6 @@
 
 #include "cgql/schema/GraphQLScalar.h"
 #include "cgql/type/parser/utils.h"
-#include "cgql/type/location.h"
 
 namespace cgql {
 namespace internal {
