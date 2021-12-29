@@ -39,7 +39,7 @@ inline void runAdvancedParsing() {
     ResolverMap root {
       {
         "person",
-        [](Args args) -> Data {
+        [](const Args args) -> Data {
           Int id = fromVariant<Int>(args["id"]);
           ResultMap a {
             {
@@ -59,7 +59,7 @@ inline void runAdvancedParsing() {
       },
       {
         "sum",
-        [](Args args) -> Data {
+        [](const Args args) -> Data {
           Int x = fromVariant<Int>(args["x"]);
           Int y = fromVariant<Int>(args["y"]);
           return x + y;
