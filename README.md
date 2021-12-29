@@ -136,13 +136,12 @@ Finally run:
 ```bash
 cmake -B ./build/
 cmake --build ./build/
-chmod +x build/src/Source
 ./build/src/Source
 ```
 
 Output:
 ```bash
-person
+cw3dv
   name cw3dv
   age 14
 ```
