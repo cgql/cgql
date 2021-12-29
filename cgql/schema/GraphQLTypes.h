@@ -78,7 +78,7 @@ typedef std::unordered_map<
 > ArgsMap;
 struct Args {
   ArgsMap argsMap;
-  inline Arg operator[](const std::string& argKey) {
+  inline const Arg& operator[](const std::string& argKey) const {
     return this->argsMap.at(argKey);
   }
 };
@@ -91,7 +91,7 @@ constexpr const T& fromVariant(
 }
 
 using ResolverFunc = std::function<
-  Data(Args)
+  Data(const Args)
 >;
 
 typedef std::unordered_map<std::string, ResolverFunc> ResolverMap;
