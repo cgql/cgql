@@ -9,7 +9,7 @@ GraphQLField findGraphQLFieldByName(
   const GraphQLObject& objectType,
   const std::string& fieldName
 ) {
-  for(const GraphQLField& field : objectType.getFields()) {
+  for(auto const& field : objectType.getFields()) {
     if(fieldName == field.getName()) {
       return field;
     }
@@ -27,7 +27,7 @@ GroupedField collectFields(
   const SelectionSet &selectionSet
 ) {
   GroupedField groupedFields;
-  for(const Selection& selection : selectionSet) {
+  for(auto const& selection : selectionSet) {
     if(selection.index() == 0) {
       // holds a Field*
       cgqlSPtr<Field> field =
@@ -57,10 +57,10 @@ SelectionSet mergeSelectionSet(
   const cgqlContainer<Field>& fields
 ) {
   SelectionSet mergedSelectionSet;
-  for(const Field& field : fields) {
+  for(auto const& field : fields) {
     const SelectionSet& fieldSelectionSet = field.getSelectionSet();
     if(fieldSelectionSet.empty()) continue;
-    for(const Selection& subField : fieldSelectionSet) {
+    for(auto const& subField : fieldSelectionSet) {
       mergedSelectionSet.push_back(subField);
     }
   }
@@ -131,7 +131,7 @@ Args buildArgumentMap(
   const Field& field
 ) {
   Args arg;
-  for(const Argument& argDef : field.getArgs()) {
+  for(auto const& argDef : field.getArgs()) {
     arg.argsMap.try_emplace(
       argDef.getName(),
       argDef.getValue()
@@ -173,13 +173,12 @@ ResultMap executeSelectionSet(
   const ResolverMap& resolverMap
 ) {
   ResultMap resultMap;
-  GroupedField groupedFieldSet = cgql::internal::collectFields(
+  GroupedField groupedFieldSet = collectFields(
     objectType,
     selectionSet
   );
   for(auto const& [responseKey, fields] : groupedFieldSet) {
-    GraphQLField field =
-      cgql::internal::findGraphQLFieldByName(
+    GraphQLField field = findGraphQLFieldByName(
         objectType,
         fields[0].getName()
       );
@@ -206,7 +205,7 @@ ResultMap executeQuery(
 ) {
   const GraphQLObject& queryType = schema.getQuery();
   const SelectionSet& selection = query.getSelectionSet();
-  return cgql::internal::executeSelectionSet(
+  return executeSelectionSet(
     selection,
     queryType,
     {},
@@ -218,7 +217,7 @@ OperationDefinition getOperation(
   const Document& document,
   OperationType operationName
 ) {
-  for(const Definition& def : document.getDefinitions()) {
+  for(auto const& def : document.getDefinitions()) {
     if(def.index() == 0) {
       OperationDefinition opDef = fromVariant<OperationDefinition>(def);
       if(opDef.getOperationType() == operationName) {

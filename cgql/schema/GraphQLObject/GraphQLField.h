@@ -52,7 +52,7 @@ public:
   ) {
     this->args.push_back(arg);
   }
-  inline const cgqlContainer<GraphQLArgument>& getArgs() const {
+  inline cgqlContainer<GraphQLArgument> getArgs() const {
     return this->args;
   };
 private:

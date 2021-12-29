@@ -22,7 +22,7 @@ namespace cgql {
       const FieldDefinition& fieldDef,
       const std::unordered_map<std::string, TypeDefinition>& typeMap
     ) {
-      for(const ArgumentDefinitions& argDef : fieldDef.getArgs()) {
+      for(auto const& argDef : fieldDef.getArgs()) {
         GraphQLArgument arg;
         arg.setName(argDef.getName());
         arg.setType(this->buildType(argDef.getType(), typeMap));
@@ -35,7 +35,7 @@ namespace cgql {
     ) {
       cgqlContainer<GraphQLField> fields;
       fields.reserve(objDef.getFields().size());
-      for(FieldDefinition fieldDef : objDef.getFields()) {
+      for(auto const& fieldDef : objDef.getFields()) {
         GraphQLField field;
         field.setName(fieldDef.getName());
         field.setType(this->buildType(fieldDef.getType(), typeMap));

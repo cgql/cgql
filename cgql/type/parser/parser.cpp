@@ -223,7 +223,7 @@ Document Parser::parseDocument() {
 
 GraphQLSchema documentToSchema(const internal::Document& doc) {
   std::unordered_map<std::string, TypeDefinition> typeMap;
-  for(auto def : doc.getDefinitions()) {
+  for(auto const& def : doc.getDefinitions()) {
     if(def.index() == 1) {
       TypeDefinition objDef =
         fromVariant<TypeDefinition>(def);

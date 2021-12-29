@@ -11,7 +11,7 @@ public:
   inline void setName(const std::string& name) {
     this->name = name;
   };
-  inline const std::string& getName() const {
+  constexpr inline const std::string& getName() const {
     return this->name;
   };
 protected:
