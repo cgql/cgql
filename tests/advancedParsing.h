@@ -5,24 +5,25 @@
 using namespace cgql;
 
 inline void runAdvancedParsing() {
+  auto typedefs = parseSchema(
+    "type Address {"
+    "  city: String"
+    "  houseName: String"
+    "}"
+    ""
+    "type Person {"
+    "  name: String"
+    "  age: Int"
+    "  address: Address"
+    "  partner: Person"
+    "}"
+    ""
+    "type Query {"
+    "  person(id: Int): Person"
+    "  sum(x: Int, y: Int): Int"
+    "}"
+  );
   for(int i = 0; i < 50000; i++) {
-    auto typedefs = parseSchema(
-      "type Address {"
-      "  city: String"
-      "  houseName: String"
-      "}"
-      ""
-      "type Person {"
-      "  name: String"
-      "  age: Int"
-      "  address: Address"
-      "}"
-      ""
-      "type Query {"
-      "  person(id: Int): Person"
-      "  sum(x: Int, y: Int): Int"
-      "}"
-    );
     auto doc = parse(
       "{"
       "  cw3dv: person(id: 65) {"
@@ -31,6 +32,9 @@ inline void runAdvancedParsing() {
       "    addr: address {"
       "      city"
       "      houseName"
+      "    }"
+      "    partner {"
+      "      name"
       "    }"
       "  }"
       "  sum(x: 15, y: 10)"
@@ -47,11 +51,17 @@ inline void runAdvancedParsing() {
               { "houseName", "cw3dv's-homeeeee" }
             }
           };
+          ResultMap r {
+            {
+              { "name", "cw3dv1" }
+            }
+          };
           ResultMap p {
             {
               { "name", "cw3dv" },
               { "age", id },
-              { "address", cgqlSMakePtr<ResultMap>(a) }
+              { "address", cgqlSMakePtr<ResultMap>(a) },
+              { "partner", cgqlSMakePtr<ResultMap>(r) }
             }
           };
           return std::make_shared<ResultMap>(p);
