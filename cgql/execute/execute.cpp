@@ -129,14 +129,32 @@ Data completeValue(
 }
 
 Args buildArgumentMap(
-  const Field& field
+  const Field& field,
+  const GraphQLField& fieldType
 ) {
   Args arg;
-  for(auto const& argDef : field.getArgs()) {
-    arg.argsMap.try_emplace(
-      argDef.getName(),
-      argDef.getValue()
+  const cgqlContainer<Argument>& argumentValues =
+    field.getArgs();
+  const cgqlContainer<GraphQLArgument>& argumentDefinitions =
+    fieldType.getArgs();
+  for(auto const& argDef : argumentDefinitions) {
+    const std::string& argName = argDef.getName();
+    const GraphQLScalarTypes& argType = argDef.getType();
+    auto it = std::find_if(
+      argumentValues.begin(),
+      argumentValues.end(),
+      [&argName](Argument arg) {
+        return arg.getName() == argName;
+      }
     );
+    bool hasValue = it != argumentValues.end();
+    const Arg& argValue = it->getValue();
+    if(hasValue) {
+      arg.argsMap.try_emplace(
+        argName,
+        argValue
+      );
+    }
   }
   return arg;
 }
@@ -151,7 +169,10 @@ Data executeField(
   Data result;
   auto it = resolverMap.find(field.getName());
   if(it != resolverMap.end()) {
-    result = it->second(buildArgumentMap(fields[0]));
+    result = it->second(buildArgumentMap(
+      fields[0],
+      field
+    ));
   } else {
     result = defaultFieldResolver(
       source.value(),
