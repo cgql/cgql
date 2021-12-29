@@ -17,7 +17,8 @@ GraphQLField findGraphQLFieldByName(
   std::string msg;
   msg += "Field with name ";
   msg += fieldName;
-  msg += " cannot be found in fields";
+  msg += " cannot be found in object ";
+  msg += objectType.getName();
   cgqlAssert(true, msg.c_str());
   /* silence compiler warning */ return {};
 }
