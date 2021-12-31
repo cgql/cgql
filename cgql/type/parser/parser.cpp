@@ -150,8 +150,10 @@ std::string Parser::parseType() {
 ArgumentDefinitions Parser::parseArgumentDefinition() {
   std::string name = this->parseName();
   this->move(TokenType::COLON);
-  std::string type = this->parseType();
   ArgumentDefinitions arg;
+  Type type {
+    this->parseType()
+  };
   arg.setName(name);
   arg.setType(type);
   return arg;
@@ -168,7 +170,9 @@ FieldDefinition Parser::parseFieldTypeDefinition() {
     this->tokenizer.advance();
   }
   this->move(TokenType::COLON);
-  std::string type = this->parseType();
+  Type type {
+    this->parseType()
+  };
   field.setName(name);
   field.setType(type);
   return field;
@@ -222,7 +226,7 @@ Document Parser::parseDocument() {
 };
 
 GraphQLSchema documentToSchema(const internal::Document& doc) {
-  std::unordered_map<std::string, TypeDefinition> typeMap;
+  std::unordered_map<Type, TypeDefinition> typeMap;
   for(auto const& def : doc.getDefinitions()) {
     if(def.index() == 1) {
       TypeDefinition objDef =

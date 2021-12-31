@@ -89,28 +89,59 @@ private:
   SelectionSet selectionSet;
 };
 
+class Type {
+public:
+  Type(
+    const std::string& name,
+    bool isList = false,
+    bool isNonNull = false
+  ): name(name), _isList(isList), _isNonNull(isNonNull) {}
+  Type() = default;
+  ~Type() {}
+  inline const std::string& getTypeName() const {
+    return this->name;
+  }
+  inline bool isList() const {
+    return this->_isList;
+  }
+  inline bool isNonNull() const {
+    return this->_isNonNull;
+  }
+  bool operator==(const Type& other) const {
+    return (
+      this->_isList == other._isList &&
+      this->_isNonNull == other._isNonNull &&
+      this->name == this->name
+    );
+  }
+private:
+  std::string name;
+  bool _isList;
+  bool _isNonNull;
+};
+
 class ArgumentDefinitions : public AbstractTypeDefinition {
 public:
   ArgumentDefinitions() = default;
   ~ArgumentDefinitions();
-  inline void setType(const std::string& type) {
+  inline void setType(const Type& type) {
     this->type = type;
   }
-  inline const std::string& getType() const {
+  inline const Type& getType() const {
     return this->type;
   }
 private:
-  std::string type;
+  Type type;
 };
 
 class FieldDefinition : public AbstractTypeDefinition {
 public:
   FieldDefinition() = default;
   ~FieldDefinition();
-  inline void setType(const std::string& type) {
+  inline void setType(const Type& type) {
     this->type = type;
   }
-  inline const std::string& getType() const {
+  inline const Type& getType() const {
     return this->type;
   }
   inline void addArg(const ArgumentDefinitions& arg) {
@@ -120,7 +151,7 @@ public:
     return this->args;
   }
 private:
-  std::string type;
+  Type type;
   cgqlContainer<ArgumentDefinitions> args;
 };
 
@@ -164,5 +195,14 @@ void printSelectionSet(const internal::SelectionSet selectionSet, int level);
 void printDocumentNode(const internal::Document& doc);
 void printResultMap(const ResultMap& rm, uint8_t level = 0);
 } // cgql
+
+namespace std {
+  template<>
+  struct hash<cgql::internal::Type> {
+    std::size_t operator()(const cgql::internal::Type& type) const {
+      return hash<std::string>()(type.getTypeName());
+    }
+  };
+};
 
 #endif

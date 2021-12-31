@@ -3,23 +3,23 @@
 namespace cgql {
   namespace internal {
     GraphQLScalarTypes DocToSchemaParser::buildType(
-      const std::string& typeName,
-      const std::unordered_map<std::string, TypeDefinition>& typeMap,
+      const Type& typeName,
+      const std::unordered_map<Type, TypeDefinition>& typeMap,
       const cgqlSPtr<GraphQLObject>& currObj
     ) {
-      if(currObj->getName() == typeName) {
+      if(currObj->getName() == typeName.getTypeName()) {
         return currObj;
       }
-      if(typeName == "String") {
+      if(typeName.getTypeName() == "String") {
         return GraphQLTypes::GraphQLString;
-      } else if(typeName == "Int") {
+      } else if(typeName.getTypeName() == "Int") {
         return GraphQLTypes::GraphQLInt;
       }
       auto it = typeMap.find(typeName);
       ObjectTypeDefinition type =
         fromVariant<ObjectTypeDefinition>(it->second);
       return buildObject(
-        typeName,
+        typeName.getTypeName(),
         type,
         typeMap
       );
@@ -27,7 +27,7 @@ namespace cgql {
     void DocToSchemaParser::buildArguments(
       GraphQLField& field,
       const FieldDefinition& fieldDef,
-      const std::unordered_map<std::string, TypeDefinition>& typeMap,
+      const std::unordered_map<Type, TypeDefinition>& typeMap,
       const cgqlSPtr<GraphQLObject>& currObj
     ) {
       for(auto const& argDef : fieldDef.getArgs()) {
@@ -39,7 +39,7 @@ namespace cgql {
     }
     cgqlContainer<GraphQLField> DocToSchemaParser::buildFields(
       const ObjectTypeDefinition& objDef,
-      const std::unordered_map<std::string, TypeDefinition>& typeMap,
+      const std::unordered_map<Type, TypeDefinition>& typeMap,
       const cgqlSPtr<GraphQLObject>& currObj
     ) {
       cgqlContainer<GraphQLField> fields;
@@ -56,7 +56,7 @@ namespace cgql {
     cgqlSPtr<GraphQLObject> DocToSchemaParser::buildObject(
       const std::string& name,
       const ObjectTypeDefinition& typeDef,
-      const std::unordered_map<std::string, TypeDefinition>& typeMap
+      const std::unordered_map<Type, TypeDefinition>& typeMap
     ) {
       cgqlSPtr<GraphQLObject> obj = cgqlSMakePtr<GraphQLObject>();
       obj->setName(name);
@@ -70,7 +70,7 @@ namespace cgql {
       return obj;
     }
     GraphQLSchema DocToSchemaParser::docToSchemaImpl(
-      const std::unordered_map<std::string, TypeDefinition>& typeMap
+      const std::unordered_map<Type, TypeDefinition>& typeMap
     ) {
       GraphQLSchema schema;
       this->typeNameCache.reserve(typeMap.size());
@@ -83,7 +83,7 @@ namespace cgql {
           ) != this->typeNameCache.end()) continue;
           GraphQLObject obj;
           obj = *buildObject(
-            key,
+            key.getTypeName(),
             fromVariant<ObjectTypeDefinition>(value),
             typeMap
           );
