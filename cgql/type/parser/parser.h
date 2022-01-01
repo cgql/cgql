@@ -34,7 +34,7 @@ private:
 
   std::string parseName();
 
-  std::string parseType();
+  Type parseType();
   ObjectTypeDefinition parseObjectTypeDefinition();
   FieldDefinition parseFieldTypeDefinition();
   ArgumentDefinitions parseArgumentDefinition();

@@ -3,26 +3,35 @@
 namespace cgql {
   namespace internal {
     GraphQLScalarTypes DocToSchemaParser::buildType(
-      const Type& typeName,
+      const Type& type,
       const std::unordered_map<Type, TypeDefinition>& typeMap,
       const cgqlSPtr<GraphQLObject>& currObj
     ) {
-      if(currObj->getName() == typeName.getTypeName()) {
+      std::string typeName = type.getName();
+      if(currObj->getName() == typeName) {
         return currObj;
       }
-      if(typeName.getTypeName() == "String") {
+      if(typeName == "String") {
         return GraphQLTypes::GraphQLString;
-      } else if(typeName.getTypeName() == "Int") {
+      } else if(typeName == "Int") {
         return GraphQLTypes::GraphQLInt;
       }
       auto it = typeMap.find(typeName);
-      ObjectTypeDefinition type =
+      ObjectTypeDefinition objType =
         fromVariant<ObjectTypeDefinition>(it->second);
       return buildObject(
-        typeName.getTypeName(),
-        type,
+        typeName,
+        objType,
         typeMap
       );
+    }
+    TypeMetaData DocToSchemaParser::buildTypeMetaData(
+      const Type& type
+    ) {
+      return {
+        type.isList(),
+        type.isNonNull()
+      };
     }
     void DocToSchemaParser::buildArguments(
       GraphQLField& field,
@@ -34,6 +43,7 @@ namespace cgql {
         GraphQLArgument arg;
         arg.setName(argDef.getName());
         arg.setType(this->buildType(argDef.getType(), typeMap, currObj));
+        arg.setTypeMetaData(this->buildTypeMetaData(argDef.getType()));
         field.addArg(arg.getName(), arg);
       }
     }
@@ -49,6 +59,7 @@ namespace cgql {
         field.setName(fieldDef.getName());
         field.setType(this->buildType(fieldDef.getType(), typeMap, currObj));
         this->buildArguments(field, fieldDef, typeMap, currObj);
+        field.setTypeMetaData(this->buildTypeMetaData(fieldDef.getType()));
         fields.push_back(field);
       }
       return fields;
@@ -83,7 +94,7 @@ namespace cgql {
           ) != this->typeNameCache.end()) continue;
           GraphQLObject obj;
           obj = *buildObject(
-            key.getTypeName(),
+            key.getName(),
             fromVariant<ObjectTypeDefinition>(value),
             typeMap
           );

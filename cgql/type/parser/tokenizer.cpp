@@ -41,6 +41,12 @@ const char* tokenTypeToCharArray(const TokenType& type) {
     case TokenType::BRACES_R:
       return "BRACES_R";
       break;
+    case TokenType::SQUARE_BRACES_L:
+      return "SQUARE_BRACES_L";
+      break;
+    case TokenType::SQUARE_BRACES_R:
+      return "SQUARE_BRACES_R";
+      break;
     case TokenType::START_OF_QUERY:
       return "START_OF_QUERY";
       break;
@@ -49,6 +55,9 @@ const char* tokenTypeToCharArray(const TokenType& type) {
       break;
     case TokenType::COLON:
       return "COLON";
+      break;
+    case TokenType::BANG:
+      return "BANG";
       break;
   }
   return "";
@@ -142,6 +151,12 @@ Token Tokenizer::nextToken() {
       case 0x007D:
         this->advanceCursor(1);
         return generateToken(TokenType::CURLY_BRACES_R);
+      case 0x005B:
+        this->advanceCursor(1);
+        return generateToken(TokenType::SQUARE_BRACES_L);
+      case 0x005D:
+        this->advanceCursor(1);
+        return generateToken(TokenType::SQUARE_BRACES_R);
       case 0x0028:
         this->advanceCursor(1);
         return generateToken(TokenType::BRACES_L);
@@ -151,6 +166,9 @@ Token Tokenizer::nextToken() {
       case 0x003A:
         this->advanceCursor(1);
         return generateToken(TokenType::COLON);
+      case 0x0021:
+        this->advanceCursor(1);
+        return generateToken(TokenType::BANG);
     }
   }
   return generateToken(TokenType::END_OF_QUERY);

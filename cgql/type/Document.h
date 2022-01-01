@@ -89,23 +89,28 @@ private:
   SelectionSet selectionSet;
 };
 
-class Type {
+class Type : public AbstractTypeDefinition {
 public:
   Type(
     const std::string& name,
     bool isList = false,
     bool isNonNull = false
-  ): name(name), _isList(isList), _isNonNull(isNonNull) {}
+  ): _isList(isList), _isNonNull(isNonNull) {
+    this->setName(name);
+  }
   Type() = default;
   ~Type() {}
-  inline const std::string& getTypeName() const {
-    return this->name;
-  }
   inline bool isList() const {
     return this->_isList;
   }
   inline bool isNonNull() const {
     return this->_isNonNull;
+  }
+  inline void setTypeList(bool isList) {
+    this->_isList = isList;
+  }
+  inline void setTypeNonNull(bool isNonNull) {
+    this->_isNonNull = isNonNull;
   }
   bool operator==(const Type& other) const {
     return (
@@ -115,7 +120,6 @@ public:
     );
   }
 private:
-  std::string name;
   bool _isList;
   bool _isNonNull;
 };
@@ -200,7 +204,10 @@ namespace std {
   template<>
   struct hash<cgql::internal::Type> {
     std::size_t operator()(const cgql::internal::Type& type) const {
-      return hash<std::string>()(type.getTypeName());
+      std::size_t hashIsList = std::hash<bool>()(type.isList());
+      std::size_t hashIsNonNull = std::hash<bool>()(type.isNonNull());
+      std::size_t hashName = std::hash<std::string>()(type.getName());
+      return hashIsList ^ (hashIsNonNull << 1 ^ (hashName << 2));
     }
   };
 };

@@ -134,26 +134,30 @@ OperationDefinition Parser::parseOperationDefinition() {
   };
 }
 
-std::string Parser::parseType() {
-  Token type = this->move(TokenType::NAME);
-  std::string name = type.getValue();
-  if(name == "String") {
-    return "String";
-  } else if(name == "Int") {
-    return "Int";
+Type Parser::parseType() {
+  Type type;
+  if(this->checkType(TokenType::SQUARE_BRACES_L)) {
+    this->tokenizer.advance();
+    Type innerType = this->parseType();
+    this->move(TokenType::SQUARE_BRACES_R);
+    type.setTypeList(true);
+    type.setTypeNonNull(innerType.isNonNull());
+    type.setName(innerType.getName());
   } else {
-    // the type should be an object by now
-    return name;
+    type.setName(this->parseName());
   }
+  if(this->checkType(TokenType::BANG)) {
+    type.setTypeNonNull(true);
+    this->tokenizer.advance();
+  }
+  return type;
 }
 
 ArgumentDefinitions Parser::parseArgumentDefinition() {
   std::string name = this->parseName();
   this->move(TokenType::COLON);
   ArgumentDefinitions arg;
-  Type type {
-    this->parseType()
-  };
+  Type type = this->parseType();
   arg.setName(name);
   arg.setType(type);
   return arg;
@@ -170,9 +174,7 @@ FieldDefinition Parser::parseFieldTypeDefinition() {
     this->tokenizer.advance();
   }
   this->move(TokenType::COLON);
-  Type type {
-    this->parseType()
-  };
+  Type type = this->parseType();
   field.setName(name);
   field.setType(type);
   return field;

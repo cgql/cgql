@@ -23,11 +23,14 @@ enum TokenType {
   CURLY_BRACES_R,
   BRACES_L,
   BRACES_R,
+  SQUARE_BRACES_L,
+  SQUARE_BRACES_R,
 
   START_OF_QUERY,
   END_OF_QUERY,
 
-  COLON
+  COLON,
+  BANG
 };
 
 const char* tokenTypeToCharArray(const TokenType& type);

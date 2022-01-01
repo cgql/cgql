@@ -9,6 +9,11 @@
 
 namespace cgql {
 
+struct TypeMetaData {
+  bool isList;
+  bool isNonNull;
+};
+
 class GraphQLArgument : public internal::AbstractTypeDefinition {
 public:
   GraphQLArgument(
@@ -23,9 +28,16 @@ public:
   inline const GraphQLScalarTypes& getType() const {
     return this->type;
   }
+  inline void setTypeMetaData(const TypeMetaData& typeMetaData) {
+    this->typeMetaData = typeMetaData;
+  }
+  inline const TypeMetaData& getTypeMetaData() const {
+    return this->typeMetaData;
+  }
 private:
   std::string name;
   GraphQLScalarTypes type;
+  TypeMetaData typeMetaData;
 };
 
 class GraphQLField : public internal::AbstractTypeDefinition {
@@ -55,8 +67,15 @@ public:
   inline cgqlContainer<GraphQLArgument> getArgs() const {
     return this->args;
   };
+  inline void setTypeMetaData(const TypeMetaData& typeMetaData) {
+    this->typeMetaData = typeMetaData;
+  }
+  inline const TypeMetaData& getTypeMetaData() const {
+    return this->typeMetaData;
+  }
 private:
   GraphQLScalarTypes type;
+  TypeMetaData typeMetaData;
   std::optional<cgql::ResolverFunc> resolve;
   cgqlContainer<GraphQLArgument> args;
 };
