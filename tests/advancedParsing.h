@@ -6,6 +6,10 @@ using namespace cgql;
 
 inline void runAdvancedParsing() {
   auto typedefs = parseSchema(
+    "type Organization {"
+    "  organizationName: String"
+    "}"
+    ""
     "type Address {"
     "  city: String"
     "  houseName: String"
@@ -16,11 +20,11 @@ inline void runAdvancedParsing() {
     "  age: Int"
     "  address: Address"
     "  partner: Person"
+    "  workedAt: [Organization!]"
     "}"
     ""
     "type Query {"
     "  person(id: Int): Person"
-    "  sum(x: Int, y: Int): Int"
     "}"
   );
   for(int i = 0; i < 50000; i++) {
@@ -37,7 +41,6 @@ inline void runAdvancedParsing() {
       "      name"
       "    }"
       "  }"
-      "  sum(x: 15, y: 10)"
       "}"
     );
     ResolverMap root {
@@ -67,14 +70,6 @@ inline void runAdvancedParsing() {
           return std::make_shared<ResultMap>(p);
         }
       },
-      {
-        "sum",
-        [](const Args args) -> Data {
-          Int x = fromVariant<Int>(args["x"]);
-          Int y = fromVariant<Int>(args["y"]);
-          return x + y;
-        }
-      }
     };
     auto r = execute(typedefs, doc, root);
     // printResultMap(r);
