@@ -2,6 +2,7 @@
 #define CGQL_UTILS_H
 
 #include "cgql/cgqlPch.h"
+#include "cgql/type/Document.h"
 
 namespace cgql {
 namespace internal {

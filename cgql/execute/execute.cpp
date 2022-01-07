@@ -31,14 +31,14 @@ GroupedField collectFields(
   for(auto const& selection : selectionSet) {
     if(selection.index() == 0) {
       // holds a Field*
-      cgqlSPtr<Field> field =
+      const cgqlSPtr<Field>& field =
         fromVariant<cgqlSPtr<Field>>(selection);
 
-      std::string responseKey =
+      const std::string& responseKey =
         field->getAlias().empty() ?
           field->getName() : field->getAlias();
 
-      GroupedField::iterator it =
+      const GroupedField::iterator& it =
         groupedFields.find(responseKey);
       if(it != groupedFields.end()) {
         it->second.push_back(*field);
@@ -73,11 +73,11 @@ Data coerceLeafValue(
   const GraphQLScalarTypes& fieldType,
   const Data& data
 ) {
-  GraphQLTypesBase<T> type =
+  const GraphQLTypesBase<T>& type =
     fromVariant<GraphQLTypesBase<T>>(fieldType);
-  GraphQLReturnTypes variedValue =
+  const GraphQLReturnTypes& variedValue =
     fromVariant<GraphQLReturnTypes>(data);
-  T value = fromVariant<T>(variedValue);
+  const T& value = fromVariant<T>(variedValue);
   return type.serialize(value);
 }
 
@@ -105,16 +105,15 @@ Data completeValue(
   const std::optional<ResultMap>& source,
   const ResolverMap& resolverMap
 ) {
-  Data completedValue;
   if(fieldType.index() == 2) {
-    cgqlSPtr<ResultMap> v =
+    const cgqlSPtr<ResultMap>& v =
       fromVariant<cgqlSPtr<ResultMap>>(result);
-    cgqlSPtr<GraphQLObject> schemaObj =
+    const cgqlSPtr<GraphQLObject>& schemaObj =
       fromVariant<cgqlSPtr<GraphQLObject>>(fieldType);
 
     SelectionSet mergedSelectionSet =
       mergeSelectionSet(fields);
-    completedValue = cgqlSMakePtr<ResultMap>(
+    return cgqlSMakePtr<ResultMap>(
       executeSelectionSet(
         mergedSelectionSet,
         *schemaObj,
@@ -125,7 +124,6 @@ Data completeValue(
   } else {
     return coerceVariedLeafValue(fieldType, result);
   }
-  return completedValue;
 }
 
 Args buildArgumentMap(
@@ -140,10 +138,10 @@ Args buildArgumentMap(
   for(auto const& argDef : argumentDefinitions) {
     const std::string& argName = argDef.getName();
     const GraphQLScalarTypes& argType = argDef.getType();
-    auto it = std::find_if(
+    const auto& it = std::find_if(
       argumentValues.begin(),
       argumentValues.end(),
-      [&argName](Argument arg) {
+      [&argName](const Argument& arg) {
         return arg.getName() == argName;
       }
     );
@@ -241,7 +239,7 @@ OperationDefinition getOperation(
 ) {
   for(auto const& def : document.getDefinitions()) {
     if(def.index() == 0) {
-      OperationDefinition opDef = fromVariant<OperationDefinition>(def);
+      const OperationDefinition& opDef = fromVariant<OperationDefinition>(def);
       if(opDef.getOperationType() == operationName) {
         return opDef;
       }
