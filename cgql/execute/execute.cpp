@@ -5,7 +5,7 @@
 namespace cgql {
 namespace internal {
 
-GraphQLField findGraphQLFieldByName(
+const GraphQLField& findGraphQLFieldByName(
   const GraphQLObject& objectType,
   const std::string& fieldName
 ) {
@@ -20,7 +20,7 @@ GraphQLField findGraphQLFieldByName(
   msg += " cannot be found in object ";
   msg += objectType.getName();
   cgqlAssert(true, msg.c_str());
-  /* silence compiler warning */ return {};
+  /* silence compiler warning */ return objectType.getFields()[0];
 }
 
 GroupedField collectFields(
@@ -202,7 +202,7 @@ ResultMap executeSelectionSet(
         objectType,
         fields[0].getName()
       );
-    GraphQLScalarTypes fieldType = field.getType();
+    const GraphQLScalarTypes& fieldType = field.getType();
     resultMap.data.try_emplace(
       responseKey,
       executeField(
@@ -233,7 +233,7 @@ ResultMap executeQuery(
   );
 }
 
-OperationDefinition getOperation(
+const OperationDefinition& getOperation(
   const Document& document,
   OperationType operationName
 ) {
@@ -255,8 +255,7 @@ ResultMap execute(
   const ResolverMap& resolverMap
 ) {
   // get operation
-  internal::OperationDefinition operation =
-    internal::getOperation(document);
+  auto operation = internal::getOperation(document);
   return internal::executeQuery(
     operation,
     schema,

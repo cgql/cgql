@@ -9,7 +9,7 @@
 namespace cgql {
 namespace internal {
 
-GraphQLField findGraphQLFieldByName(
+const GraphQLField& findGraphQLFieldByName(
   const GraphQLObject& objectType,
   const std::string& fieldName
 );
@@ -63,7 +63,7 @@ ResultMap executeQuery(
   const ResolverMap& resolverMap
 );
 
-OperationDefinition getOperation(
+const OperationDefinition& getOperation(
   const Document& document,
   OperationType operationName = OperationType::QUERY
 );
