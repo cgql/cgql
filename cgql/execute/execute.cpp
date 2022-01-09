@@ -1,6 +1,7 @@
 #include "cgql/execute/execute.h"
 #include "cgql/execute/defaultResolver.h"
 #include "cgql/logger/logger.h"
+#include "cgql/utilities/utils.h"
 
 namespace cgql {
 namespace internal {
@@ -109,7 +110,6 @@ Data completeListItem(
 ) {
   const cgqlContainer<T> rawResultList =
     fromVariant<cgqlContainer<T>>(result);
-  logger::error("hey");
   cgqlContainer<T> resultList;
   resultList.reserve(rawResultList.size());
   for(auto const& rawResult : rawResultList) {
@@ -118,7 +118,7 @@ Data completeListItem(
         fieldType,
         field,
         fields,
-        result,
+        rawResult,
         source,
         resolverMap
       ))
@@ -168,7 +168,7 @@ Data completeValue(
   const std::optional<ResultMap>& source,
   const ResolverMap& resolverMap
 ) {
-  if(field.getTypeMetaData().isList()) {
+  if(isList(result) && field.getTypeMetaData().isList()) {
     auto completedList = completeList(
       fieldType,
       field,
@@ -177,7 +177,6 @@ Data completeValue(
       source,
       resolverMap
     );
-    logger::info(fieldType.index());
     return completedList;
   }
   if(fieldType.index() == 2) {
