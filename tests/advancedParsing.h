@@ -16,7 +16,7 @@ inline void runAdvancedParsing() {
     "  age: Int"
     "  address: Address"
     "  partner: Person"
-    "  workedAt: [String!]"
+    "  workedAt: [String]"
     "}"
     ""
     "type Query {"
