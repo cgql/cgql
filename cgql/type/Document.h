@@ -6,6 +6,7 @@
 #include "cgql/logger/logger.h"
 #include "cgql/schema/GraphQLDefinition.h"
 #include "cgql/utilities/assert.h"
+#include "cgql/utilities/utils.h"
 
 namespace cgql {
 namespace internal {
@@ -202,7 +203,6 @@ private:
 };
 } // internal
 
-void printSelectionSet(const internal::SelectionSet selectionSet, int level);
 void printDocumentNode(const internal::Document& doc);
 void printResultMap(const ResultMap& rm, uint8_t level = 0);
 } // cgql
