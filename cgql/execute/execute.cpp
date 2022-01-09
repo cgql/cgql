@@ -108,7 +108,7 @@ Data completeListItem(
   const std::optional<ResultMap>& source,
   const ResolverMap& resolverMap
 ) {
-  const cgqlContainer<T> rawResultList =
+  const cgqlContainer<T>& rawResultList =
     fromVariant<cgqlContainer<T>>(result);
   cgqlContainer<T> resultList;
   resultList.reserve(rawResultList.size());
@@ -124,7 +124,7 @@ Data completeListItem(
       ))
     );
   }
-  return resultList;
+  return std::move(resultList);
 }
 
 Data completeList(
@@ -169,7 +169,7 @@ Data completeValue(
   const ResolverMap& resolverMap
 ) {
   if(isList(result) && field.getTypeMetaData().isList()) {
-    auto completedList = completeList(
+    return completeList(
       fieldType,
       field,
       fields,
@@ -177,7 +177,6 @@ Data completeValue(
       source,
       resolverMap
     );
-    return completedList;
   }
   if(fieldType.index() == 2) {
     const cgqlSPtr<ResultMap>& v =

@@ -58,7 +58,7 @@ public:
   ~Tokenizer();
   Token nextToken();
   Token current;
-  Token advance();
+  const Token& advance();
 private:
   std::string source;
   uint16_t cursor;

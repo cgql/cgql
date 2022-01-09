@@ -16,7 +16,7 @@ namespace cgql {
       __FILE__,                           \
       __LINE__,                           \
       message                             \
-    );
+    )
 #else
   #define cgqlAssert(expression, message)
 #endif

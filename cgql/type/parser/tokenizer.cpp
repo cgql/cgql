@@ -77,7 +77,7 @@ Tokenizer::Tokenizer(const char* source)
     cursor(0),
     current(generateToken(TokenType::START_OF_QUERY)) {}
 Tokenizer::~Tokenizer() {}
-Token Tokenizer::advance() {
+const Token& Tokenizer::advance() {
   this->current = this->nextToken();
   return this->current;
 }

@@ -35,7 +35,7 @@ class Field;
 using Selection = std::variant<
   cgqlSPtr<Field>
 >;
-typedef cgqlContainer<Selection> SelectionSet;
+using SelectionSet = cgqlContainer<Selection>;
 
 class Field : public AbstractTypeDefinition {
 public:
