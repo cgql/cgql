@@ -4,9 +4,20 @@ namespace cgql {
   namespace internal {
     GraphQLScalarTypes DocToSchemaParser::buildType(
       const Type& type,
+      const TypeMetaData& typeMetaData,
       const std::unordered_map<Type, TypeDefinition>& typeMap,
       const cgqlSPtr<GraphQLObject>& currObj
     ) {
+      if(typeMetaData.isList()) {
+        cgqlAssert(!type.getWrappedInnerType().has_value(), "Inner type is empty");
+        cgqlAssert(typeMetaData.getWrappedInnerType() == nullptr, "TypeMetaData of inner type is empty");
+        return this->buildType(
+          *type.getWrappedInnerType().value(),
+          *typeMetaData.getWrappedInnerType(),
+          typeMap,
+          currObj
+        );
+      }
       std::string typeName = type.getName();
       if(currObj->getName() == typeName) {
         return currObj;
@@ -28,10 +39,16 @@ namespace cgql {
     TypeMetaData DocToSchemaParser::buildTypeMetaData(
       const Type& type
     ) {
-      return {
-        type.isList(),
-        type.isNonNull()
-      };
+      TypeMetaData typeMetaData;
+      bool hasInnerType = type.getWrappedInnerType().has_value();
+      if(hasInnerType) {
+        TypeMetaData innerType =
+          buildTypeMetaData(*type.getWrappedInnerType().value());
+        typeMetaData.setWrappedInnerType(cgqlSMakePtr<TypeMetaData>(innerType));
+      }
+      typeMetaData.setIsList(type.isList());
+      typeMetaData.setIsNonNull(type.isNonNull());
+      return typeMetaData;
     }
     void DocToSchemaParser::buildArguments(
       GraphQLField& field,
@@ -42,8 +59,13 @@ namespace cgql {
       for(auto const& argDef : fieldDef.getArgs()) {
         GraphQLArgument arg;
         arg.setName(argDef.getName());
-        arg.setType(this->buildType(argDef.getType(), typeMap, currObj));
         arg.setTypeMetaData(this->buildTypeMetaData(argDef.getType()));
+        arg.setType(this->buildType(
+          argDef.getType(),
+          arg.getTypeMetaData(),
+          typeMap,
+          currObj
+        ));
         field.addArg(arg.getName(), arg);
       }
     }
@@ -57,9 +79,14 @@ namespace cgql {
       for(auto const& fieldDef : objDef.getFields()) {
         GraphQLField field;
         field.setName(fieldDef.getName());
-        field.setType(this->buildType(fieldDef.getType(), typeMap, currObj));
-        this->buildArguments(field, fieldDef, typeMap, currObj);
         field.setTypeMetaData(this->buildTypeMetaData(fieldDef.getType()));
+        field.setType(this->buildType(
+          fieldDef.getType(),
+          field.getTypeMetaData(),
+          typeMap,
+          currObj
+        ));
+        this->buildArguments(field, fieldDef, typeMap, currObj);
         fields.push_back(field);
       }
       return fields;

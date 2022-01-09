@@ -59,9 +59,12 @@ namespace internal {
 }
 
 struct ResultMap;
+
 typedef std::variant<
   GraphQLReturnTypes,
-  cgqlSPtr<ResultMap>
+  cgqlSPtr<ResultMap>,
+  cgqlContainer<GraphQLReturnTypes>,
+  cgqlContainer<cgqlSPtr<ResultMap>>
 > Data;
 
 struct ResultMap {

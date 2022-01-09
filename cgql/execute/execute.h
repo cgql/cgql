@@ -36,6 +36,7 @@ Data coerceVariedLeafValue(
 
 Data completeValue(
   const GraphQLScalarTypes& fieldType,
+  const GraphQLField& field,
   const cgqlContainer<Field>& fields,
   const Data& result,
   const std::optional<ResultMap>& source,

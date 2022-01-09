@@ -98,13 +98,88 @@ Data coerceVariedLeafValue(
   /* silence compiler warning */ return 0;
 }
 
-Data completeValue(
+template<typename T>
+Data completeListItem(
   const GraphQLScalarTypes& fieldType,
+  const GraphQLField& field,
   const cgqlContainer<Field>& fields,
   const Data& result,
   const std::optional<ResultMap>& source,
   const ResolverMap& resolverMap
 ) {
+  const cgqlContainer<T> rawResultList =
+    fromVariant<cgqlContainer<T>>(result);
+  logger::error("hey");
+  cgqlContainer<T> resultList;
+  resultList.reserve(rawResultList.size());
+  for(auto const& rawResult : rawResultList) {
+    resultList.push_back(
+      fromVariant<T>(completeValue(
+        fieldType,
+        field,
+        fields,
+        result,
+        source,
+        resolverMap
+      ))
+    );
+  }
+  return resultList;
+}
+
+Data completeList(
+  const GraphQLScalarTypes& fieldType,
+  const GraphQLField& field,
+  const cgqlContainer<Field>& fields,
+  const Data& result,
+  const std::optional<ResultMap>& source,
+  const ResolverMap& resolverMap
+) {
+  switch(result.index()) {
+    case 2:
+      return completeListItem<GraphQLReturnTypes>(
+        fieldType,
+        field,
+        fields,
+        result,
+        source,
+        resolverMap
+      );
+    case 3:
+      return completeListItem<cgqlSPtr<ResultMap>>(
+        fieldType,
+        field,
+        fields,
+        result,
+        source,
+        resolverMap
+      );
+    default:
+      cgqlAssert(true, "Unknown variant type");
+  }
+  return 0;
+}
+
+Data completeValue(
+  const GraphQLScalarTypes& fieldType,
+  const GraphQLField& field,
+  const cgqlContainer<Field>& fields,
+  const Data& result,
+  const std::optional<ResultMap>& source,
+  const ResolverMap& resolverMap
+) {
+  if(field.getTypeMetaData().isList()) {
+    auto completedList = completeList(
+      fieldType,
+      field,
+      fields,
+      result,
+      source,
+      resolverMap
+    );
+    logger::info(fieldType.index());
+    return completedList;
+  }
   if(fieldType.index() == 2) {
     const cgqlSPtr<ResultMap>& v =
       fromVariant<cgqlSPtr<ResultMap>>(result);
@@ -179,6 +254,7 @@ Data executeField(
   }
   return completeValue(
     fieldType,
+    field,
     fields,
     result,
     source,

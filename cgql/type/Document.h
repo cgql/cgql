@@ -106,11 +106,17 @@ public:
   inline bool isNonNull() const {
     return this->_isNonNull;
   }
+  inline const std::optional<cgqlSPtr<Type>>& getWrappedInnerType() const {
+    return this->wrappedInnerType;
+  }
   inline void setTypeList(bool isList) {
     this->_isList = isList;
   }
   inline void setTypeNonNull(bool isNonNull) {
     this->_isNonNull = isNonNull;
+  }
+  inline void setWrappedInnerType(const Type& innerType) {
+    this->wrappedInnerType = cgqlSMakePtr<Type>(innerType);
   }
   bool operator==(const Type& other) const {
     return (
@@ -120,8 +126,9 @@ public:
     );
   }
 private:
-  bool _isList;
-  bool _isNonNull;
+  std::optional<cgqlSPtr<Type>> wrappedInnerType;
+  bool _isList = false;
+  bool _isNonNull = false;
 };
 
 class ArgumentDefinitions : public AbstractTypeDefinition {

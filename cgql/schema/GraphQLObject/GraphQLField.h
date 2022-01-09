@@ -10,8 +10,25 @@
 namespace cgql {
 
 struct TypeMetaData {
-  bool isList;
-  bool isNonNull;
+public:
+  inline void setWrappedInnerType(const cgqlSPtr<TypeMetaData>& wrappedInnerType) {
+    this->wrappedInnerType = wrappedInnerType;
+  }
+  inline void setIsList(bool isList) { this->_isList = isList; }
+  inline void setIsNonNull(bool isNonNull) { this->_isNonNull = isNonNull; }
+  inline const cgqlSPtr<TypeMetaData>& getWrappedInnerType() const {
+    return this->wrappedInnerType;
+  }
+  inline bool isList() const {
+    return this->_isList;
+  }
+  inline bool isNonNull() const {
+    return this->_isNonNull;
+  }
+private:
+  cgqlSPtr<TypeMetaData> wrappedInnerType;
+  bool _isList;
+  bool _isNonNull;
 };
 
 class GraphQLArgument : public internal::AbstractTypeDefinition {

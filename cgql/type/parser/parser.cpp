@@ -141,8 +141,7 @@ Type Parser::parseType() {
     Type innerType = this->parseType();
     this->move(TokenType::SQUARE_BRACES_R);
     type.setTypeList(true);
-    type.setTypeNonNull(innerType.isNonNull());
-    type.setName(innerType.getName());
+    type.setWrappedInnerType(innerType);
   } else {
     type.setName(this->parseName());
   }

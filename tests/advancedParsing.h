@@ -6,10 +6,6 @@ using namespace cgql;
 
 inline void runAdvancedParsing() {
   auto typedefs = parseSchema(
-    "type Organization {"
-    "  organizationName: String"
-    "}"
-    ""
     "type Address {"
     "  city: String"
     "  houseName: String"
@@ -20,7 +16,7 @@ inline void runAdvancedParsing() {
     "  age: Int"
     "  address: Address"
     "  partner: Person"
-    "  workedAt: [Organization!]"
+    "  workedAt: [String!]"
     "}"
     ""
     "type Query {"
@@ -40,6 +36,7 @@ inline void runAdvancedParsing() {
       "    partner {"
       "      name"
       "    }"
+      "    workedAt"
       "  }"
       "}"
     );
@@ -64,7 +61,14 @@ inline void runAdvancedParsing() {
               { "name", "cw3dv" },
               { "age", id },
               { "address", cgqlSMakePtr<ResultMap>(a) },
-              { "partner", cgqlSMakePtr<ResultMap>(r) }
+              { "partner", cgqlSMakePtr<ResultMap>(r) },
+              { "workedAt",
+                (cgqlContainer<GraphQLReturnTypes>){
+                  "Google",
+                  "Microsoft",
+                  "Github"
+                }
+              }
             }
           };
           return std::make_shared<ResultMap>(p);

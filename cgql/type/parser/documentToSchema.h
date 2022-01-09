@@ -12,6 +12,7 @@ namespace cgql {
     struct DocToSchemaParser {
       GraphQLScalarTypes buildType(
         const Type& type,
+        const TypeMetaData& typeMetaData,
         const std::unordered_map<Type, TypeDefinition>& typeMap,
         const cgqlSPtr<GraphQLObject>& currObj
       );
