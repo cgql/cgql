@@ -1,5 +1,6 @@
 #include "cgql/type/Document.h"
 #include "cgql/logger/logger.h"
+#include "cgql/utilities/cgqlDefs.h"
 
 namespace cgql {
 namespace internal {
@@ -98,22 +99,51 @@ void printDocumentNode(const internal::Document &doc) {
   }
 }
 
+void printScalarValue(
+  const std::string& key,
+  const Data& value,
+  const std::string& indentation
+) {
+  auto rg = fromVariant<GraphQLReturnTypes>(value);
+  if(rg.index() == 0) {
+    std::string v = indentation +
+      key.data() +
+      " " + std::to_string(fromVariant<Int>(rg));
+    logger::info(v);
+  } else if(rg.index() == 1) {
+    std::string v = indentation +
+      key.data() +
+      " " + fromVariant<String>(rg).data();
+    logger::info(v);
+  }
+}
+
+template<typename T>
+void printList(
+  const std::string& key,
+  const cgqlContainer<T>& value,
+  const std::string& indentation
+) {
+  logger::info(indentation + key);
+  for(auto const& each : value) {
+    printScalarValue("", each, indentation);
+  }
+}
+
 void printResultMap(const ResultMap& rm, uint8_t level) {
   std::string indentation;
   for(auto i = 0; i < level; i++) indentation += "  ";
   for(auto const& [key, value] : rm.data) {
     if(value.index() == 0) {
-      auto rg = fromVariant<GraphQLReturnTypes>(value);
-      if(rg.index() == 0) {
-        std::string v = indentation +
-          key.data() +
-          " " + std::to_string(fromVariant<Int>(rg));
-        logger::info(v);
-      } else if(rg.index() == 1) {
-        std::string v = indentation +
-          key.data() +
-          " " + fromVariant<String>(rg).data();
-        logger::info(v);
+      printScalarValue(key, value, indentation);
+    } else if(isList(value)) {
+      switch(value.index()) {
+        case 2:
+          printList(key, fromVariant<cgqlContainer<GraphQLReturnTypes>>(value), indentation);
+          break;
+        case 3:
+          printList(key, fromVariant<cgqlContainer<cgqlSPtr<ResultMap>>>(value), indentation);
+          break;
       }
     } else {
       std::string v = indentation + key.data();
