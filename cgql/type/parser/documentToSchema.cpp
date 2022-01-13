@@ -8,7 +8,7 @@ namespace cgql {
       const std::unordered_map<Type, TypeDefinition>& typeMap,
       const cgqlSPtr<GraphQLObject>& currObj
     ) {
-      if(typeMetaData.isList()) {
+      if(typeMetaData.isList() || typeMetaData.isNonNull()) {
         cgqlAssert(!type.getWrappedInnerType().has_value(), "Inner type is empty");
         cgqlAssert(typeMetaData.getWrappedInnerType() == nullptr, "TypeMetaData of inner type is empty");
         return this->buildType(

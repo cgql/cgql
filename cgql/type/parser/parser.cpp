@@ -146,8 +146,11 @@ Type Parser::parseType() {
     type.setName(this->parseName());
   }
   if(this->checkType(TokenType::BANG)) {
-    type.setTypeNonNull(true);
     this->tokenizer.advance();
+    Type nonNullType;
+    nonNullType.setWrappedInnerType(type);
+    nonNullType.setTypeNonNull(true);
+    return nonNullType;
   }
   return type;
 }

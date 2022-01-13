@@ -12,7 +12,7 @@ inline void runAdvancedParsing() {
     "}"
     ""
     "type Person {"
-    "  name: String"
+    "  name: String!"
     "  age: Int"
     "  address: Address"
     "  partner: Person"

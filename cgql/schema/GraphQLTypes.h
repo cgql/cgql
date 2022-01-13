@@ -64,7 +64,8 @@ typedef std::variant<
   GraphQLReturnTypes,
   cgqlSPtr<ResultMap>,
   cgqlContainer<GraphQLReturnTypes>,
-  cgqlContainer<cgqlSPtr<ResultMap>>
+  cgqlContainer<cgqlSPtr<ResultMap>>,
+  std::monostate
 > Data;
 
 struct ResultMap {

@@ -96,7 +96,7 @@ Data coerceVariedLeafValue(
     default:
       cgqlAssert(true, "Unknown variant type");
   }
-  /* silence compiler warning */ return 0;
+  /* silence compiler warning */ return (GraphQLReturnTypes)0;
 }
 
 template<typename T>
@@ -168,6 +168,11 @@ Data completeValue(
   const std::optional<ResultMap>& source,
   const ResolverMap& resolverMap
 ) {
+  if(field.getTypeMetaData().isNonNull()) {
+    if(result.index() == 4) {
+      // field error
+    }
+  }
   if(isList(result) && field.getTypeMetaData().isList()) {
     return completeList(
       fieldType,
@@ -245,10 +250,13 @@ Data executeField(
       field
     ));
   } else {
-    result = defaultFieldResolver(
+    auto defaultResolvedValue = defaultFieldResolver(
       source.value(),
       field.getName()
     );
+    result = defaultResolvedValue.has_value() ?
+      defaultResolvedValue.value() :
+      std::monostate{};
   }
   return completeValue(
     fieldType,
@@ -272,10 +280,10 @@ ResultMap executeSelectionSet(
     selectionSet
   );
   for(auto const& [responseKey, fields] : groupedFieldSet) {
-    GraphQLField field = findGraphQLFieldByName(
-        objectType,
-        fields[0].getName()
-      );
+    const GraphQLField& field = findGraphQLFieldByName(
+      objectType,
+      fields[0].getName()
+    );
     const GraphQLScalarTypes& fieldType = field.getType();
     resultMap.data.try_emplace(
       responseKey,
