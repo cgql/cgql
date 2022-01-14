@@ -28,6 +28,7 @@ public:
   }
 private:
   Arg value;
+  std::optional<Location> location;
 };
 
 class Field;
@@ -73,6 +74,7 @@ private:
   std::string alias;
   SelectionSet selectionSet;
   cgqlContainer<Argument> args;
+  std::optional<Location> location;
 };
 
 class OperationDefinition {
@@ -130,6 +132,7 @@ private:
   std::optional<cgqlSPtr<Type>> wrappedInnerType;
   bool _isList = false;
   bool _isNonNull = false;
+  std::optional<Location> location;
 };
 
 class ArgumentDefinitions : public AbstractTypeDefinition {
@@ -144,6 +147,7 @@ public:
   }
 private:
   Type type;
+  std::optional<Location> location;
 };
 
 class FieldDefinition : public AbstractTypeDefinition {
@@ -165,6 +169,7 @@ public:
 private:
   Type type;
   cgqlContainer<ArgumentDefinitions> args;
+  std::optional<Location> location;
 };
 
 class ObjectTypeDefinition : public AbstractTypeDefinition {
@@ -179,6 +184,7 @@ public:
   }
 private:
   cgqlContainer<FieldDefinition> fields;
+  std::optional<Location> location;
 };
 
 using TypeDefinition = std::variant<

@@ -5,6 +5,7 @@
 #include "cgql/schema/GraphQLScalar.h"
 #include "cgql/utilities/cgqlDefs.h"
 #include "cgql/utilities/assert.h"
+#include <list>
 
 namespace cgql {
 
@@ -59,6 +60,10 @@ namespace internal {
 }
 
 struct ResultMap;
+struct Location {
+  uint16_t line;
+  uint16_t column;
+};
 
 typedef std::variant<
   GraphQLReturnTypes,
@@ -68,8 +73,15 @@ typedef std::variant<
   std::monostate
 > Data;
 
+class Error {
+private:
+  std::string msg;
+  Location location;
+};
+
 struct ResultMap {
   std::unordered_map<std::string, Data> data;
+  std::list<Error> errors;
 };
 
 typedef std::variant<
@@ -95,7 +107,7 @@ constexpr const T& fromVariant(
 }
 
 using ResolverFunc = std::function<
-  Data(const Args)
+  Data(const Args&)
 >;
 
 typedef std::unordered_map<std::string, ResolverFunc> ResolverMap;

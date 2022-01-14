@@ -59,7 +59,7 @@ ResultMap executeSelectionSet(
 );
 
 ResultMap executeQuery(
-  OperationDefinition& query,
+  const OperationDefinition& query,
   const GraphQLSchema& schema,
   const ResolverMap& resolverMap
 );

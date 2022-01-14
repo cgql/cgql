@@ -74,6 +74,7 @@ Data coerceLeafValue(
   const GraphQLScalarTypes& fieldType,
   const Data& data
 ) {
+  cgqlAssert(data.index() == 4, "Result cannot be null");
   const GraphQLTypesBase<T>& type =
     fromVariant<GraphQLTypesBase<T>>(fieldType);
   const GraphQLReturnTypes& variedValue =
@@ -172,6 +173,9 @@ Data completeValue(
     if(result.index() == 4) {
       // field error
     }
+  }
+  if(result.index() == 4) {
+    return std::monostate{};
   }
   if(isList(result) && field.getTypeMetaData().isList()) {
     return completeList(
@@ -300,7 +304,7 @@ ResultMap executeSelectionSet(
 }
 
 ResultMap executeQuery(
-  OperationDefinition& query,
+  const OperationDefinition& query,
   const GraphQLSchema& schema,
   const ResolverMap& resolverMap
 
@@ -337,7 +341,7 @@ ResultMap execute(
   const ResolverMap& resolverMap
 ) {
   // get operation
-  auto operation = internal::getOperation(document);
+  const internal::OperationDefinition& operation = internal::getOperation(document);
   return internal::executeQuery(
     operation,
     schema,
