@@ -5,7 +5,6 @@
 #include "cgql/schema/GraphQLScalar.h"
 #include "cgql/utilities/cgqlDefs.h"
 #include "cgql/utilities/assert.h"
-#include <list>
 
 namespace cgql {
 
@@ -74,6 +73,8 @@ typedef std::variant<
 > Data;
 
 class Error {
+public:
+  Error() = default;
 private:
   std::string msg;
   Location location;

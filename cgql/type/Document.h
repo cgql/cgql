@@ -103,6 +103,14 @@ public:
   }
   Type() = default;
   ~Type() {}
+  bool operator==(const Type& other) const {
+    return (
+      this->_isList == other._isList &&
+      this->_isNonNull == other._isNonNull &&
+      this->wrappedInnerType == other.wrappedInnerType &&
+      this->name == other.name
+    );
+  }
   inline bool isList() const {
     return this->_isList;
   }
@@ -120,13 +128,6 @@ public:
   }
   inline void setWrappedInnerType(const Type& innerType) {
     this->wrappedInnerType = cgqlSMakePtr<Type>(innerType);
-  }
-  bool operator==(const Type& other) const {
-    return (
-      this->_isList == other._isList &&
-      this->_isNonNull == other._isNonNull &&
-      this->name == this->name
-    );
   }
 private:
   std::optional<cgqlSPtr<Type>> wrappedInnerType;

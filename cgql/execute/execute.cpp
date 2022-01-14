@@ -247,7 +247,7 @@ Data executeField(
   const ResolverMap& resolverMap
 ) {
   Data result;
-  auto it = resolverMap.find(field.getName());
+  const ResolverMap::const_iterator& it = resolverMap.find(field.getName());
   if(it != resolverMap.end()) {
     result = it->second(buildArgumentMap(
       fields[0],
