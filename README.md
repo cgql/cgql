@@ -91,7 +91,7 @@ int main() {
     "}"
     ""
     "type Query {"
-    "  person: Person"
+    "  person(id: Int): Person"
     "}"
   );
 
@@ -99,7 +99,8 @@ int main() {
   ResolverMap resolvers {
     {
       "person",
-      []() -> Data {
+      [](const Args& args) -> Data {
+        Int id = fromVariant<Int>(args["id"]); // argument
         ResultMap p {
           { "name", "cw3dv" },
           { "age", 14 }
