@@ -80,7 +80,7 @@ Data coerceLeafValue(
   const GraphQLReturnTypes& variedValue =
     fromVariant<GraphQLReturnTypes>(data);
   const T& value = fromVariant<T>(variedValue);
-  return type.serialize(value);
+  return type.getSerializer()(value);
 }
 
 Data coerceVariedLeafValue(

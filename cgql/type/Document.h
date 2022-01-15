@@ -20,10 +20,10 @@ enum OperationType {
 class Argument : public AbstractTypeDefinition {
 public:
   Argument() = default;
-  inline void setValue(const Arg& value) {
+  void setValue(const Arg& value) {
     this->value = value;
   }
-  inline const Arg& getValue() const {
+  const Arg& getValue() const {
     return this->value;
   }
 private:
@@ -46,28 +46,28 @@ public:
   );
   Field() = default;
   ~Field();
-  inline void setAlias(const std::string& alias) {
+  void setAlias(const std::string& alias) {
     cgqlAssert(
       this->name == alias,
       "field should contain an alias different from its name"
     );
     this->alias = alias;
   }
-  inline const std::string& getAlias() const {
+  const std::string& getAlias() const {
     return this->alias;
   }
-  inline void setSelectionSet(const SelectionSet& selectionSet) {
+  void setSelectionSet(const SelectionSet& selectionSet) {
     cgqlAssert(
       this->selectionSet.size() != 0,
       "selectionSet already contains fields"
     );
     this->selectionSet = std::move(selectionSet);
   }
-  inline const SelectionSet& getSelectionSet() const { return this->selectionSet; }
-  inline void addArgs(const Argument& arg) {
+  const SelectionSet& getSelectionSet() const { return this->selectionSet; }
+  void addArgs(const Argument& arg) {
     this->args.push_back(arg);
   }
-  inline const cgqlContainer<Argument>& getArgs() const {
+  const cgqlContainer<Argument>& getArgs() const {
     return this->args;
   }
 private:
@@ -85,8 +85,8 @@ public:
   );
   OperationDefinition() = default;
   ~OperationDefinition();
-  inline const OperationType& getOperationType() const { return this->operationType; }
-  inline const SelectionSet& getSelectionSet() const { return this->selectionSet; }
+  const OperationType& getOperationType() const { return this->operationType; }
+  const SelectionSet& getSelectionSet() const { return this->selectionSet; }
 private:
   OperationType operationType;
   SelectionSet selectionSet;
@@ -111,22 +111,22 @@ public:
       this->name == other.name
     );
   }
-  inline bool isList() const {
+  bool isList() const {
     return this->_isList;
   }
-  inline bool isNonNull() const {
+  bool isNonNull() const {
     return this->_isNonNull;
   }
-  inline const std::optional<cgqlSPtr<Type>>& getWrappedInnerType() const {
+  const std::optional<cgqlSPtr<Type>>& getWrappedInnerType() const {
     return this->wrappedInnerType;
   }
-  inline void setTypeList(bool isList) {
+  void setTypeList(bool isList) {
     this->_isList = isList;
   }
-  inline void setTypeNonNull(bool isNonNull) {
+  void setTypeNonNull(bool isNonNull) {
     this->_isNonNull = isNonNull;
   }
-  inline void setWrappedInnerType(const Type& innerType) {
+  void setWrappedInnerType(const Type& innerType) {
     this->wrappedInnerType = cgqlSMakePtr<Type>(innerType);
   }
 private:
@@ -140,10 +140,10 @@ class ArgumentDefinitions : public AbstractTypeDefinition {
 public:
   ArgumentDefinitions() = default;
   ~ArgumentDefinitions();
-  inline void setType(const Type& type) {
+  void setType(const Type& type) {
     this->type = type;
   }
-  inline const Type& getType() const {
+  const Type& getType() const {
     return this->type;
   }
 private:
@@ -155,16 +155,16 @@ class FieldDefinition : public AbstractTypeDefinition {
 public:
   FieldDefinition() = default;
   ~FieldDefinition();
-  inline void setType(const Type& type) {
+  void setType(const Type& type) {
     this->type = type;
   }
-  inline const Type& getType() const {
+  const Type& getType() const {
     return this->type;
   }
-  inline void addArg(const ArgumentDefinitions& arg) {
+  void addArg(const ArgumentDefinitions& arg) {
     this->args.push_back(arg);
   }
-  inline const cgqlContainer<ArgumentDefinitions>& getArgs() const {
+  const cgqlContainer<ArgumentDefinitions>& getArgs() const {
     return this->args;
   }
 private:
@@ -177,10 +177,10 @@ class ObjectTypeDefinition : public AbstractTypeDefinition {
 public:
   ObjectTypeDefinition() = default;
   ~ObjectTypeDefinition();
-  inline void addField(const FieldDefinition& field) {
+  void addField(const FieldDefinition& field) {
     this->fields.push_back(field);
   }
-  inline const cgqlContainer<FieldDefinition>& getFields() const {
+  const cgqlContainer<FieldDefinition>& getFields() const {
     return this->fields;
   }
 private:
@@ -204,7 +204,7 @@ public:
   );
   Document() = default;
   ~Document();
-  inline const cgqlContainer<Definition>& getDefinitions() const { return this->definitions; }
+  const cgqlContainer<Definition>& getDefinitions() const { return this->definitions; }
 private:
   cgqlContainer<Definition> definitions;
 };

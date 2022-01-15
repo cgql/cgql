@@ -5,7 +5,7 @@ namespace cgql {
     GraphQLScalarTypes DocToSchemaParser::buildType(
       const Type& type,
       const TypeMetaData& typeMetaData,
-      const std::unordered_map<Type, TypeDefinition>& typeMap,
+      const std::unordered_map<std::string, TypeDefinition>& typeMap,
       const cgqlSPtr<GraphQLObject>& currObj
     ) {
       if(typeMetaData.isList() || typeMetaData.isNonNull()) {
@@ -53,7 +53,7 @@ namespace cgql {
     void DocToSchemaParser::buildArguments(
       GraphQLField& field,
       const FieldDefinition& fieldDef,
-      const std::unordered_map<Type, TypeDefinition>& typeMap,
+      const std::unordered_map<std::string, TypeDefinition>& typeMap,
       const cgqlSPtr<GraphQLObject>& currObj
     ) {
       for(auto const& argDef : fieldDef.getArgs()) {
@@ -71,7 +71,7 @@ namespace cgql {
     }
     cgqlContainer<GraphQLField> DocToSchemaParser::buildFields(
       const ObjectTypeDefinition& objDef,
-      const std::unordered_map<Type, TypeDefinition>& typeMap,
+      const std::unordered_map<std::string, TypeDefinition>& typeMap,
       const cgqlSPtr<GraphQLObject>& currObj
     ) {
       cgqlContainer<GraphQLField> fields;
@@ -94,7 +94,7 @@ namespace cgql {
     cgqlSPtr<GraphQLObject> DocToSchemaParser::buildObject(
       const std::string& name,
       const ObjectTypeDefinition& typeDef,
-      const std::unordered_map<Type, TypeDefinition>& typeMap
+      const std::unordered_map<std::string, TypeDefinition>& typeMap
     ) {
       cgqlSPtr<GraphQLObject> obj = cgqlSMakePtr<GraphQLObject>();
       obj->setName(name);
@@ -108,7 +108,7 @@ namespace cgql {
       return obj;
     }
     GraphQLSchema DocToSchemaParser::docToSchemaImpl(
-      const std::unordered_map<Type, TypeDefinition>& typeMap
+      const std::unordered_map<std::string, TypeDefinition>& typeMap
     ) {
       GraphQLSchema schema;
       this->typeNameCache.reserve(typeMap.size());
@@ -121,7 +121,7 @@ namespace cgql {
           ) != this->typeNameCache.end()) continue;
           GraphQLObject obj;
           obj = *buildObject(
-            key.getName(),
+            key,
             fromVariant<ObjectTypeDefinition>(value),
             typeMap
           );

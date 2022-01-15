@@ -13,7 +13,7 @@ class GraphQLObject;
 namespace GraphQLTypes {
   inline GraphQLTypesBase<Int> GraphQLInt(
     "Int",
-    [](const Int& value) -> Int {
+    [](const Int& value) -> const Int& {
       bool isNotInLimits =
         value > internal::GRAPHQL_INT_LIMITS::MAX ||
         value < internal::GRAPHQL_INT_LIMITS::MIN;
@@ -28,7 +28,7 @@ namespace GraphQLTypes {
   );
   inline GraphQLTypesBase<String> GraphQLString(
     "String",
-    [](const String& value) -> String {
+    [](const String& value) -> const String& {
       return value;
     }
   );
@@ -54,7 +54,7 @@ namespace internal {
   class Field;
   typedef std::unordered_map<
     std::string,
-    cgqlContainer<internal::Field>
+    cgqlContainer<Field>
   > GroupedField;
 }
 
@@ -89,10 +89,12 @@ typedef std::variant<
   Int,
   String
 > Arg;
+
 typedef std::unordered_map<
   std::string,
   Arg
 > ArgsMap;
+
 struct Args {
   ArgsMap argsMap;
   inline const Arg& operator[](const std::string& argKey) const {

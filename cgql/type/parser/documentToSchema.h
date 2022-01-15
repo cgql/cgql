@@ -13,7 +13,7 @@ namespace cgql {
       GraphQLScalarTypes buildType(
         const Type& type,
         const TypeMetaData& typeMetaData,
-        const std::unordered_map<Type, TypeDefinition>& typeMap,
+        const std::unordered_map<std::string, TypeDefinition>& typeMap,
         const cgqlSPtr<GraphQLObject>& currObj
       );
       TypeMetaData buildTypeMetaData(
@@ -22,24 +22,24 @@ namespace cgql {
       void buildArguments(
         GraphQLField& field,
         const FieldDefinition& fieldDef,
-        const std::unordered_map<Type, TypeDefinition>& typeMap,
+        const std::unordered_map<std::string, TypeDefinition>& typeMap,
         const cgqlSPtr<GraphQLObject>& currObj
       );
       cgqlContainer<GraphQLField> buildFields(
         const ObjectTypeDefinition& objDef,
-        const std::unordered_map<Type, TypeDefinition>& typeMap,
+        const std::unordered_map<std::string, TypeDefinition>& typeMap,
         const cgqlSPtr<GraphQLObject>& currObj
       );
       cgqlSPtr<GraphQLObject> buildObject(
         const std::string& name,
         const ObjectTypeDefinition& objDef,
-        const std::unordered_map<Type, TypeDefinition>& typeMap
+        const std::unordered_map<std::string, TypeDefinition>& typeMap
       );
       GraphQLSchema docToSchemaImpl(
-        const std::unordered_map<Type, TypeDefinition>& typeMap
+        const std::unordered_map<std::string, TypeDefinition>& typeMap
       );
       // data
-      cgqlContainer<Type> typeNameCache;
+      cgqlContainer<std::string> typeNameCache;
     };
   }
 }

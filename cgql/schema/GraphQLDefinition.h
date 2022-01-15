@@ -7,14 +7,14 @@ namespace cgql {
 class GraphQLSchema {
 public:
   GraphQLSchema(
-    GraphQLObject& query
+    const GraphQLObject& query
   ): query(query) {};
   GraphQLSchema() = default;
   ~GraphQLSchema() {};
-  inline const GraphQLObject& getQuery() const {
+  const GraphQLObject& getQuery() const {
     return this->query;
   }
-  inline void setQuery(const GraphQLObject& query) {
+  void setQuery(const GraphQLObject& query) {
     this->query = query;
   }
 private:

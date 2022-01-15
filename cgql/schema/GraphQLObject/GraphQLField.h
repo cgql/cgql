@@ -11,20 +11,12 @@ namespace cgql {
 
 struct TypeMetaData {
 public:
-  inline void setWrappedInnerType(const cgqlSPtr<TypeMetaData>& wrappedInnerType) {
-    this->wrappedInnerType = wrappedInnerType;
-  }
-  inline void setIsList(bool isList) { this->_isList = isList; }
-  inline void setIsNonNull(bool isNonNull) { this->_isNonNull = isNonNull; }
-  inline const cgqlSPtr<TypeMetaData>& getWrappedInnerType() const {
-    return this->wrappedInnerType;
-  }
-  inline bool isList() const {
-    return this->_isList;
-  }
-  inline bool isNonNull() const {
-    return this->_isNonNull;
-  }
+  void setWrappedInnerType(const cgqlSPtr<TypeMetaData>& wrappedInnerType);
+  void setIsList(bool isList);
+  void setIsNonNull(bool isNonNull);
+  const cgqlSPtr<TypeMetaData>& getWrappedInnerType() const;
+  bool isList() const;
+  bool isNonNull() const;
 private:
   cgqlSPtr<TypeMetaData> wrappedInnerType;
   bool _isList;
@@ -39,18 +31,10 @@ public:
   );
   GraphQLArgument() = default;
   ~GraphQLArgument();
-  inline void setType(const GraphQLScalarTypes& type) {
-    this->type = type;
-  }
-  inline const GraphQLScalarTypes& getType() const {
-    return this->type;
-  }
-  inline void setTypeMetaData(const TypeMetaData& typeMetaData) {
-    this->typeMetaData = typeMetaData;
-  }
-  inline const TypeMetaData& getTypeMetaData() const {
-    return this->typeMetaData;
-  }
+  void setType(const GraphQLScalarTypes& type);
+  const GraphQLScalarTypes& getType() const;
+  void setTypeMetaData(const TypeMetaData& typeMetaData);
+  const TypeMetaData& getTypeMetaData() const;
 private:
   std::string name;
   GraphQLScalarTypes type;
@@ -70,26 +54,16 @@ public:
   );
   GraphQLField() = default;
   ~GraphQLField();
-  inline const GraphQLScalarTypes& getType() const { return this->type; };
-  inline const std::optional<cgql::ResolverFunc>& getResolver() const { return this->resolve; };
-  inline void setType(const GraphQLScalarTypes& type) {
-    this->type = type;
-  }
-  inline void addArg(
+  const GraphQLScalarTypes& getType() const;
+  const std::optional<cgql::ResolverFunc>& getResolver() const;
+  void setType(const GraphQLScalarTypes& type);
+  void addArg(
     const std::string& name,
     const GraphQLArgument& arg
-  ) {
-    this->args.push_back(arg);
-  }
-  inline cgqlContainer<GraphQLArgument> getArgs() const {
-    return this->args;
-  };
-  inline void setTypeMetaData(const TypeMetaData& typeMetaData) {
-    this->typeMetaData = typeMetaData;
-  }
-  inline const TypeMetaData& getTypeMetaData() const {
-    return this->typeMetaData;
-  }
+  );
+  const cgqlContainer<GraphQLArgument>& getArgs() const;
+  void setTypeMetaData(const TypeMetaData& typeMetaData);
+  const TypeMetaData& getTypeMetaData() const;
 private:
   GraphQLScalarTypes type;
   TypeMetaData typeMetaData;

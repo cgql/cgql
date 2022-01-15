@@ -17,8 +17,8 @@ public:
   );
   GraphQLObject() = default;
   ~GraphQLObject();
-  inline const cgqlContainer<GraphQLField>& getFields() const { return this->fields; };
-  inline cgqlContainer<GraphQLField>& getMutableFields() {
+  const cgqlContainer<GraphQLField>& getFields() const { return this->fields; };
+  cgqlContainer<GraphQLField>& getMutableFields() {
     return this->fields;
   }
 private:

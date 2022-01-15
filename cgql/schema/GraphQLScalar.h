@@ -16,15 +16,18 @@ template<typename T>
 class GraphQLTypesBase {
 public:
   GraphQLTypesBase(
-    String name,
+    const std::string& name,
     const SerializeFunc<T>& serialize
   ): name(name), serialize(serialize) {};
   GraphQLTypesBase() = default;
   ~GraphQLTypesBase() {};
-  SerializeFunc<T> serialize;
-  inline String getTypeName() const { return this->name; };
+  const std::string& getTypeName() const { return this->name; };
+  const SerializeFunc<T>& getSerializer() const {
+    return this->serialize;
+  };
 private:
-  String name;
+  SerializeFunc<T> serialize;
+  std::string name;
 };
 
 } // cgql
