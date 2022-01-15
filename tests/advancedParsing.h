@@ -71,7 +71,7 @@ inline void runAdvancedParsing() {
               }
             }
           };
-          return std::make_shared<ResultMap>(p);
+          return cgqlSMakePtr<ResultMap>(p);
         }
       },
     };
