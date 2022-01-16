@@ -4,7 +4,6 @@
 #include "cgql/cgqlPch.h"
 
 #include "cgql/type/Document.h"
-#include "cgql/schema/GraphQLObject/GraphQLField.h"
 #include "cgql/schema/GraphQLTypes.h"
 #include "cgql/type/parser/tokenizer.h"
 
@@ -34,15 +33,15 @@ private:
 
   std::string parseName();
 
-  Type parseType();
-  ObjectTypeDefinition parseObjectTypeDefinition();
-  FieldDefinition parseFieldTypeDefinition();
-  ArgumentDefinitions parseArgumentDefinition();
+  cgqlSPtr<TypeDefinition> parseType();
+  cgqlSPtr<ObjectTypeDefinition> parseObjectTypeDefinition();
+  FieldTypeDefinition parseFieldTypeDefinition();
+  ArgumentTypeDefinition parseArgumentDefinition();
 };
 } // internal
 
 internal::Document parse(const char* source);
-GraphQLSchema parseSchema(const char* source);
+internal::Schema parseSchema(const char* source);
 } // cgql
 
 #endif

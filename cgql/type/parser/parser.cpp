@@ -1,7 +1,7 @@
 #include "cgql/cgqlPch.h"
 
-#include "cgql/type/parser/documentToSchema.h"
 #include "cgql/type/parser/parser.h"
+#include "cgql/type/parser/docToSchema.h"
 #include "cgql/utilities/assert.h"
 #include "cgql/logger/logger.h"
 #include "cgql/type/parser/parser.h"
@@ -134,39 +134,39 @@ OperationDefinition Parser::parseOperationDefinition() {
   };
 }
 
-Type Parser::parseType() {
-  Type type;
+cgqlSPtr<TypeDefinition> Parser::parseType() {
+  cgqlSPtr<TypeDefinition> type = cgqlSMakePtr<TypeDefinition>();
   if(this->checkType(TokenType::SQUARE_BRACES_L)) {
     this->tokenizer.advance();
-    Type innerType = this->parseType();
+    type = cgqlSMakePtr<ListTypeDefinition<TypeDefinition>>(
+      this->parseType()
+    );
     this->move(TokenType::SQUARE_BRACES_R);
-    type.setTypeList(true);
-    type.setWrappedInnerType(innerType);
   } else {
-    type.setName(this->parseName());
+    std::string name = this->parseName();
+    if(name == "Int") type->setEnumType(DefinitionType::INT_TYPE);
+    else if(name == "String") type->setEnumType(DefinitionType::STRING_TYPE);
+    type->setName(name);
   }
   if(this->checkType(TokenType::BANG)) {
     this->tokenizer.advance();
-    Type nonNullType;
-    nonNullType.setWrappedInnerType(type);
-    nonNullType.setTypeNonNull(true);
-    return nonNullType;
+    return cgqlSMakePtr<NonNullTypeDefinition<TypeDefinition>>(type);
   }
   return type;
 }
 
-ArgumentDefinitions Parser::parseArgumentDefinition() {
+ArgumentTypeDefinition Parser::parseArgumentDefinition() {
   std::string name = this->parseName();
   this->move(TokenType::COLON);
-  ArgumentDefinitions arg;
-  Type type = this->parseType();
+  ArgumentTypeDefinition arg;
+  cgqlSPtr<TypeDefinition> type = this->parseType();
   arg.setName(name);
   arg.setType(type);
   return arg;
 }
 
-FieldDefinition Parser::parseFieldTypeDefinition() {
-  FieldDefinition field;
+FieldTypeDefinition Parser::parseFieldTypeDefinition() {
+  FieldTypeDefinition field;
   std::string name = this->parseName();
   if(this->checkType(TokenType::BRACES_L)) {
     this->tokenizer.advance();
@@ -176,21 +176,22 @@ FieldDefinition Parser::parseFieldTypeDefinition() {
     this->tokenizer.advance();
   }
   this->move(TokenType::COLON);
-  Type type = this->parseType();
+  cgqlSPtr<TypeDefinition> type = this->parseType();
   field.setName(name);
   field.setType(type);
   return field;
 }
 
-ObjectTypeDefinition Parser::parseObjectTypeDefinition() {
+cgqlSPtr<ObjectTypeDefinition> Parser::parseObjectTypeDefinition() {
   this->tokenizer.advance();
   std::string name = this->parseName();
-  ObjectTypeDefinition obj;
-  obj.setName(name);
+  cgqlSPtr<ObjectTypeDefinition> obj =
+    cgqlSMakePtr<ObjectTypeDefinition>();
+  obj->setName(name);
   if(this->checkType(TokenType::CURLY_BRACES_L)) {
     this->tokenizer.advance();
     do {
-      obj.addField(
+      obj->addField(
         this->parseFieldTypeDefinition()
       );
     } while(!this->checkType(TokenType::CURLY_BRACES_R));
@@ -229,23 +230,26 @@ Document Parser::parseDocument() {
   };
 };
 
-GraphQLSchema documentToSchema(const internal::Document& doc) {
-  std::unordered_map<std::string, TypeDefinition> typeMap;
-  for(auto const& def : doc.getDefinitions()) {
-    if(def.index() == 1) {
-      TypeDefinition objDef =
-        fromVariant<TypeDefinition>(def);
-      AbstractTypeDefinition abstractTypeDef =
-        fromVariant<ObjectTypeDefinition>(objDef);
-      typeMap.try_emplace(
-        abstractTypeDef.getName(),
-        objDef
-      );
+internal::Schema documentToSchema(Document& doc) {
+  Schema schema;
+  DocToSchema docToSchema;
+  std::unordered_map<std::string, const cgqlSPtr<TypeDefinition>&> typeDefMap;
+  for(Definition& def : doc.getDefinitions()) {
+    auto& rootTypeDef =
+      fromVariant<cgqlSPtr<TypeDefinition>>(def);
+    typeDefMap.try_emplace(rootTypeDef->getName(), rootTypeDef);
+  }
+  for(Definition& def : doc.getDefinitions()) {
+    auto& rootTypeDef =
+      fromVariant<cgqlSPtr<TypeDefinition>>(def);
+    cgqlSPtr<ObjectTypeDefinition> objDef =
+      std::static_pointer_cast<ObjectTypeDefinition>(rootTypeDef);
+    docToSchema.completeObject(objDef, typeDefMap);
+    if(rootTypeDef->getName() == "Query") {
+      schema.setQuery(objDef);
     }
   }
-
-  DocToSchemaParser docToSchemaParser;
-  return docToSchemaParser.docToSchemaImpl(typeMap);
+  return schema;
 }
 
 } // internal
@@ -256,10 +260,10 @@ internal::Document parse(const char *document) {
   return doc;
 };
 
-GraphQLSchema parseSchema(const char *source) {
+internal::Schema parseSchema(const char *source) {
   internal::Parser parser(source);
   internal::Document doc = parser.parseDocument();
-  GraphQLSchema schema = internal::documentToSchema(doc);
+  internal::Schema schema = internal::documentToSchema(doc);
   return schema;
 }
 

@@ -2,20 +2,20 @@
 #define EXECUTE_H
 
 #include "cgql/cgqlPch.h"
-#include "cgql/schema/GraphQLDefinition.h"
+#include "cgql/schema/typeDefinitions.hpp"
 #include "cgql/type/Document.h"
 #include "cgql/utilities/cgqlDefs.h"
 
 namespace cgql {
 namespace internal {
 
-const GraphQLField& findGraphQLFieldByName(
-  const GraphQLObject& objectType,
+const FieldTypeDefinition& findGraphQLFieldByName(
+  const ObjectTypeDefinition& objectType,
   const std::string& fieldName
 );
 
 GroupedField collectFields(
-  const GraphQLObject &objectType,
+  const ObjectTypeDefinition &objectType,
   const SelectionSet &selectionSet
 );
 
@@ -23,20 +23,19 @@ SelectionSet mergeSelectionSet(
   const cgqlContainer<Field>& fields
 );
 
-template<typename T>
 Data coerceLeafValue(
-  const GraphQLScalarTypes& fieldType,
+  const TypeDefinition& fieldType,
   const Data& data
 );
 
 Data coerceVariedLeafValue(
-  const GraphQLScalarTypes& fieldType,
+  const TypeDefinition& fieldType,
   const Data& data
 );
 
 Data completeValue(
-  const GraphQLScalarTypes& fieldType,
-  const GraphQLField& field,
+  const TypeDefinition& fieldType,
+  const FieldTypeDefinition& field,
   const cgqlContainer<Field>& fields,
   const Data& result,
   const std::optional<ResultMap>& source,
@@ -44,8 +43,8 @@ Data completeValue(
 );
 
 Data executeField(
-  const GraphQLField& field,
-  const GraphQLScalarTypes& fieldType,
+  const FieldTypeDefinition& field,
+  const TypeDefinition& fieldType,
   const cgqlContainer<Field>& fields,
   const std::optional<ResultMap>& source,
   const ResolverMap& resolverMap
@@ -53,14 +52,14 @@ Data executeField(
 
 ResultMap executeSelectionSet(
   const SelectionSet &selectionSet,
-  const GraphQLObject &objectType,
+  const ObjectTypeDefinition &objectType,
   const std::optional<ResultMap>& source,
   const ResolverMap& resolverMap
 );
 
 ResultMap executeQuery(
   const OperationDefinition& query,
-  const GraphQLSchema& schema,
+  const Schema& schema,
   const ResolverMap& resolverMap
 );
 
@@ -72,7 +71,7 @@ const OperationDefinition& getOperation(
 } // internal 
 
 ResultMap execute(
-  const GraphQLSchema& schema,
+  const internal::Schema& schema,
   const internal::Document& document,
   const ResolverMap& resolverMap
 );

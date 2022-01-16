@@ -23,12 +23,6 @@ OperationDefinition::OperationDefinition(
 
 OperationDefinition::~OperationDefinition() {}
 
-ArgumentDefinitions::~ArgumentDefinitions() {}
-
-FieldDefinition::~FieldDefinition() {}
-
-ObjectTypeDefinition::~ObjectTypeDefinition() {}
-
 // Document
 Document::Document(
   const cgqlContainer<Definition>& definitions
@@ -88,13 +82,13 @@ void printDocumentNode(const internal::Document &doc) {
       logger::info(opDef.getOperationType());
       printSelectionSet(opDef.getSelectionSet(), 0);
     } else if(def.index() == 1) {
-      internal::TypeDefinition typeDef =
+      /* internal::TypeDefinition typeDef =
         fromVariant<internal::TypeDefinition>(def);
       if(typeDef.index() == 0) {
         internal::ObjectTypeDefinition obj =
           fromVariant<internal::ObjectTypeDefinition>(typeDef);
         printGQLObj(obj, 2);
-      }
+      } */
     }
   }
 }

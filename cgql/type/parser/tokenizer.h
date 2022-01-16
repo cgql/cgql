@@ -3,7 +3,6 @@
 
 #include "cgql/cgqlPch.h"
 
-#include "cgql/schema/GraphQLScalar.h"
 #include "cgql/utilities/utils.h"
 
 namespace cgql {

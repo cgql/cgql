@@ -4,11 +4,27 @@
 #include "cgql/cgqlPch.h"
 
 #include "cgql/logger/logger.h"
-#include "cgql/schema/GraphQLDefinition.h"
 #include "cgql/utilities/assert.h"
 #include "cgql/utilities/utils.h"
+#include "cgql/schema/typeDefinitions.hpp"
+#include "cgql/schema/GraphQLTypes.h"
 
 namespace cgql {
+
+struct TypeMetaData {
+public:
+  void setWrappedInnerType(const cgqlSPtr<TypeMetaData>& wrappedInnerType);
+  void setIsList(bool isList);
+  void setIsNonNull(bool isNonNull);
+  const cgqlSPtr<TypeMetaData>& getWrappedInnerType() const;
+  bool isList() const;
+  bool isNonNull() const;
+private:
+  cgqlSPtr<TypeMetaData> wrappedInnerType;
+  bool _isList;
+  bool _isNonNull;
+};
+
 namespace internal {
 
 enum OperationType {
@@ -17,7 +33,7 @@ enum OperationType {
   SUBSCRIPTION
 };
 
-class Argument : public AbstractTypeDefinition {
+class Argument : public AbstractSchemaTypeDefinition {
 public:
   Argument() = default;
   void setValue(const Arg& value) {
@@ -38,7 +54,7 @@ using Selection = std::variant<
 >;
 using SelectionSet = cgqlContainer<Selection>;
 
-class Field : public AbstractTypeDefinition {
+class Field : public AbstractSchemaTypeDefinition {
 public:
   Field(
     const std::string& name,
@@ -48,7 +64,7 @@ public:
   ~Field();
   void setAlias(const std::string& alias) {
     cgqlAssert(
-      this->name == alias,
+      this->getName() == alias,
       "field should contain an alias different from its name"
     );
     this->alias = alias;
@@ -92,7 +108,7 @@ private:
   SelectionSet selectionSet;
 };
 
-class Type : public AbstractTypeDefinition {
+class Type : public AbstractSchemaTypeDefinition {
 public:
   Type(
     const std::string& name,
@@ -108,7 +124,7 @@ public:
       this->_isList == other._isList &&
       this->_isNonNull == other._isNonNull &&
       this->wrappedInnerType == other.wrappedInnerType &&
-      this->name == other.name
+      this->getName() == other.getName()
     );
   }
   bool isList() const {
@@ -136,65 +152,13 @@ private:
   std::optional<Location> location;
 };
 
-class ArgumentDefinitions : public AbstractTypeDefinition {
-public:
-  ArgumentDefinitions() = default;
-  ~ArgumentDefinitions();
-  void setType(const Type& type) {
-    this->type = type;
-  }
-  const Type& getType() const {
-    return this->type;
-  }
-private:
-  Type type;
-  std::optional<Location> location;
-};
-
-class FieldDefinition : public AbstractTypeDefinition {
-public:
-  FieldDefinition() = default;
-  ~FieldDefinition();
-  void setType(const Type& type) {
-    this->type = type;
-  }
-  const Type& getType() const {
-    return this->type;
-  }
-  void addArg(const ArgumentDefinitions& arg) {
-    this->args.push_back(arg);
-  }
-  const cgqlContainer<ArgumentDefinitions>& getArgs() const {
-    return this->args;
-  }
-private:
-  Type type;
-  cgqlContainer<ArgumentDefinitions> args;
-  std::optional<Location> location;
-};
-
-class ObjectTypeDefinition : public AbstractTypeDefinition {
-public:
-  ObjectTypeDefinition() = default;
-  ~ObjectTypeDefinition();
-  void addField(const FieldDefinition& field) {
-    this->fields.push_back(field);
-  }
-  const cgqlContainer<FieldDefinition>& getFields() const {
-    return this->fields;
-  }
-private:
-  cgqlContainer<FieldDefinition> fields;
-  std::optional<Location> location;
-};
-
-using TypeDefinition = std::variant<
+using RootTypeDefinition = std::variant<
   ObjectTypeDefinition
 >;
 
 using Definition = std::variant<
   OperationDefinition,
-  TypeDefinition
+  cgqlSPtr<TypeDefinition>
 >;
 
 class Document {
@@ -204,9 +168,9 @@ public:
   );
   Document() = default;
   ~Document();
-  const cgqlContainer<Definition>& getDefinitions() const { return this->definitions; }
+  cgqlContainer<Definition>& getDefinitions() const { return this->definitions; }
 private:
-  cgqlContainer<Definition> definitions;
+  mutable cgqlContainer<Definition> definitions;
 };
 } // internal
 

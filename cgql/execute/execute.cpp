@@ -6,8 +6,8 @@
 namespace cgql {
 namespace internal {
 
-const GraphQLField& findGraphQLFieldByName(
-  const GraphQLObject& objectType,
+const FieldTypeDefinition& findGraphQLFieldByName(
+  const ObjectTypeDefinition& objectType,
   const std::string& fieldName
 ) {
   for(auto const& field : objectType.getFields()) {
@@ -25,7 +25,7 @@ const GraphQLField& findGraphQLFieldByName(
 }
 
 GroupedField collectFields(
-  const GraphQLObject &objectType,
+  const ObjectTypeDefinition &objectType,
   const SelectionSet &selectionSet
 ) {
   GroupedField groupedFields;
@@ -69,41 +69,38 @@ SelectionSet mergeSelectionSet(
   return mergedSelectionSet;
 }
 
-template<typename T>
 Data coerceLeafValue(
-  const GraphQLScalarTypes& fieldType,
+  const cgqlSPtr<TypeDefinition>& fieldType,
   const Data& data
 ) {
   cgqlAssert(data.index() == 4, "Result cannot be null");
-  const GraphQLTypesBase<T>& type =
+  /* const GraphQLTypesBase<T>& type =
     fromVariant<GraphQLTypesBase<T>>(fieldType);
   const GraphQLReturnTypes& variedValue =
     fromVariant<GraphQLReturnTypes>(data);
   const T& value = fromVariant<T>(variedValue);
-  return type.getSerializer()(value);
+  return type.getSerializer()(value); */
+  return data;
 }
 
 Data coerceVariedLeafValue(
-  const GraphQLScalarTypes& fieldType,
+  const cgqlSPtr<TypeDefinition>& fieldType,
   const Data& data
 ) {
-  switch(fieldType.index()) {
-    case 0:
-      return coerceLeafValue<Int>(fieldType, data);
-      break;
-    case 1:
-      return coerceLeafValue<String>(fieldType, data);
-      break;
+  switch(fieldType->getType()) {
+    case INT_TYPE:
+    case STRING_TYPE:
+      return coerceLeafValue(fieldType, data);
     default:
-      cgqlAssert(true, "Unknown variant type");
+      cgqlAssert(true, "Unable to coerce resolved value");
   }
   /* silence compiler warning */ return (GraphQLReturnTypes)0;
 }
 
 template<typename T>
 Data completeListItem(
-  const GraphQLScalarTypes& fieldType,
-  const GraphQLField& field,
+  const cgqlSPtr<ListTypeDefinition<TypeDefinition>>& fieldType,
+  const FieldTypeDefinition& field,
   const cgqlContainer<Field>& fields,
   const Data& result,
   const std::optional<ResultMap>& source,
@@ -116,7 +113,7 @@ Data completeListItem(
   for(auto const& rawResult : rawResultList) {
     resultList.push_back(
       fromVariant<T>(completeValue(
-        fieldType,
+        fieldType->getInnerType(),
         field,
         fields,
         rawResult,
@@ -129,32 +126,34 @@ Data completeListItem(
 }
 
 Data completeList(
-  const GraphQLScalarTypes& fieldType,
-  const GraphQLField& field,
+  const cgqlSPtr<ListTypeDefinition<TypeDefinition>>& fieldType,
+  const FieldTypeDefinition& field,
   const cgqlContainer<Field>& fields,
-  const Data& result,
+  const Data& rawResult,
   const std::optional<ResultMap>& source,
   const ResolverMap& resolverMap
 ) {
-  switch(result.index()) {
+  switch(rawResult.index()) {
     case 2:
       return completeListItem<GraphQLReturnTypes>(
         fieldType,
         field,
         fields,
-        result,
+        rawResult,
         source,
         resolverMap
       );
+      break;
     case 3:
       return completeListItem<cgqlSPtr<ResultMap>>(
         fieldType,
         field,
         fields,
-        result,
+        rawResult,
         source,
         resolverMap
       );
+      break;
     default:
       cgqlAssert(true, "Unknown variant type");
   }
@@ -162,24 +161,21 @@ Data completeList(
 }
 
 Data completeValue(
-  const GraphQLScalarTypes& fieldType,
-  const GraphQLField& field,
+  const cgqlSPtr<TypeDefinition>& fieldType,
+  const FieldTypeDefinition& field,
   const cgqlContainer<Field>& fields,
   const Data& result,
   const std::optional<ResultMap>& source,
   const ResolverMap& resolverMap
 ) {
-  if(field.getTypeMetaData().isNonNull()) {
+  if(fieldType->getType() == NON_NULL_TYPE) {
+    const cgqlSPtr<NonNullTypeDefinition<TypeDefinition>>& nonNull =
+      std::static_pointer_cast<NonNullTypeDefinition<TypeDefinition>>(fieldType);
     if(result.index() == 4) {
       // field error
     }
-  }
-  if(result.index() == 4) {
-    return std::monostate{};
-  }
-  if(isList(result) && field.getTypeMetaData().isList()) {
-    return completeList(
-      fieldType,
+    return completeValue(
+      nonNull->getInnerType(),
       field,
       fields,
       result,
@@ -187,11 +183,24 @@ Data completeValue(
       resolverMap
     );
   }
-  if(fieldType.index() == 2) {
+  if(result.index() == 4) {
+    return std::monostate{};
+  }
+  if(fieldType->getType() == LIST_TYPE) {
+    return completeList(
+      std::static_pointer_cast<ListTypeDefinition<TypeDefinition>>(fieldType),
+      field,
+      fields,
+      result,
+      source,
+      resolverMap
+    );
+  }
+  if(fieldType->getType() == DefinitionType::OBJECT_TYPE) {
     const cgqlSPtr<ResultMap>& v =
       fromVariant<cgqlSPtr<ResultMap>>(result);
-    const cgqlSPtr<GraphQLObject>& schemaObj =
-      fromVariant<cgqlSPtr<GraphQLObject>>(fieldType);
+    const cgqlSPtr<ObjectTypeDefinition>& schemaObj =
+      std::static_pointer_cast<ObjectTypeDefinition>(fieldType);
 
     SelectionSet mergedSelectionSet =
       mergeSelectionSet(fields);
@@ -210,16 +219,16 @@ Data completeValue(
 
 Args buildArgumentMap(
   const Field& field,
-  const GraphQLField& fieldType
+  const FieldTypeDefinition& fieldType
 ) {
   Args arg;
   const cgqlContainer<Argument>& argumentValues =
     field.getArgs();
-  const cgqlContainer<GraphQLArgument>& argumentDefinitions =
+  const cgqlContainer<ArgumentTypeDefinition>& argumentDefinitions =
     fieldType.getArgs();
   for(auto const& argDef : argumentDefinitions) {
     const std::string& argName = argDef.getName();
-    const GraphQLScalarTypes& argType = argDef.getType();
+    const cgqlSPtr<TypeDefinition>& argType = argDef.getType();
     const auto& it = std::find_if(
       argumentValues.begin(),
       argumentValues.end(),
@@ -240,8 +249,8 @@ Args buildArgumentMap(
 }
 
 Data executeField(
-  const GraphQLField& field,
-  const GraphQLScalarTypes& fieldType,
+  const FieldTypeDefinition& field,
+  const cgqlSPtr<TypeDefinition>& fieldType,
   const cgqlContainer<Field>& fields,
   const std::optional<ResultMap>& source,
   const ResolverMap& resolverMap
@@ -274,7 +283,7 @@ Data executeField(
 
 ResultMap executeSelectionSet(
   const SelectionSet &selectionSet,
-  const GraphQLObject &objectType,
+  const ObjectTypeDefinition &objectType,
   const std::optional<ResultMap>& source,
   const ResolverMap& resolverMap
 ) {
@@ -284,11 +293,11 @@ ResultMap executeSelectionSet(
     selectionSet
   );
   for(auto const& [responseKey, fields] : groupedFieldSet) {
-    const GraphQLField& field = findGraphQLFieldByName(
+    const FieldTypeDefinition& field = findGraphQLFieldByName(
       objectType,
       fields[0].getName()
     );
-    const GraphQLScalarTypes& fieldType = field.getType();
+    const cgqlSPtr<TypeDefinition>& fieldType = field.getType();
     resultMap.data.try_emplace(
       responseKey,
       executeField(
@@ -305,15 +314,15 @@ ResultMap executeSelectionSet(
 
 ResultMap executeQuery(
   const OperationDefinition& query,
-  const GraphQLSchema& schema,
+  const Schema& schema,
   const ResolverMap& resolverMap
 
 ) {
-  const GraphQLObject& queryType = schema.getQuery();
+  const cgqlSPtr<ObjectTypeDefinition>& queryType = schema.getQuery();
   const SelectionSet& selection = query.getSelectionSet();
   return executeSelectionSet(
     selection,
-    queryType,
+    *queryType,
     {},
     resolverMap
   );
@@ -336,7 +345,7 @@ const OperationDefinition& getOperation(
 } // internal
 
 ResultMap execute(
-  const GraphQLSchema &schema,
+  const internal::Schema &schema,
   const internal::Document &document,
   const ResolverMap& resolverMap
 ) {

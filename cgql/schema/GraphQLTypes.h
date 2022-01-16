@@ -2,48 +2,16 @@
 #define GRAPHQL_TYPES_H
 
 #include "cgql/cgqlPch.h"
-#include "cgql/schema/GraphQLScalar.h"
+#include "cgql/schema/typeDefinitions.hpp"
 #include "cgql/utilities/cgqlDefs.h"
 #include "cgql/utilities/assert.h"
 
 namespace cgql {
 
-class GraphQLObject;
-
-namespace GraphQLTypes {
-  inline GraphQLTypesBase<Int> GraphQLInt(
-    "Int",
-    [](const Int& value) -> const Int& {
-      bool isNotInLimits =
-        value > internal::GRAPHQL_INT_LIMITS::MAX ||
-        value < internal::GRAPHQL_INT_LIMITS::MIN;
-      if(isNotInLimits) {
-        cgqlAssert(
-          !isNotInLimits,
-          "Value should be less than 2147483647 and greater than -2147483648"
-        );
-      }
-      return value;
-    }
-  );
-  inline GraphQLTypesBase<String> GraphQLString(
-    "String",
-    [](const String& value) -> const String& {
-      return value;
-    }
-  );
-}
-
-using GraphQLScalarTypes = std::variant<
-  GraphQLTypesBase<Int>,
-  GraphQLTypesBase<String>,
-  cgqlSPtr<GraphQLObject>
->;
-
 using GraphQLReturnTypes = std::variant<
   Int,
   String,
-  cgqlSPtr<GraphQLObject>
+  cgqlSPtr<internal::ObjectTypeDefinition>
 >;
 
 }
