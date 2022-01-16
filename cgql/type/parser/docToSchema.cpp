@@ -5,7 +5,7 @@ namespace cgql {
 namespace internal {
 
 void DocToSchema::completeObject(
-  cgqlSPtr<ObjectTypeDefinition> &object,
+  cgqlSPtr<ObjectTypeDefinition> const &object,
   std::unordered_map<std::string, const cgqlSPtr<TypeDefinition>&> typeDefMap
 ) {
   for(FieldTypeDefinition& field : object->getFields()) {
@@ -14,14 +14,14 @@ void DocToSchema::completeObject(
 }
 
 void DocToSchema::completeField(
-  FieldTypeDefinition &field,
+  FieldTypeDefinition const& field,
   std::unordered_map<std::string, const cgqlSPtr<TypeDefinition>&> typeDefMap
 ) {
   this->completeType(field.getType(), typeDefMap);
 }
 
 void DocToSchema::completeArgument(
-  ArgumentTypeDefinition &argument,
+  ArgumentTypeDefinition const& argument,
   std::unordered_map<std::string, const cgqlSPtr<TypeDefinition>&> typeDefMap
 ) {
 }

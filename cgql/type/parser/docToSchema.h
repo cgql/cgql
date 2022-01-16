@@ -13,15 +13,15 @@ public:
   DocToSchema() = default;
 
   void completeObject(
-    cgqlSPtr<ObjectTypeDefinition>& object,
+    cgqlSPtr<ObjectTypeDefinition> const& object,
     std::unordered_map<std::string, const cgqlSPtr<TypeDefinition>&> typeDefMap
   );
   void completeField(
-    FieldTypeDefinition& field,
+    FieldTypeDefinition const& field,
     std::unordered_map<std::string, const cgqlSPtr<TypeDefinition>&> typeDefMap
   );
   void completeArgument(
-    ArgumentTypeDefinition& argument,
+    ArgumentTypeDefinition const& argument,
     std::unordered_map<std::string, const cgqlSPtr<TypeDefinition>&> typeDefMap
   );
   void completeType(

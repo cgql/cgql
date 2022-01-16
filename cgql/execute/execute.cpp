@@ -187,8 +187,10 @@ Data completeValue(
     return std::monostate{};
   }
   if(fieldType->getType() == LIST_TYPE) {
+    const cgqlSPtr<ListTypeDefinition<TypeDefinition>>& list =
+      std::static_pointer_cast<ListTypeDefinition<TypeDefinition>>(fieldType);
     return completeList(
-      std::static_pointer_cast<ListTypeDefinition<TypeDefinition>>(fieldType),
+      list,
       field,
       fields,
       result,
