@@ -235,18 +235,20 @@ internal::Schema documentToSchema(Document& doc) {
   DocToSchema docToSchema;
   std::unordered_map<std::string, const cgqlSPtr<TypeDefinition>&> typeDefMap;
   for(Definition& def : doc.getDefinitions()) {
-    auto& rootTypeDef =
+    const cgqlSPtr<TypeDefinition>& rootTypeDef =
       fromVariant<cgqlSPtr<TypeDefinition>>(def);
     typeDefMap.try_emplace(rootTypeDef->getName(), rootTypeDef);
   }
   for(Definition& def : doc.getDefinitions()) {
-    auto& rootTypeDef =
+    cgqlSPtr<TypeDefinition> const& rootTypeDef =
       fromVariant<cgqlSPtr<TypeDefinition>>(def);
-    cgqlSPtr<ObjectTypeDefinition> objDef =
-      std::static_pointer_cast<ObjectTypeDefinition>(rootTypeDef);
-    docToSchema.completeObject(objDef, typeDefMap);
-    if(rootTypeDef->getName() == "Query") {
-      schema.setQuery(objDef);
+    if(rootTypeDef->getType() == DefinitionType::OBJECT_TYPE) {
+      cgqlSPtr<ObjectTypeDefinition> const& objDef =
+        std::static_pointer_cast<ObjectTypeDefinition>(rootTypeDef);
+      docToSchema.completeObject(objDef, typeDefMap);
+      if(rootTypeDef->getName() == "Query") {
+        schema.setQuery(objDef);
+      }
     }
   }
   return schema;
