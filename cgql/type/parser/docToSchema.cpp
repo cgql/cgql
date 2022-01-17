@@ -18,12 +18,16 @@ void DocToSchema::completeField(
   std::unordered_map<std::string, const cgqlSPtr<TypeDefinition>&> typeDefMap
 ) {
   this->completeType(field.getType(), typeDefMap);
+  for(ArgumentTypeDefinition& argument : field.getArgs()) {
+    this->completeArgument(argument, typeDefMap);
+  }
 }
 
 void DocToSchema::completeArgument(
   ArgumentTypeDefinition const& argument,
   std::unordered_map<std::string, const cgqlSPtr<TypeDefinition>&> typeDefMap
 ) {
+  this->completeType(argument.getType(), typeDefMap);
 }
 
 void DocToSchema::completeType(

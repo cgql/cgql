@@ -65,15 +65,6 @@ void printSelectionSet(const internal::SelectionSet selectionSet, int level) {
   }
 }
 
-void printGQLObj(const internal::ObjectTypeDefinition& obj, int level) {
-  std::string indentation;
-  for(int i = 0; i < level; i++) indentation += " ";
-  logger::info(obj.getName().data());
-  for(auto field : obj.getFields()) {
-    logger::info(indentation + field.getName().data());
-  }
-}
-
 void printDocumentNode(const internal::Document &doc) {
   for(const internal::Definition& def : doc.getDefinitions()) {
     if(def.index() == 0) {
@@ -82,13 +73,13 @@ void printDocumentNode(const internal::Document &doc) {
       logger::info(opDef.getOperationType());
       printSelectionSet(opDef.getSelectionSet(), 0);
     } else if(def.index() == 1) {
-      /* internal::TypeDefinition typeDef =
-        fromVariant<internal::TypeDefinition>(def);
-      if(typeDef.index() == 0) {
-        internal::ObjectTypeDefinition obj =
-          fromVariant<internal::ObjectTypeDefinition>(typeDef);
-        printGQLObj(obj, 2);
-      } */
+      cgqlSPtr<internal::TypeDefinition> typeDef =
+        fromVariant<cgqlSPtr<internal::TypeDefinition>>(def);
+      if(typeDef->getType() == internal::DefinitionType::OBJECT_TYPE) {
+        cgqlSPtr<internal::ObjectTypeDefinition> objDef =
+          std::static_pointer_cast<internal::ObjectTypeDefinition>(typeDef);
+        // printGQLObj(objDef, 2);
+      }
     }
   }
 }

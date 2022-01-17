@@ -193,12 +193,12 @@ public:
   void addArg(const ArgumentTypeDefinition& arg) {
     this->argDefs.push_back(arg);
   }
-  const cgqlContainer<ArgumentTypeDefinition>& getArgs() const {
+  cgqlContainer<ArgumentTypeDefinition>& getArgs() const {
     return this->argDefs;
   }
 private:
   mutable cgqlSPtr<TypeDefinition> type;
-  cgqlContainer<ArgumentTypeDefinition> argDefs;
+  mutable cgqlContainer<ArgumentTypeDefinition> argDefs;
 };
 
 

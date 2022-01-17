@@ -11,20 +11,6 @@
 
 namespace cgql {
 
-struct TypeMetaData {
-public:
-  void setWrappedInnerType(const cgqlSPtr<TypeMetaData>& wrappedInnerType);
-  void setIsList(bool isList);
-  void setIsNonNull(bool isNonNull);
-  const cgqlSPtr<TypeMetaData>& getWrappedInnerType() const;
-  bool isList() const;
-  bool isNonNull() const;
-private:
-  cgqlSPtr<TypeMetaData> wrappedInnerType;
-  bool _isList;
-  bool _isNonNull;
-};
-
 namespace internal {
 
 enum OperationType {
@@ -108,50 +94,6 @@ private:
   SelectionSet selectionSet;
 };
 
-class Type : public AbstractSchemaTypeDefinition {
-public:
-  Type(
-    const std::string& name,
-    bool isList = false,
-    bool isNonNull = false
-  ): _isList(isList), _isNonNull(isNonNull) {
-    this->setName(name);
-  }
-  Type() = default;
-  ~Type() {}
-  bool operator==(const Type& other) const {
-    return (
-      this->_isList == other._isList &&
-      this->_isNonNull == other._isNonNull &&
-      this->wrappedInnerType == other.wrappedInnerType &&
-      this->getName() == other.getName()
-    );
-  }
-  bool isList() const {
-    return this->_isList;
-  }
-  bool isNonNull() const {
-    return this->_isNonNull;
-  }
-  const std::optional<cgqlSPtr<Type>>& getWrappedInnerType() const {
-    return this->wrappedInnerType;
-  }
-  void setTypeList(bool isList) {
-    this->_isList = isList;
-  }
-  void setTypeNonNull(bool isNonNull) {
-    this->_isNonNull = isNonNull;
-  }
-  void setWrappedInnerType(const Type& innerType) {
-    this->wrappedInnerType = cgqlSMakePtr<Type>(innerType);
-  }
-private:
-  std::optional<cgqlSPtr<Type>> wrappedInnerType;
-  bool _isList = false;
-  bool _isNonNull = false;
-  std::optional<Location> location;
-};
-
 using RootTypeDefinition = std::variant<
   ObjectTypeDefinition
 >;
@@ -177,17 +119,5 @@ private:
 void printDocumentNode(const internal::Document& doc);
 void printResultMap(const ResultMap& rm, uint8_t level = 0);
 } // cgql
-
-namespace std {
-  template<>
-  struct hash<cgql::internal::Type> {
-    std::size_t operator()(const cgql::internal::Type& type) const {
-      std::size_t hashIsList = std::hash<bool>()(type.isList());
-      std::size_t hashIsNonNull = std::hash<bool>()(type.isNonNull());
-      std::size_t hashName = std::hash<std::string>()(type.getName());
-      return hashIsList ^ (hashIsNonNull << 1 ^ (hashName << 2));
-    }
-  };
-};
 
 #endif
