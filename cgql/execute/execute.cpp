@@ -7,10 +7,10 @@ namespace cgql {
 namespace internal {
 
 const FieldTypeDefinition& findGraphQLFieldByName(
-  const ObjectTypeDefinition& objectType,
+  const cgqlSPtr<ObjectTypeDefinition>& objectType,
   const std::string& fieldName
 ) {
-  for(auto const& field : objectType.getFields()) {
+  for(auto const& field : objectType->getFields()) {
     if(fieldName == field.getName()) {
       return field;
     }
@@ -19,13 +19,13 @@ const FieldTypeDefinition& findGraphQLFieldByName(
   msg += "Field with name ";
   msg += fieldName;
   msg += " cannot be found in object ";
-  msg += objectType.getName();
+  msg += objectType->getName();
   cgqlAssert(true, msg.c_str());
-  /* silence compiler warning */ return objectType.getFields()[0];
+  /* silence compiler warning */ return objectType->getFields()[0];
 }
 
 GroupedField collectFields(
-  const ObjectTypeDefinition &objectType,
+  const cgqlSPtr<ObjectTypeDefinition>& objectType,
   const SelectionSet &selectionSet
 ) {
   GroupedField groupedFields;
@@ -122,7 +122,7 @@ Data completeListItem(
       ))
     );
   }
-  return std::move(resultList);
+  return resultList;
 }
 
 Data completeList(
@@ -208,7 +208,7 @@ Data completeValue(
       mergeSelectionSet(fields);
     return executeSelectionSet(
       mergedSelectionSet,
-      *schemaObj,
+      schemaObj,
       v,
       resolverMap
     );
@@ -283,7 +283,7 @@ Data executeField(
 
 cgqlSPtr<ResultMap> executeSelectionSet(
   const SelectionSet &selectionSet,
-  const ObjectTypeDefinition &objectType,
+  const cgqlSPtr<ObjectTypeDefinition> &objectType,
   const std::optional<cgqlSPtr<ResultMap>>& source,
   const ResolverMap& resolverMap
 ) {
@@ -321,7 +321,7 @@ cgqlSPtr<ResultMap> executeQuery(
   const SelectionSet& selection = query.getSelectionSet();
   return executeSelectionSet(
     selection,
-    *queryType,
+    queryType,
     {},
     resolverMap
   );
