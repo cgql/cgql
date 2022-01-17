@@ -103,7 +103,7 @@ Data completeListItem(
   const FieldTypeDefinition& field,
   const cgqlContainer<Field>& fields,
   const Data& result,
-  const std::optional<ResultMap>& source,
+  const std::optional<cgqlSPtr<ResultMap>>& source,
   const ResolverMap& resolverMap
 ) {
   const cgqlContainer<T>& rawResultList =
@@ -130,7 +130,7 @@ Data completeList(
   const FieldTypeDefinition& field,
   const cgqlContainer<Field>& fields,
   const Data& rawResult,
-  const std::optional<ResultMap>& source,
+  const std::optional<cgqlSPtr<ResultMap>>& source,
   const ResolverMap& resolverMap
 ) {
   switch(rawResult.index()) {
@@ -165,7 +165,7 @@ Data completeValue(
   const FieldTypeDefinition& field,
   const cgqlContainer<Field>& fields,
   const Data& result,
-  const std::optional<ResultMap>& source,
+  const std::optional<cgqlSPtr<ResultMap>>& source,
   const ResolverMap& resolverMap
 ) {
   if(fieldType->getType() == NON_NULL_TYPE) {
@@ -206,13 +206,11 @@ Data completeValue(
 
     SelectionSet mergedSelectionSet =
       mergeSelectionSet(fields);
-    return cgqlSMakePtr<ResultMap>(
-      executeSelectionSet(
-        mergedSelectionSet,
-        *schemaObj,
-        *v,
-        resolverMap
-      )
+    return executeSelectionSet(
+      mergedSelectionSet,
+      *schemaObj,
+      v,
+      resolverMap
     );
   } else {
     return coerceVariedLeafValue(fieldType, result);
@@ -254,7 +252,7 @@ Data executeField(
   const FieldTypeDefinition& field,
   const cgqlSPtr<TypeDefinition>& fieldType,
   const cgqlContainer<Field>& fields,
-  const std::optional<ResultMap>& source,
+  const std::optional<cgqlSPtr<ResultMap>>& source,
   const ResolverMap& resolverMap
 ) {
   Data result;
@@ -283,10 +281,10 @@ Data executeField(
   );
 }
 
-ResultMap executeSelectionSet(
+cgqlSPtr<ResultMap> executeSelectionSet(
   const SelectionSet &selectionSet,
   const ObjectTypeDefinition &objectType,
-  const std::optional<ResultMap>& source,
+  const std::optional<cgqlSPtr<ResultMap>>& source,
   const ResolverMap& resolverMap
 ) {
   ResultMap resultMap;
@@ -311,14 +309,13 @@ ResultMap executeSelectionSet(
       )
     );
   }
-  return resultMap;
+  return cgqlSMakePtr<ResultMap>(resultMap);
 }
 
-ResultMap executeQuery(
+cgqlSPtr<ResultMap> executeQuery(
   const OperationDefinition& query,
   const Schema& schema,
   const ResolverMap& resolverMap
-
 ) {
   const cgqlSPtr<ObjectTypeDefinition>& queryType = schema.getQuery();
   const SelectionSet& selection = query.getSelectionSet();
@@ -346,7 +343,7 @@ const OperationDefinition& getOperation(
 }
 } // internal
 
-ResultMap execute(
+cgqlSPtr<ResultMap> execute(
   const internal::Schema &schema,
   const internal::Document &document,
   const ResolverMap& resolverMap

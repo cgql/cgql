@@ -7,11 +7,11 @@ namespace cgql {
 namespace internal {
 
 inline const std::optional<Data> defaultFieldResolver(
-  const ResultMap& source,
+  const cgqlSPtr<ResultMap>& source,
   const std::string& name
 ) {
-  auto const& it = source.data.find(name);
-  if(it != source.data.end()) {
+  auto const& it = source->data.find(name);
+  if(it != source->data.end()) {
     return it->second;
   }
   // cgqlAssert(it == source.data.end(), "Cannot find value for given key in result map");

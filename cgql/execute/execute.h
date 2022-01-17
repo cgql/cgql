@@ -38,7 +38,7 @@ Data completeValue(
   const FieldTypeDefinition& field,
   const cgqlContainer<Field>& fields,
   const Data& result,
-  const std::optional<ResultMap>& source,
+  const std::optional<cgqlSPtr<ResultMap>>& source,
   const ResolverMap& resolverMap
 );
 
@@ -46,18 +46,18 @@ Data executeField(
   const FieldTypeDefinition& field,
   const TypeDefinition& fieldType,
   const cgqlContainer<Field>& fields,
-  const std::optional<ResultMap>& source,
+  const std::optional<cgqlSPtr<ResultMap>>& source,
   const ResolverMap& resolverMap
 );
 
-ResultMap executeSelectionSet(
+cgqlSPtr<ResultMap> executeSelectionSet(
   const SelectionSet &selectionSet,
   const ObjectTypeDefinition &objectType,
-  const std::optional<ResultMap>& source,
+  const std::optional<cgqlSPtr<ResultMap>>& source,
   const ResolverMap& resolverMap
 );
 
-ResultMap executeQuery(
+cgqlSPtr<ResultMap> executeQuery(
   const OperationDefinition& query,
   const Schema& schema,
   const ResolverMap& resolverMap
@@ -70,7 +70,7 @@ const OperationDefinition& getOperation(
 
 } // internal 
 
-ResultMap execute(
+cgqlSPtr<ResultMap> execute(
   const internal::Schema& schema,
   const internal::Document& document,
   const ResolverMap& resolverMap
