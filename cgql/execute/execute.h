@@ -52,7 +52,7 @@ Data executeField(
 
 cgqlSPtr<ResultMap> executeSelectionSet(
   const SelectionSet &selectionSet,
-  const cgqlSPtr<ObjectTypeDefinition> &objectType,
+  const ObjectTypeDefinition &objectType,
   const std::optional<cgqlSPtr<ResultMap>>& source,
   const ResolverMap& resolverMap
 );
