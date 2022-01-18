@@ -1,7 +1,7 @@
 #ifndef GRAPHQL_TYPES_H
 #define GRAPHQL_TYPES_H
 
-#include "cgql/cgqlPch.h"
+#include "cgql/base/cgqlPch.h"
 #include "cgql/schema/typeDefinitions.hpp"
 #include "cgql/utilities/cgqlDefs.h"
 #include "cgql/utilities/assert.h"

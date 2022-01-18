@@ -1,7 +1,7 @@
 #ifndef LOGGER_H
 #define LOGGER_H
 
-#include "cgql/cgqlPch.h"
+#include "cgql/base/cgqlPch.h"
 
 namespace cgql {
 

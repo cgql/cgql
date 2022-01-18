@@ -1,7 +1,7 @@
 #ifndef ABSTRACT_TYPE_H
 #define ABSTRACT_TYPE_H
 
-#include "cgql/cgqlPch.h"
+#include "cgql/base/cgqlPch.h"
 
 namespace cgql {
 namespace internal {

@@ -2,7 +2,7 @@
 #define TYPE_DEFINITIONS_HPP
 
 #include "cgql/utilities/cgqlDefs.h"
-#include "cgql/cgqlPch.h"
+#include "cgql/base/cgqlPch.h"
 
 namespace cgql {
 

@@ -1,5 +1,3 @@
-#include "cgql/cgqlPch.h"
-
 #include "cgql/type/parser/tokenizer.h"
 #include "cgql/logger/logger.h"
 

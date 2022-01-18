@@ -1,10 +1,11 @@
-#include <cgql/execute/execute.h>
+#include <cgql/cgql.h>
 #include <cgql/type/parser/parser.h>
 #include <cgql/logger/logger.h>
 
 using namespace cgql;
 
 inline void runAdvancedParsing() {
+  CgqlInstance test;
   auto typedefs = parseSchema(
     "type Address {"
     "  city: String"
@@ -23,6 +24,7 @@ inline void runAdvancedParsing() {
     "  person(id: Int): Person"
     "}"
   );
+  test.useSchema(typedefs);
   for(int i = 0; i < 50000; i++) {
     auto doc = parse(
       "{"
@@ -75,7 +77,7 @@ inline void runAdvancedParsing() {
         }
       },
     };
-    auto r = execute(typedefs, doc, root);
+    auto r = test.executeWith(doc, root);
     // printResultMap(r);
   }
 }

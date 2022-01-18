@@ -1,7 +1,7 @@
 #ifndef TOKENIZER_H
 #define TOKENIZER_H
 
-#include "cgql/cgqlPch.h"
+#include "cgql/base/cgqlPch.h"
 
 #include "cgql/utilities/utils.h"
 

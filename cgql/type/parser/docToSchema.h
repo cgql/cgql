@@ -1,7 +1,7 @@
 #ifndef DOC_TO_SCHEMA_H
 #define DOC_TO_SCHEMA_H
 
-#include "cgql/cgqlPch.h"
+#include "cgql/base/cgqlPch.h"
 #include "cgql/schema/typeDefinitions.hpp"
 #include "cgql/utilities/assert.h"
 

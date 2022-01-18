@@ -14,7 +14,6 @@ inline const std::optional<Data> defaultFieldResolver(
   if(it != source->data.end()) {
     return it->second;
   }
-  // cgqlAssert(it == source.data.end(), "Cannot find value for given key in result map");
   return {};
 }
 

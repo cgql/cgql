@@ -1,7 +1,7 @@
 #ifndef PARSER_H
 #define PARSER_H
 
-#include "cgql/cgqlPch.h"
+#include "cgql/base/cgqlPch.h"
 
 #include "cgql/type/Document.h"
 #include "cgql/schema/GraphQLTypes.h"
@@ -41,7 +41,7 @@ private:
 } // internal
 
 internal::Document parse(const char* source);
-internal::Schema parseSchema(const char* source);
+cgqlSPtr<internal::Schema> parseSchema(const char* source);
 } // cgql
 
 #endif

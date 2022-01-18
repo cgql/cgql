@@ -1,4 +1,4 @@
-#include "cgql/cgqlPch.h"
+#include "cgql/base/cgqlPch.h"
 
 #include "cgql/type/parser/parser.h"
 #include "cgql/type/parser/docToSchema.h"
@@ -262,11 +262,11 @@ internal::Document parse(const char *document) {
   return doc;
 };
 
-internal::Schema parseSchema(const char *source) {
+cgqlSPtr<internal::Schema> parseSchema(const char *source) {
   internal::Parser parser(source);
   internal::Document doc = parser.parseDocument();
   internal::Schema schema = internal::documentToSchema(doc);
-  return schema;
+  return cgqlSMakePtr<internal::Schema>(schema);
 }
 
 } // cgql

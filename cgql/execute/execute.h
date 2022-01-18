@@ -1,7 +1,7 @@
 #ifndef EXECUTE_H
 #define EXECUTE_H
 
-#include "cgql/cgqlPch.h"
+#include "cgql/base/cgqlPch.h"
 #include "cgql/schema/typeDefinitions.hpp"
 #include "cgql/type/Document.h"
 #include "cgql/utilities/cgqlDefs.h"
@@ -59,7 +59,7 @@ cgqlSPtr<ResultMap> executeSelectionSet(
 
 cgqlSPtr<ResultMap> executeQuery(
   const OperationDefinition& query,
-  const Schema& schema,
+  const cgqlSPtr<Schema>& schema,
   const ResolverMap& resolverMap
 );
 
@@ -71,7 +71,7 @@ const OperationDefinition& getOperation(
 } // internal 
 
 cgqlSPtr<ResultMap> execute(
-  const internal::Schema& schema,
+  const cgqlSPtr<internal::Schema>& schema,
   const internal::Document& document,
   const ResolverMap& resolverMap
 );

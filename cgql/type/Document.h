@@ -1,7 +1,7 @@
 #ifndef DOCUMENT_H
 #define DOCUMENT_H
 
-#include "cgql/cgqlPch.h"
+#include "cgql/base/cgqlPch.h"
 
 #include "cgql/logger/logger.h"
 #include "cgql/utilities/assert.h"

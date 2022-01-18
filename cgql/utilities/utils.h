@@ -1,7 +1,7 @@
 #ifndef CGQL_UTILS_H
 #define CGQL_UTILS_H
 
-#include "cgql/cgqlPch.h"
+#include "cgql/base/cgqlPch.h"
 
 namespace cgql {
 namespace internal {

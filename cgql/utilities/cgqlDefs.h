@@ -1,7 +1,7 @@
 #ifndef CGQL_DEFS_H
 #define CGQL_DEFS_H
 
-#include "cgql/cgqlPch.h"
+#include "cgql/base/cgqlPch.h"
 
 namespace cgql {
 

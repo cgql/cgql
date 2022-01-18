@@ -314,10 +314,10 @@ cgqlSPtr<ResultMap> executeSelectionSet(
 
 cgqlSPtr<ResultMap> executeQuery(
   const OperationDefinition& query,
-  const Schema& schema,
+  const cgqlSPtr<Schema>& schema,
   const ResolverMap& resolverMap
 ) {
-  const cgqlSPtr<ObjectTypeDefinition>& queryType = schema.getQuery();
+  const cgqlSPtr<ObjectTypeDefinition>& queryType = schema->getQuery();
   const SelectionSet& selection = query.getSelectionSet();
   return executeSelectionSet(
     selection,
@@ -344,7 +344,7 @@ const OperationDefinition& getOperation(
 } // internal
 
 cgqlSPtr<ResultMap> execute(
-  const internal::Schema &schema,
+  const cgqlSPtr<internal::Schema> &schema,
   const internal::Document &document,
   const ResolverMap& resolverMap
 ) {
