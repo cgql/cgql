@@ -200,6 +200,24 @@ cgqlSPtr<ObjectTypeDefinition> Parser::parseObjectTypeDefinition() {
   return obj;
 }
 
+cgqlSPtr<InterfaceTypeDefinition> Parser::parseInterfaceTypeDefinition() {
+  this->tokenizer.advance();
+  std::string name = this->parseName();
+  cgqlSPtr<InterfaceTypeDefinition> interface =
+    cgqlSMakePtr<InterfaceTypeDefinition>();
+  interface->setName(name);
+  if(this->checkType(TokenType::CURLY_BRACES_L)) {
+    this->tokenizer.advance();
+    do {
+      interface->addField(
+        this->parseFieldTypeDefinition()
+      );
+    } while(!this->checkType(TokenType::CURLY_BRACES_R));
+  }
+  this->tokenizer.advance();
+  return interface;
+}
+
 Definition Parser::parseDefinition() {
   Definition definition;
   if(this->checkType(TokenType::CURLY_BRACES_L)) {
@@ -207,9 +225,10 @@ Definition Parser::parseDefinition() {
   } else if(this->checkType(TokenType::NAME)) {
     std::string currentValue =
       this->tokenizer.current.getValue();
-    if(currentValue == "type") {
+    if(currentValue == "type")
       definition = this->parseObjectTypeDefinition();
-    }
+    else if(currentValue == "interface")
+      definition = this->parseInterfaceTypeDefinition();
   } else {
     std::string errorMsg;
     errorMsg += "Unexpected token ";
@@ -242,13 +261,18 @@ internal::Schema documentToSchema(Document& doc) {
   for(Definition& def : doc.getDefinitions()) {
     cgqlSPtr<TypeDefinition> const& rootTypeDef =
       fromVariant<cgqlSPtr<TypeDefinition>>(def);
-    if(rootTypeDef->getType() == DefinitionType::OBJECT_TYPE) {
+    DefinitionType const& type = rootTypeDef->getType();
+    if(type == DefinitionType::OBJECT_TYPE) {
       cgqlSPtr<ObjectTypeDefinition> const& objDef =
         std::static_pointer_cast<ObjectTypeDefinition>(rootTypeDef);
       docToSchema.completeObject(objDef, typeDefMap);
       if(rootTypeDef->getName() == "Query") {
         schema.setQuery(objDef);
       }
+    } else if(type == DefinitionType::INTERFACE_TYPE) {
+      cgqlSPtr<InterfaceTypeDefinition> const& interfaceDef =
+        std::static_pointer_cast<InterfaceTypeDefinition>(rootTypeDef);
+      docToSchema.completeInterface(interfaceDef, typeDefMap);
     }
   }
   return schema;

@@ -35,6 +35,7 @@ private:
 
   cgqlSPtr<TypeDefinition> parseType();
   cgqlSPtr<ObjectTypeDefinition> parseObjectTypeDefinition();
+  cgqlSPtr<InterfaceTypeDefinition> parseInterfaceTypeDefinition();
   FieldTypeDefinition parseFieldTypeDefinition();
   ArgumentTypeDefinition parseArgumentDefinition();
 };

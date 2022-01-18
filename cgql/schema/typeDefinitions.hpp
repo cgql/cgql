@@ -12,6 +12,7 @@ typedef std::string_view String;
 namespace internal {
 
 enum DefinitionType : uint8_t {
+  INTERFACE_TYPE,
   OBJECT_TYPE,
   TYPE_DEF,
 
@@ -36,6 +37,8 @@ inline std::ostream& operator<<(std::ostream& os, const DefinitionType& type) {
       os << "LIST_TYPE"; break;
     case NON_NULL_TYPE:
       os << "NON_NULL_TYPE"; break;
+    case INTERFACE_TYPE:
+      os << "INTERFACE_TYPE"; break;
   }
   return os;
 }
@@ -68,7 +71,7 @@ public:
   }
   void setEnumType(const DefinitionType& type) override {
     this->type = type;
-  };
+  }
 private:
   DefinitionType type;
 };
@@ -88,7 +91,7 @@ public:
   }
   void setEnumType(const DefinitionType& type) override {
     this->type = type;
-  };
+  }
 private:
   DefinitionType type;
 };
@@ -108,7 +111,7 @@ public:
   }
   void setEnumType(const DefinitionType& type) override {
     this->type = type;
-  };
+  }
 private:
   mutable cgqlSPtr<T> innerType;
   DefinitionType type;
@@ -129,7 +132,7 @@ public:
   }
   void setEnumType(const DefinitionType& type) override {
     this->type = type;
-  };
+  }
 private:
   mutable cgqlSPtr<T> innerType;
   DefinitionType type;
@@ -174,7 +177,7 @@ public:
   }
   void setEnumType(const DefinitionType& type) override {
     this->type = type;
-  };
+  }
 private:
   mutable cgqlContainer<FieldTypeDefinition> fieldDefs;
   DefinitionType type;
@@ -199,6 +202,30 @@ public:
 private:
   mutable cgqlSPtr<TypeDefinition> type;
   mutable cgqlContainer<ArgumentTypeDefinition> argDefs;
+};
+
+class InterfaceTypeDefinition : public TypeDefinition {
+public:
+  InterfaceTypeDefinition() {
+    this->type = DefinitionType::INTERFACE_TYPE;
+  };
+  ~InterfaceTypeDefinition() {}
+  void addField(const FieldTypeDefinition& field) {
+    this->fields.push_back(field);
+  }
+  cgqlContainer<FieldTypeDefinition>& getFields() const {
+    return this->fields;
+  }
+  const DefinitionType& getType() const override {
+    return this->type;
+  }
+  void setEnumType(const DefinitionType& type) override {
+    this->type = type;
+  }
+private:
+  mutable cgqlContainer<FieldTypeDefinition> fields;
+  mutable cgqlContainer<cgqlSPtr<InterfaceTypeDefinition>> implements;
+  DefinitionType type;
 };
 
 

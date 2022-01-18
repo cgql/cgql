@@ -16,6 +16,10 @@ public:
     cgqlSPtr<ObjectTypeDefinition> const& object,
     std::unordered_map<std::string, const cgqlSPtr<TypeDefinition>&> typeDefMap
   );
+  void completeInterface(
+    cgqlSPtr<InterfaceTypeDefinition> const& interface,
+    std::unordered_map<std::string, const cgqlSPtr<TypeDefinition>&> typeDefMap
+  );
   void completeField(
     FieldTypeDefinition const& field,
     std::unordered_map<std::string, const cgqlSPtr<TypeDefinition>&> typeDefMap

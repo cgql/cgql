@@ -13,6 +13,15 @@ void DocToSchema::completeObject(
   }
 }
 
+void DocToSchema::completeInterface(
+  cgqlSPtr<InterfaceTypeDefinition> const& interface,
+  std::unordered_map<std::string, const cgqlSPtr<TypeDefinition>&> typeDefMap
+) {
+  for(FieldTypeDefinition& field : interface->getFields()) {
+    this->completeField(field, typeDefMap);
+  }
+}
+
 void DocToSchema::completeField(
   FieldTypeDefinition const& field,
   std::unordered_map<std::string, const cgqlSPtr<TypeDefinition>&> typeDefMap
