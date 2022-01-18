@@ -240,10 +240,10 @@ internal::Schema documentToSchema(Document& doc) {
     typeDefMap.try_emplace(rootTypeDef->getName(), rootTypeDef);
   }
   for(Definition& def : doc.getDefinitions()) {
-    cgqlSPtr<TypeDefinition> rootTypeDef =
+    cgqlSPtr<TypeDefinition> const& rootTypeDef =
       fromVariant<cgqlSPtr<TypeDefinition>>(def);
     if(rootTypeDef->getType() == DefinitionType::OBJECT_TYPE) {
-      cgqlSPtr<ObjectTypeDefinition> objDef =
+      cgqlSPtr<ObjectTypeDefinition> const& objDef =
         std::static_pointer_cast<ObjectTypeDefinition>(rootTypeDef);
       docToSchema.completeObject(objDef, typeDefMap);
       if(rootTypeDef->getName() == "Query") {
