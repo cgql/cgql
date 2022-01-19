@@ -166,9 +166,8 @@ public:
     this->type = DefinitionType::OBJECT_TYPE;
   };
   ~ObjectTypeDefinition() {}
-  template<typename... T>
-  void addField(T&&... field) {
-    this->fieldDefs.emplace_back(std::forward<T>(field)...);
+  void addField(const FieldTypeDefinition& field) {
+    this->fieldDefs.push_back(field);
   }
   cgqlContainer<FieldTypeDefinition>& getFields() const {
     return this->fieldDefs;
