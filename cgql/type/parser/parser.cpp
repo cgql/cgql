@@ -50,15 +50,16 @@ std::string Parser::parseName() {
 }
 
 Arg Parser::parseValue() {
-  std::string valueAsStr;
   TokenType curr = this->tokenizer.current.getType();
-  switch(curr) {
-    case TokenType::NAME:
-      valueAsStr = this->parseName();
-      break;
-    default:
-      valueAsStr = this->move(curr).getValue();
-  }
+  std::string valueAsStr = [&curr, this](){;
+    switch(curr) {
+      case TokenType::NAME:
+        return this->parseName();
+        break;
+      default:
+        return this->move(curr).getValue();
+    }
+  }();
   uint8_t start = charToInt<uint8_t>(valueAsStr[0]);
   if(isAsciiDigit(start)) {
     // potentially an integer
@@ -122,9 +123,7 @@ SelectionSet Parser::parseSelectionSet() {
     selections.push_back(this->parseSelection());
   } while(!this->checkType(TokenType::CURLY_BRACES_R));
   this->tokenizer.advance();
-  return {
-    selections
-  };
+  return selections;
 }
 
 OperationDefinition Parser::parseOperationDefinition() {
@@ -182,11 +181,11 @@ FieldTypeDefinition Parser::parseFieldTypeDefinition() {
   return field;
 }
 
-cgqlSPtr<ObjectTypeDefinition> Parser::parseObjectTypeDefinition() {
+cgqlUPtr<ObjectTypeDefinition> Parser::parseObjectTypeDefinition() {
   this->tokenizer.advance();
   std::string name = this->parseName();
-  cgqlSPtr<ObjectTypeDefinition> obj =
-    cgqlSMakePtr<ObjectTypeDefinition>();
+  cgqlUPtr<ObjectTypeDefinition> obj =
+    cgqlUMakePtr<ObjectTypeDefinition>();
   obj->setName(name);
   if(this->checkType(TokenType::CURLY_BRACES_L)) {
     this->tokenizer.advance();

@@ -126,7 +126,7 @@ Token Tokenizer::tokenizeDigits() {
 }
 
 Token Tokenizer::nextToken() {
-  uint16_t len = this->source.length();
+  size_t len = this->source.length();
 
   uint16_t* i = &this->cursor;
 

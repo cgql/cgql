@@ -34,7 +34,7 @@ private:
   std::string parseName();
 
   cgqlSPtr<TypeDefinition> parseType();
-  cgqlSPtr<ObjectTypeDefinition> parseObjectTypeDefinition();
+  cgqlUPtr<ObjectTypeDefinition> parseObjectTypeDefinition();
   cgqlSPtr<InterfaceTypeDefinition> parseInterfaceTypeDefinition();
   FieldTypeDefinition parseFieldTypeDefinition();
   ArgumentTypeDefinition parseArgumentDefinition();
