@@ -10,7 +10,7 @@ namespace cgql {
 namespace internal {
 
 const FieldTypeDefinition& findGraphQLFieldByName(
-  const ObjectTypeDefinition& objectType,
+  const cgqlSPtr<ObjectTypeDefinition>& objectType,
   const std::string& fieldName
 );
 

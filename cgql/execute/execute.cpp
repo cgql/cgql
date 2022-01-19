@@ -63,10 +63,10 @@ SelectionSet mergeSelectionSet(
     const SelectionSet& fieldSelectionSet = field.getSelectionSet();
     if(fieldSelectionSet.empty()) continue;
     for(auto const& subField : fieldSelectionSet) {
-      mergedSelectionSet.push_back(subField);
+      mergedSelectionSet.emplace_back(subField);
     }
   }
-  return mergedSelectionSet;
+  return std::move(mergedSelectionSet);
 }
 
 Data coerceLeafValue(
