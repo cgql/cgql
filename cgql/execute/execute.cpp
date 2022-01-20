@@ -66,7 +66,7 @@ SelectionSet mergeSelectionSet(
       mergedSelectionSet.emplace_back(subField);
     }
   }
-  return std::move(mergedSelectionSet);
+  return mergedSelectionSet;
 }
 
 Data coerceLeafValue(
@@ -111,7 +111,7 @@ Data completeListItem(
   cgqlContainer<T> resultList;
   resultList.reserve(rawResultList.size());
   for(auto const& rawResult : rawResultList) {
-    resultList.push_back(
+    resultList.emplace_back(
       fromVariant<T>(completeValue(
         fieldType->getInnerType(),
         field,
@@ -255,22 +255,23 @@ Data executeField(
   const std::optional<cgqlSPtr<ResultMap>>& source,
   const ResolverMap& resolverMap
 ) {
-  Data result;
   const ResolverMap::const_iterator& it = resolverMap.find(field.getName());
-  if(it != resolverMap.end()) {
-    result = it->second(buildArgumentMap(
-      fields[0],
-      field
-    ));
-  } else {
-    auto defaultResolvedValue = defaultFieldResolver(
-      source.value(),
-      field.getName()
-    );
-    result = defaultResolvedValue.has_value() ?
-      defaultResolvedValue.value() :
-      std::monostate{};
-  }
+  Data result = [&]() {
+    if(it != resolverMap.end()) {
+      return it->second(buildArgumentMap(
+        fields[0],
+        field
+      ));
+    } else {
+      auto defaultResolvedValue = defaultFieldResolver(
+        source.value(),
+        field.getName()
+      );
+      return defaultResolvedValue.has_value() ?
+        defaultResolvedValue.value() :
+        std::monostate{};
+    }
+  }();
   return completeValue(
     fieldType,
     field,
