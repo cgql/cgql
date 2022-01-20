@@ -167,7 +167,7 @@ public:
   };
   ~ObjectTypeDefinition() {}
   void addField(const FieldTypeDefinition& field) {
-    this->fieldDefs.push_back(field);
+    this->fieldDefs.emplace_back(field);
   }
   cgqlContainer<FieldTypeDefinition>& getFields() const {
     return this->fieldDefs;
@@ -194,7 +194,7 @@ public:
     return this->type;
   }
   void addArg(const ArgumentTypeDefinition& arg) {
-    this->argDefs.push_back(arg);
+    this->argDefs.emplace_back(arg);
   }
   cgqlContainer<ArgumentTypeDefinition>& getArgs() const {
     return this->argDefs;
