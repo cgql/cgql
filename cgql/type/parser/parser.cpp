@@ -45,8 +45,7 @@ bool Parser::checkType(const TokenType& type) {
 }
 
 std::string Parser::parseName() {
-  std::string name = this->move(TokenType::NAME).getValue();
-  return name;
+  return this->move(TokenType::NAME).getValue();
 }
 
 Arg Parser::parseValue() {

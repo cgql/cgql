@@ -12,7 +12,7 @@ public:
   CgqlInstance();
   ~CgqlInstance();
   void useSchema(const cgqlSPtr<internal::Schema>& schema);
-  cgqlSPtr<ResultMap> executeWith(const internal::Document& document, const ResolverMap& resolverMap);
+  cgqlUPtr<ResultMap> executeWith(const internal::Document& document, const ResolverMap& resolverMap);
 private:
   cgqlSPtr<internal::Schema> schema;
 };
