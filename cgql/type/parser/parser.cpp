@@ -70,7 +70,7 @@ Arg Parser::parseValue() {
 
 Argument Parser::parseArgument() {
   Argument argument;
-  std::string name = this->parseName();
+  std::string name(this->parseName());
   this->move(TokenType::COLON);
   Arg value = this->parseValue();
   argument.setName(name);
@@ -80,10 +80,10 @@ Argument Parser::parseArgument() {
 
 cgqlSPtr<Field> Parser::parseField() {
   Field field;
-  std::string aliasOrName = this->parseName();
+  std::string aliasOrName(this->parseName());
   if(this->checkType(TokenType::COLON)) {
     this->tokenizer.advance();
-    std::string name = this->parseName();
+    std::string name(this->parseName());
     field.setAlias(aliasOrName); // alias
     field.setName(name);
   } else {
@@ -142,7 +142,7 @@ cgqlSPtr<TypeDefinition> Parser::parseType() {
     );
     this->move(TokenType::SQUARE_BRACES_R);
   } else {
-    std::string name = this->parseName();
+    std::string name(this->parseName());
     if(name == "Int") type->setEnumType(DefinitionType::INT_TYPE);
     else if(name == "String") type->setEnumType(DefinitionType::STRING_TYPE);
     type->setName(name);
@@ -155,7 +155,7 @@ cgqlSPtr<TypeDefinition> Parser::parseType() {
 }
 
 ArgumentTypeDefinition Parser::parseArgumentDefinition() {
-  std::string name = this->parseName();
+  std::string name(this->parseName());
   this->move(TokenType::COLON);
   ArgumentTypeDefinition arg;
   cgqlSPtr<TypeDefinition> type = this->parseType();
@@ -166,7 +166,7 @@ ArgumentTypeDefinition Parser::parseArgumentDefinition() {
 
 FieldTypeDefinition Parser::parseFieldTypeDefinition() {
   FieldTypeDefinition field;
-  std::string name = this->parseName();
+  std::string name(this->parseName());
   if(this->checkType(TokenType::BRACES_L)) {
     this->tokenizer.advance();
     do {
@@ -183,7 +183,7 @@ FieldTypeDefinition Parser::parseFieldTypeDefinition() {
 
 cgqlUPtr<ObjectTypeDefinition> Parser::parseObjectTypeDefinition() {
   this->tokenizer.advance();
-  std::string name = this->parseName();
+  std::string name(this->parseName());
   cgqlUPtr<ObjectTypeDefinition> obj =
     cgqlUMakePtr<ObjectTypeDefinition>();
   obj->setName(name);
@@ -201,7 +201,7 @@ cgqlUPtr<ObjectTypeDefinition> Parser::parseObjectTypeDefinition() {
 
 cgqlSPtr<InterfaceTypeDefinition> Parser::parseInterfaceTypeDefinition() {
   this->tokenizer.advance();
-  std::string name = this->parseName();
+  std::string name(this->parseName());
   cgqlSPtr<InterfaceTypeDefinition> interface =
     cgqlSMakePtr<InterfaceTypeDefinition>();
   interface->setName(name);
@@ -222,8 +222,7 @@ Definition Parser::parseDefinition() {
   if(this->checkType(TokenType::CURLY_BRACES_L)) {
     definition = this->parseOperationDefinition();
   } else if(this->checkType(TokenType::NAME)) {
-    std::string currentValue =
-      this->tokenizer.current.getValue();
+    std::string currentValue(this->tokenizer.current.getValue());
     if(currentValue == "type")
       definition = this->parseObjectTypeDefinition();
     else if(currentValue == "interface")
