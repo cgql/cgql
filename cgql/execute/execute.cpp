@@ -281,13 +281,14 @@ Data executeField(
   );
 }
 
-cgqlSPtr<ResultMap> executeSelectionSet(
+cgqlUPtr<ResultMap> executeSelectionSet(
   const SelectionSet &selectionSet,
   const cgqlSPtr<ObjectTypeDefinition> &objectType,
   const std::optional<cgqlSPtr<ResultMap>>& source,
   const ResolverMap& resolverMap
 ) {
-  ResultMap resultMap;
+  cgqlUPtr<ResultMap> resultMap =
+    cgqlUMakePtr<ResultMap>();
   GroupedField groupedFieldSet = collectFields(
     objectType,
     selectionSet
@@ -298,7 +299,7 @@ cgqlSPtr<ResultMap> executeSelectionSet(
       fields[0].getName()
     );
     const cgqlSPtr<TypeDefinition>& fieldType = field.getType();
-    resultMap.data.try_emplace(
+    resultMap->data.try_emplace(
       responseKey,
       executeField(
         field,
@@ -309,10 +310,11 @@ cgqlSPtr<ResultMap> executeSelectionSet(
       )
     );
   }
-  return cgqlSMakePtr<ResultMap>(resultMap);
+  // return cgqlUMakePtr<ResultMap>(resultMap);
+  return resultMap;
 }
 
-cgqlSPtr<ResultMap> executeQuery(
+cgqlUPtr<ResultMap> executeQuery(
   const OperationDefinition& query,
   const cgqlSPtr<Schema>& schema,
   const ResolverMap& resolverMap
@@ -343,7 +345,7 @@ const OperationDefinition& getOperation(
 }
 } // internal
 
-cgqlSPtr<ResultMap> execute(
+cgqlUPtr<ResultMap> execute(
   const cgqlSPtr<internal::Schema> &schema,
   const internal::Document &document,
   const ResolverMap& resolverMap

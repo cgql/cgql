@@ -50,14 +50,14 @@ Data executeField(
   const ResolverMap& resolverMap
 );
 
-cgqlSPtr<ResultMap> executeSelectionSet(
+cgqlUPtr<ResultMap> executeSelectionSet(
   const SelectionSet &selectionSet,
   const cgqlSPtr<ObjectTypeDefinition> &objectType,
   const std::optional<cgqlSPtr<ResultMap>>& source,
   const ResolverMap& resolverMap
 );
 
-cgqlSPtr<ResultMap> executeQuery(
+cgqlUPtr<ResultMap> executeQuery(
   const OperationDefinition& query,
   const cgqlSPtr<Schema>& schema,
   const ResolverMap& resolverMap
@@ -70,7 +70,7 @@ const OperationDefinition& getOperation(
 
 } // internal 
 
-cgqlSPtr<ResultMap> execute(
+cgqlUPtr<ResultMap> execute(
   const cgqlSPtr<internal::Schema>& schema,
   const internal::Document& document,
   const ResolverMap& resolverMap
