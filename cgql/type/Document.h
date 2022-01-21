@@ -58,16 +58,18 @@ public:
   const std::string& getAlias() const {
     return this->alias;
   }
-  void setSelectionSet(const SelectionSet& selectionSet) {
+  void setSelectionSet(SelectionSet& selectionSet) {
     cgqlAssert(
       this->selectionSet.size() != 0,
       "selectionSet already contains fields"
     );
-    this->selectionSet = std::move(selectionSet);
+    this->selectionSet.swap(selectionSet);
   }
-  const SelectionSet& getSelectionSet() const { return this->selectionSet; }
+  const SelectionSet& getSelectionSet() const {
+    return this->selectionSet;
+  }
   void addArgs(const Argument& arg) {
-    this->args.push_back(arg);
+    this->args.emplace_back(arg);
   }
   const cgqlContainer<Argument>& getArgs() const {
     return this->args;

@@ -233,8 +233,8 @@ class Schema {
 public:
   Schema() = default;
   ~Schema() {}
-  void setQuery(const cgqlSPtr<ObjectTypeDefinition>& query) {
-    this->query = query;
+  void setQuery(cgqlSPtr<ObjectTypeDefinition>& query) {
+    this->query.swap(query);
   }
   const cgqlSPtr<ObjectTypeDefinition>& getQuery() const {
     return this->query;

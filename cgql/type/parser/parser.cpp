@@ -102,9 +102,9 @@ cgqlSPtr<Field> Parser::parseField() {
   bool hasSelectionSet = this->checkType(TokenType::CURLY_BRACES_L);
   if(hasSelectionSet) {
     SelectionSet selections = this->parseSelectionSet();
-    field.setSelectionSet(std::move(selections));
+    field.setSelectionSet(selections);
     cgqlAssert(
-      selections.size() == 0,
+      field.getSelectionSet().size() == 0,
       "selectionSet should contain atleast one selection"
     );
   }
@@ -263,7 +263,7 @@ internal::Schema documentToSchema(Document& doc) {
       fromVariant<cgqlSPtr<TypeDefinition>>(def);
     DefinitionType const& type = rootTypeDef->getType();
     if(type == DefinitionType::OBJECT_TYPE) {
-      cgqlSPtr<ObjectTypeDefinition> const& objDef =
+      cgqlSPtr<ObjectTypeDefinition> objDef =
         std::static_pointer_cast<ObjectTypeDefinition>(rootTypeDef);
       docToSchema.completeObject(objDef, typeDefMap);
       if(rootTypeDef->getName() == "Query") {
