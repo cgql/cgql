@@ -133,14 +133,15 @@ OperationDefinition Parser::parseOperationDefinition() {
 }
 
 cgqlSPtr<TypeDefinition> Parser::parseType() {
-  cgqlSPtr<TypeDefinition> type = cgqlSMakePtr<TypeDefinition>();
+  cgqlSPtr<TypeDefinition> type;
   if(this->checkType(TokenType::SQUARE_BRACES_L)) {
     this->tokenizer.advance();
-    type = cgqlSMakePtr<ListTypeDefinition<TypeDefinition>>(
+    type = cgqlUMakePtr<ListTypeDefinition<TypeDefinition>>(
       this->parseType()
     );
     this->move(TokenType::SQUARE_BRACES_R);
   } else {
+    type = cgqlUMakePtr<TypeDefinition>();
     std::string name(this->parseName());
     if(name == "Int") type->setEnumType(DefinitionType::INT_TYPE);
     else if(name == "String") type->setEnumType(DefinitionType::STRING_TYPE);
@@ -198,11 +199,11 @@ cgqlUPtr<ObjectTypeDefinition> Parser::parseObjectTypeDefinition() {
   return obj;
 }
 
-cgqlSPtr<InterfaceTypeDefinition> Parser::parseInterfaceTypeDefinition() {
+cgqlUPtr<InterfaceTypeDefinition> Parser::parseInterfaceTypeDefinition() {
   this->tokenizer.advance();
   std::string name(this->parseName());
-  cgqlSPtr<InterfaceTypeDefinition> interface =
-    cgqlSMakePtr<InterfaceTypeDefinition>();
+  cgqlUPtr<InterfaceTypeDefinition> interface =
+    cgqlUMakePtr<InterfaceTypeDefinition>();
   interface->setName(name);
   if(this->checkType(TokenType::CURLY_BRACES_L)) {
     this->tokenizer.advance();
@@ -217,21 +218,23 @@ cgqlSPtr<InterfaceTypeDefinition> Parser::parseInterfaceTypeDefinition() {
 }
 
 Definition Parser::parseDefinition() {
-  Definition definition;
-  if(this->checkType(TokenType::CURLY_BRACES_L)) {
-    definition = this->parseOperationDefinition();
-  } else if(this->checkType(TokenType::NAME)) {
-    std::string currentValue(this->tokenizer.current.getValue());
-    if(currentValue == "type")
-      definition = this->parseObjectTypeDefinition();
-    else if(currentValue == "interface")
-      definition = this->parseInterfaceTypeDefinition();
-  } else {
-    std::string errorMsg;
-    errorMsg += "Unexpected token ";
-    errorMsg += tokenTypeToCharArray(this->tokenizer.current.getType());
-    cgqlAssert(false, errorMsg.c_str());
-  }
+  const Definition definition = [this]() -> Definition {;
+    if(this->checkType(TokenType::CURLY_BRACES_L)) {
+      return this->parseOperationDefinition();
+    } else if(this->checkType(TokenType::NAME)) {
+      String currentValue(this->tokenizer.current.getValue());
+      if(currentValue == "type")
+        return this->parseObjectTypeDefinition();
+      else if(currentValue == "interface")
+        return this->parseInterfaceTypeDefinition();
+    } else {
+      std::string errorMsg;
+      errorMsg += "Unexpected token ";
+      errorMsg += tokenTypeToCharArray(this->tokenizer.current.getType());
+      cgqlAssert(false, errorMsg.c_str());
+    }
+    return nullptr;
+  }();
   return definition;
 }
 

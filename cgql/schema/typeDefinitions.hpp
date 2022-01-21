@@ -211,7 +211,7 @@ public:
   };
   ~InterfaceTypeDefinition() {}
   void addField(const FieldTypeDefinition& field) {
-    this->fields.push_back(field);
+    this->fields.emplace_back(field);
   }
   cgqlContainer<FieldTypeDefinition>& getFields() const {
     return this->fields;
