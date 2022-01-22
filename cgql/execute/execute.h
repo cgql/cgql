@@ -20,7 +20,7 @@ GroupedField collectFields(
 );
 
 SelectionSet mergeSelectionSet(
-  const cgqlContainer<Field>& fields
+  const cgqlContainer<cgqlSPtr<Field>>& fields
 );
 
 Data coerceLeafValue(
@@ -36,7 +36,7 @@ Data coerceVariedLeafValue(
 Data completeValue(
   const TypeDefinition& fieldType,
   const FieldTypeDefinition& field,
-  const cgqlContainer<Field>& fields,
+  const cgqlContainer<cgqlSPtr<Field>>& fields,
   const Data& result,
   const std::optional<cgqlSPtr<ResultMap>>& source,
   const ResolverMap& resolverMap
@@ -45,7 +45,7 @@ Data completeValue(
 Data executeField(
   const FieldTypeDefinition& field,
   const TypeDefinition& fieldType,
-  const cgqlContainer<Field>& fields,
+  const cgqlContainer<cgqlSPtr<Field>>& fields,
   const std::optional<cgqlSPtr<ResultMap>>& source,
   const ResolverMap& resolverMap
 );

@@ -26,8 +26,8 @@ private:
   Definition parseDefinition();
   OperationDefinition parseOperationDefinition();
   SelectionSet parseSelectionSet();
-  Selection parseSelection();
-  cgqlSPtr<Field> parseField();
+  cgqlUPtr<Selection> parseSelection();
+  cgqlUPtr<Field> parseField();
   cgqlUPtr<InlineFragment> parseInlineFragment();
   Argument parseArgument();
   Arg parseValue();

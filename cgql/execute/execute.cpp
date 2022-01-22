@@ -30,10 +30,10 @@ GroupedField collectFields(
 ) {
   GroupedField groupedFields;
   for(auto const& selection : selectionSet) {
-    if(selection.index() == 0) {
+    if(selection->getSelectionType() == SelectionType::FIELD) {
       // holds a Field*
       const cgqlSPtr<Field>& field =
-        fromVariant<cgqlSPtr<Field>>(selection);
+        std::static_pointer_cast<Field>(selection);
 
       const std::string& responseKey =
         field->getAlias().empty() ?
@@ -42,10 +42,11 @@ GroupedField collectFields(
       const GroupedField::iterator& it =
         groupedFields.find(responseKey);
       if(it != groupedFields.end()) {
-        it->second.push_back(*field);
+        it->second.push_back(field);
       } else {
-        cgqlContainer<Field> fields;
-        fields.push_back(*field);
+        cgqlContainer<cgqlSPtr<Field>> fields;
+        fields.reserve(1);
+        fields.push_back(field);
         groupedFields.try_emplace(
           responseKey, fields
         );
@@ -56,11 +57,11 @@ GroupedField collectFields(
 }
 
 SelectionSet mergeSelectionSet(
-  const cgqlContainer<Field>& fields
+  const cgqlContainer<cgqlSPtr<Field>>& fields
 ) {
   SelectionSet mergedSelectionSet;
   for(auto const& field : fields) {
-    const SelectionSet& fieldSelectionSet = field.getSelectionSet();
+    const SelectionSet& fieldSelectionSet = field->getSelectionSet();
     if(fieldSelectionSet.empty()) continue;
     for(auto const& subField : fieldSelectionSet) {
       mergedSelectionSet.emplace_back(subField);
@@ -101,7 +102,7 @@ template<typename T>
 Data completeListItem(
   const cgqlSPtr<ListTypeDefinition<TypeDefinition>>& fieldType,
   const FieldTypeDefinition& field,
-  const cgqlContainer<Field>& fields,
+  const cgqlContainer<cgqlSPtr<Field>>& fields,
   const Data& result,
   const std::optional<cgqlSPtr<ResultMap>>& source,
   const ResolverMap& resolverMap
@@ -128,7 +129,7 @@ Data completeListItem(
 Data completeList(
   const cgqlSPtr<ListTypeDefinition<TypeDefinition>>& fieldType,
   const FieldTypeDefinition& field,
-  const cgqlContainer<Field>& fields,
+  const cgqlContainer<cgqlSPtr<Field>>& fields,
   const Data& rawResult,
   const std::optional<cgqlSPtr<ResultMap>>& source,
   const ResolverMap& resolverMap
@@ -163,7 +164,7 @@ Data completeList(
 Data completeValue(
   const cgqlSPtr<TypeDefinition>& fieldType,
   const FieldTypeDefinition& field,
-  const cgqlContainer<Field>& fields,
+  const cgqlContainer<cgqlSPtr<Field>>& fields,
   const Data& result,
   const std::optional<cgqlSPtr<ResultMap>>& source,
   const ResolverMap& resolverMap
@@ -218,12 +219,12 @@ Data completeValue(
 }
 
 Args buildArgumentMap(
-  const Field& field,
+  const cgqlSPtr<Field>& field,
   const FieldTypeDefinition& fieldType
 ) {
   Args arg;
   const cgqlContainer<Argument>& argumentValues =
-    field.getArgs();
+    field->getArgs();
   const cgqlContainer<ArgumentTypeDefinition>& argumentDefinitions =
     fieldType.getArgs();
   for(auto const& argDef : argumentDefinitions) {
@@ -251,7 +252,7 @@ Args buildArgumentMap(
 Data executeField(
   const FieldTypeDefinition& field,
   const cgqlSPtr<TypeDefinition>& fieldType,
-  const cgqlContainer<Field>& fields,
+  const cgqlContainer<cgqlSPtr<Field>>& fields,
   const std::optional<cgqlSPtr<ResultMap>>& source,
   const ResolverMap& resolverMap
 ) {
@@ -297,7 +298,7 @@ cgqlUPtr<ResultMap> executeSelectionSet(
   for(auto const& [responseKey, fields] : groupedFieldSet) {
     const FieldTypeDefinition& field = findGraphQLFieldByName(
       objectType,
-      fields[0].getName()
+      fields[0]->getName()
     );
     const cgqlSPtr<TypeDefinition>& fieldType = field.getType();
     resultMap->data.try_emplace(

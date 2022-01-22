@@ -22,7 +22,7 @@ namespace internal {
   class Field;
   typedef std::unordered_map<
     std::string,
-    cgqlContainer<Field>
+    cgqlContainer<cgqlSPtr<Field>>
   > GroupedField;
 }
 

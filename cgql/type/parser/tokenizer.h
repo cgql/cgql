@@ -9,10 +9,6 @@ namespace cgql {
 namespace internal {
 
 enum TokenType {
-  DOCUMENT,
-  OPERATION_DEFINITION,
-  SELECTION_SET,
-  FIELD,
   NAME,
 
   INT,

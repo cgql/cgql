@@ -77,7 +77,7 @@ Argument Parser::parseArgument() {
   return argument;
 }
 
-cgqlSPtr<Field> Parser::parseField() {
+cgqlUPtr<Field> Parser::parseField() {
   Field field;
   std::string aliasOrName(this->parseName());
   if(this->checkType(TokenType::COLON)) {
@@ -108,7 +108,7 @@ cgqlSPtr<Field> Parser::parseField() {
       "selectionSet should contain atleast one selection"
     );
   }
-  return cgqlSMakePtr<Field>(field);
+  return cgqlUMakePtr<Field>(field);
 }
 
 cgqlUPtr<InlineFragment> Parser::parseInlineFragment() {
@@ -122,7 +122,7 @@ cgqlUPtr<InlineFragment> Parser::parseInlineFragment() {
   return cgqlUMakePtr<InlineFragment>(inlineFragment);
 }
 
-Selection Parser::parseSelection() {
+cgqlUPtr<Selection> Parser::parseSelection() {
   if(this->checkType(TokenType::SPREAD)) {
     return this->parseInlineFragment();
   }
@@ -133,7 +133,7 @@ SelectionSet Parser::parseSelectionSet() {
   this->move(TokenType::CURLY_BRACES_L);
   SelectionSet selections;
   do {
-    selections.emplace_back(this->parseSelection());
+    selections.emplace_back(std::move(this->parseSelection()));
   } while(!this->checkType(TokenType::CURLY_BRACES_R));
   this->tokenizer.advance();
   return selections;

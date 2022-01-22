@@ -6,18 +6,6 @@ namespace internal {
 
 const char* tokenTypeToCharArray(const TokenType& type) {
   switch (type) {
-    case TokenType::DOCUMENT:
-      return "DOCUMENT";
-      break;
-    case TokenType::OPERATION_DEFINITION:
-      return "OPERATION_DEFINITION";
-      break;
-    case TokenType::SELECTION_SET:
-      return "SELECTION_SET";
-      break;
-    case TokenType::FIELD:
-      return "FIELD";
-      break;
     case TokenType::NAME:
       return "NAME";
       break;

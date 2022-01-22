@@ -5,9 +5,6 @@
 namespace cgql {
 namespace internal {
 
-// Field
-Field::~Field() {}
-
 // OperationDefinition
 OperationDefinition::OperationDefinition(
   const OperationType& operationType,
@@ -42,19 +39,16 @@ std::ostream& operator<<(std::ostream& out, OperationType type) {
 } // internal
 
 void printSelectionSet(const internal::SelectionSet selectionSet, int level) {
-  for(auto s : selectionSet) {
+  for(auto const& s : selectionSet) {
     std::string v;
     for(int i = 0; i < level; i++) v += "  ";
-    std::visit([&v](internal::Selection&& args) {
-      if(std::holds_alternative<cgqlSPtr<internal::Field>>(args)) {
-        v += fromVariant<cgqlSPtr<internal::Field>>(args)->getName();
-      }
-    }, s);
-    logger::info(v);
-    cgqlSPtr<internal::Field> selection = fromVariant<cgqlSPtr<internal::Field>>(s);
-    if(!selection->getSelectionSet().empty()) {
-      printSelectionSet(selection->getSelectionSet(), level + 1);
+    if(s->getSelectionType() == internal::SelectionType::FIELD) {
+      const cgqlSPtr<internal::Field>& field =
+        std::static_pointer_cast<internal::Field>(s);
+      v += field->getName();
     }
+    logger::info(v);
+    printSelectionSet(s->getSelectionSet(), level + 1);
   }
 }
 

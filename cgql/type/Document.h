@@ -19,6 +19,12 @@ enum OperationType {
   SUBSCRIPTION
 };
 
+enum SelectionType {
+  BASE,
+  FIELD,
+  INLINE_FRAGMENT
+};
+
 class Argument : public AbstractSchemaTypeDefinition {
 public:
   Argument() = default;
@@ -33,19 +39,42 @@ private:
   std::optional<Location> location;
 };
 
-class Field;
-class InlineFragment;
+class Selection;
+using SelectionSet = cgqlContainer<cgqlSPtr<Selection>>;
 
-using Selection = std::variant<
-  cgqlSPtr<Field>,
-  cgqlSPtr<InlineFragment>
->;
-using SelectionSet = cgqlContainer<Selection>;
-
-class Field : public AbstractSchemaTypeDefinition {
+class Selection {
 public:
-  Field() = default;
-  ~Field();
+  Selection() = default;
+  ~Selection() {}
+  void setSelectionSet(SelectionSet& selectionSet) {
+    cgqlAssert(
+      this->selectionSet.size() != 0,
+      "selectionSet already contains fields"
+    );
+    this->selectionSet.swap(selectionSet);
+  }
+  const SelectionSet& getSelectionSet() const {
+    return this->selectionSet;
+  }
+  void setSelectionType(const SelectionType& type) {
+    this->type = type;
+  }
+  const SelectionType& getSelectionType() const {
+    return this->type;
+  }
+private:
+  SelectionType type = SelectionType::BASE;
+  SelectionSet selectionSet;
+};
+
+class Field
+  : public Selection,
+    public AbstractSchemaTypeDefinition {
+public:
+  Field() {
+    this->setSelectionType(SelectionType::FIELD);
+  };
+  ~Field() {}
   void setAlias(const std::string& alias) {
     cgqlAssert(
       this->getName() == alias,
@@ -56,16 +85,6 @@ public:
   const std::string& getAlias() const {
     return this->alias;
   }
-  void setSelectionSet(SelectionSet& selectionSet) {
-    cgqlAssert(
-      this->selectionSet.size() != 0,
-      "selectionSet already contains fields"
-    );
-    this->selectionSet.swap(selectionSet);
-  }
-  const SelectionSet& getSelectionSet() const {
-    return this->selectionSet;
-  }
   void addArgs(const Argument& arg) {
     this->args.emplace_back(arg);
   }
@@ -74,12 +93,11 @@ public:
   }
 private:
   std::string alias;
-  SelectionSet selectionSet;
   cgqlContainer<Argument> args;
   std::optional<Location> location;
 };
 
-class InlineFragment {
+class InlineFragment : public Selection {
 public:
   InlineFragment() = default;
   ~InlineFragment() {}
@@ -89,19 +107,8 @@ public:
   const std::string& getTypeCondition() const {
     return this->typeCondition;
   }
-  void setSelectionSet(SelectionSet& selectionSet) {
-    cgqlAssert(
-      this->selectionSet.size() != 0,
-      "selectionSet already contains fields"
-    );
-    this->selectionSet.swap(selectionSet);
-  }
-  const SelectionSet& getSelectionSet() const {
-    return this->selectionSet;
-  }
 private:
   std::string typeCondition;
-  SelectionSet selectionSet;
 };
 
 class OperationDefinition {
