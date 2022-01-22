@@ -29,7 +29,8 @@ enum TokenType {
   END_OF_QUERY,
 
   COLON,
-  BANG
+  BANG,
+  AMPERSAND
 };
 
 const char* tokenTypeToCharArray(const TokenType& type);

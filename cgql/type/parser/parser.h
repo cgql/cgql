@@ -38,6 +38,7 @@ private:
   cgqlUPtr<InterfaceTypeDefinition> parseInterfaceTypeDefinition();
   FieldTypeDefinition parseFieldTypeDefinition();
   ArgumentTypeDefinition parseArgumentDefinition();
+  cgqlContainer<cgqlSPtr<InterfaceTypeDefinition>> parseImplementInterfaces();
 };
 } // internal
 

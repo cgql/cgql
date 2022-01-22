@@ -12,25 +12,29 @@ class DocToSchema {
 public:
   DocToSchema() = default;
 
+  void completeImplementedInterface(
+    cgqlContainer<cgqlSPtr<InterfaceTypeDefinition>>& interfaces,
+    const std::unordered_map<std::string, const cgqlSPtr<TypeDefinition>&>& typeDefMap
+  );
   void completeObject(
     cgqlSPtr<ObjectTypeDefinition> const& object,
-    std::unordered_map<std::string, const cgqlSPtr<TypeDefinition>&> typeDefMap
+    const std::unordered_map<std::string, const cgqlSPtr<TypeDefinition>&>& typeDefMap
   );
   void completeInterface(
     cgqlSPtr<InterfaceTypeDefinition> const& interface,
-    std::unordered_map<std::string, const cgqlSPtr<TypeDefinition>&> typeDefMap
+    const std::unordered_map<std::string, const cgqlSPtr<TypeDefinition>&>& typeDefMap
   );
   void completeField(
     FieldTypeDefinition const& field,
-    std::unordered_map<std::string, const cgqlSPtr<TypeDefinition>&> typeDefMap
+    const std::unordered_map<std::string, const cgqlSPtr<TypeDefinition>&>& typeDefMap
   );
   void completeArgument(
     ArgumentTypeDefinition const& argument,
-    std::unordered_map<std::string, const cgqlSPtr<TypeDefinition>&> typeDefMap
+    const std::unordered_map<std::string, const cgqlSPtr<TypeDefinition>&>& typeDefMap
   );
   void completeType(
     cgqlSPtr<TypeDefinition>& type,
-    std::unordered_map<std::string, const cgqlSPtr<TypeDefinition>&> typeDefMap
+    const std::unordered_map<std::string, const cgqlSPtr<TypeDefinition>&>& typeDefMap
   );
 };
 

@@ -160,6 +160,7 @@ private:
 };
 
 class FieldTypeDefinition;
+class InterfaceTypeDefinition;
 class ObjectTypeDefinition : public TypeDefinition {
 public:
   ObjectTypeDefinition() {
@@ -178,8 +179,15 @@ public:
   void setEnumType(const DefinitionType& type) override {
     this->type = type;
   }
+  void setImplementedInterfaces(const cgqlContainer<cgqlSPtr<InterfaceTypeDefinition>>& interfaces) {
+    this->implements = interfaces;
+  }
+  cgqlContainer<cgqlSPtr<InterfaceTypeDefinition>>& getImplementedInterfaces() const {
+    return this->implements;
+  }
 private:
   mutable cgqlContainer<FieldTypeDefinition> fieldDefs;
+  mutable cgqlContainer<cgqlSPtr<InterfaceTypeDefinition>> implements;
   DefinitionType type;
 };
 
@@ -221,6 +229,12 @@ public:
   }
   void setEnumType(const DefinitionType& type) override {
     this->type = type;
+  }
+  void setImplementedInterfaces(const cgqlContainer<cgqlSPtr<InterfaceTypeDefinition>>& interfaces) {
+    this->implements = interfaces;
+  }
+  cgqlContainer<cgqlSPtr<InterfaceTypeDefinition>>& getImplementedInterfaces() const {
+    return this->implements;
   }
 private:
   mutable cgqlContainer<FieldTypeDefinition> fields;

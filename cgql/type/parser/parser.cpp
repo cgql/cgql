@@ -154,6 +154,24 @@ cgqlSPtr<TypeDefinition> Parser::parseType() {
   return type;
 }
 
+static cgqlUPtr<InterfaceTypeDefinition> parseImplementInterface(
+  const std::string& name
+) {
+  InterfaceTypeDefinition interface;
+  interface.setName(name);
+  return cgqlUMakePtr<InterfaceTypeDefinition>(interface);
+}
+
+cgqlContainer<cgqlSPtr<InterfaceTypeDefinition>> Parser::parseImplementInterfaces() {
+  if(this->tokenizer.current.getValue() != "implements") return {};
+  cgqlContainer<cgqlSPtr<InterfaceTypeDefinition>> interfaces;
+  do {
+    this->tokenizer.advance();
+    interfaces.emplace_back(parseImplementInterface(this->parseName()));
+  } while(this->checkType(TokenType::AMPERSAND));
+  return interfaces;
+}
+
 ArgumentTypeDefinition Parser::parseArgumentDefinition() {
   std::string name(this->parseName());
   this->move(TokenType::COLON);
@@ -187,6 +205,7 @@ cgqlUPtr<ObjectTypeDefinition> Parser::parseObjectTypeDefinition() {
   cgqlUPtr<ObjectTypeDefinition> obj =
     cgqlUMakePtr<ObjectTypeDefinition>();
   obj->setName(name);
+  obj->setImplementedInterfaces(this->parseImplementInterfaces());
   if(this->checkType(TokenType::CURLY_BRACES_L)) {
     this->tokenizer.advance();
     do {
@@ -205,6 +224,7 @@ cgqlUPtr<InterfaceTypeDefinition> Parser::parseInterfaceTypeDefinition() {
   cgqlUPtr<InterfaceTypeDefinition> interface =
     cgqlUMakePtr<InterfaceTypeDefinition>();
   interface->setName(name);
+  interface->setImplementedInterfaces(this->parseImplementInterfaces());
   if(this->checkType(TokenType::CURLY_BRACES_L)) {
     this->tokenizer.advance();
     do {

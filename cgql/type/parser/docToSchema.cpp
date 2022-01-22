@@ -4,27 +4,43 @@
 namespace cgql {
 namespace internal {
 
+void DocToSchema::completeImplementedInterface(
+  cgqlContainer<cgqlSPtr<InterfaceTypeDefinition>>& interfaces,
+  const std::unordered_map<std::string, const cgqlSPtr<TypeDefinition>&>& typeDefMap
+) {
+  for(cgqlSPtr<InterfaceTypeDefinition>& interface : interfaces) {
+    cgqlSPtr<TypeDefinition> interfaceAsTypeDef =
+      std::static_pointer_cast<TypeDefinition>(interface);
+    this->completeType(
+      interfaceAsTypeDef,
+      typeDefMap
+    );
+  }
+}
+
 void DocToSchema::completeObject(
   cgqlSPtr<ObjectTypeDefinition> const &object,
-  std::unordered_map<std::string, const cgqlSPtr<TypeDefinition>&> typeDefMap
+  const std::unordered_map<std::string, const cgqlSPtr<TypeDefinition>&>& typeDefMap
 ) {
   for(FieldTypeDefinition& field : object->getFields()) {
     this->completeField(field, typeDefMap);
   }
+  this->completeImplementedInterface(object->getImplementedInterfaces(), typeDefMap);
 }
 
 void DocToSchema::completeInterface(
   cgqlSPtr<InterfaceTypeDefinition> const& interface,
-  std::unordered_map<std::string, const cgqlSPtr<TypeDefinition>&> typeDefMap
+  const std::unordered_map<std::string, const cgqlSPtr<TypeDefinition>&>& typeDefMap
 ) {
   for(FieldTypeDefinition& field : interface->getFields()) {
     this->completeField(field, typeDefMap);
   }
+  this->completeImplementedInterface(interface->getImplementedInterfaces(), typeDefMap);
 }
 
 void DocToSchema::completeField(
   FieldTypeDefinition const& field,
-  std::unordered_map<std::string, const cgqlSPtr<TypeDefinition>&> typeDefMap
+  const std::unordered_map<std::string, const cgqlSPtr<TypeDefinition>&>& typeDefMap
 ) {
   this->completeType(field.getType(), typeDefMap);
   for(ArgumentTypeDefinition& argument : field.getArgs()) {
@@ -34,14 +50,14 @@ void DocToSchema::completeField(
 
 void DocToSchema::completeArgument(
   ArgumentTypeDefinition const& argument,
-  std::unordered_map<std::string, const cgqlSPtr<TypeDefinition>&> typeDefMap
+  const std::unordered_map<std::string, const cgqlSPtr<TypeDefinition>&>& typeDefMap
 ) {
   this->completeType(argument.getType(), typeDefMap);
 }
 
 void DocToSchema::completeType(
   cgqlSPtr<TypeDefinition>& type,
-  std::unordered_map<std::string, const cgqlSPtr<TypeDefinition>&> typeDefMap
+  const std::unordered_map<std::string, const cgqlSPtr<TypeDefinition>&>& typeDefMap
 ) {
   if(type->getType() == DefinitionType::LIST_TYPE) {
     ListTypeDefinition<TypeDefinition>& list =
