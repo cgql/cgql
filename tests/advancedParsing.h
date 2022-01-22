@@ -7,12 +7,13 @@ using namespace cgql;
 inline void runAdvancedParsing() {
   CgqlInstance test;
   auto typedefs = parseSchema(
+    "interface Entity { name: String! }"
     "type Address {"
     "  city: String"
     "  houseName: String"
     "}"
     ""
-    "type Person {"
+    "type Person implements Entity {"
     "  name: String!"
     "  age: Int"
     "  address: Address"
