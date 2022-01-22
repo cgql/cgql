@@ -111,7 +111,21 @@ cgqlSPtr<Field> Parser::parseField() {
   return cgqlSMakePtr<Field>(field);
 }
 
+cgqlUPtr<InlineFragment> Parser::parseInlineFragment() {
+  InlineFragment inlineFragment;
+  this->tokenizer.advance();
+  // TODO: handle error
+  if(this->tokenizer.advance().getValue() != "on") {}
+  inlineFragment.setTypeCondition(this->parseName());
+  SelectionSet selectionSet = this->parseSelectionSet();
+  inlineFragment.setSelectionSet(selectionSet);
+  return cgqlUMakePtr<InlineFragment>(inlineFragment);
+}
+
 Selection Parser::parseSelection() {
+  if(this->checkType(TokenType::SPREAD)) {
+    return this->parseInlineFragment();
+  }
   return this->parseField();
 }
 

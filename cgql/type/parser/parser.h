@@ -28,6 +28,7 @@ private:
   SelectionSet parseSelectionSet();
   Selection parseSelection();
   cgqlSPtr<Field> parseField();
+  cgqlUPtr<InlineFragment> parseInlineFragment();
   Argument parseArgument();
   Arg parseValue();
 

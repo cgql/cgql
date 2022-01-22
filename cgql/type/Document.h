@@ -34,18 +34,16 @@ private:
 };
 
 class Field;
+class InlineFragment;
 
 using Selection = std::variant<
-  cgqlSPtr<Field>
+  cgqlSPtr<Field>,
+  cgqlSPtr<InlineFragment>
 >;
 using SelectionSet = cgqlContainer<Selection>;
 
 class Field : public AbstractSchemaTypeDefinition {
 public:
-  Field(
-    const std::string& name,
-    const SelectionSet& selectionSet
-  );
   Field() = default;
   ~Field();
   void setAlias(const std::string& alias) {
@@ -79,6 +77,31 @@ private:
   SelectionSet selectionSet;
   cgqlContainer<Argument> args;
   std::optional<Location> location;
+};
+
+class InlineFragment {
+public:
+  InlineFragment() = default;
+  ~InlineFragment() {}
+  void setTypeCondition(const std::string& typeCondition) {
+    this->typeCondition = typeCondition;
+  }
+  const std::string& getTypeCondition() const {
+    return this->typeCondition;
+  }
+  void setSelectionSet(SelectionSet& selectionSet) {
+    cgqlAssert(
+      this->selectionSet.size() != 0,
+      "selectionSet already contains fields"
+    );
+    this->selectionSet.swap(selectionSet);
+  }
+  const SelectionSet& getSelectionSet() const {
+    return this->selectionSet;
+  }
+private:
+  std::string typeCondition;
+  SelectionSet selectionSet;
 };
 
 class OperationDefinition {

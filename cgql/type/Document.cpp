@@ -6,13 +6,6 @@ namespace cgql {
 namespace internal {
 
 // Field
-Field::Field(
-  const std::string& name,
-  const SelectionSet& selectionSet
-): selectionSet(selectionSet) {
-  this->setName(name);
-}
-
 Field::~Field() {}
 
 // OperationDefinition

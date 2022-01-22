@@ -30,7 +30,9 @@ enum TokenType {
 
   COLON,
   BANG,
-  AMPERSAND
+  AMPERSAND,
+
+  SPREAD
 };
 
 const char* tokenTypeToCharArray(const TokenType& type);

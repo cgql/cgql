@@ -60,6 +60,9 @@ const char* tokenTypeToCharArray(const TokenType& type) {
     case TokenType::AMPERSAND:
       return "AMPERSAND";
       break;
+    case TokenType::SPREAD:
+      return "SPREAD";
+      break;
   }
   return "";
 }
@@ -173,6 +176,14 @@ Token Tokenizer::nextToken() {
       case 0x0026:
         this->advanceCursor(1);
         return generateToken(TokenType::AMPERSAND);
+      case 0x002E:
+        if(
+          this->source[*i + 1] == 0x002E &&
+          this->source[*i + 2] == 0x002E
+        ) {
+          this->advanceCursor(3);
+          return generateToken(TokenType::SPREAD);
+        }
     }
   }
   return generateToken(TokenType::END_OF_QUERY);
