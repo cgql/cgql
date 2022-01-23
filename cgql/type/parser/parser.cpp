@@ -133,7 +133,7 @@ SelectionSet Parser::parseSelectionSet() {
   this->move(TokenType::CURLY_BRACES_L);
   SelectionSet selections;
   do {
-    selections.emplace_back(std::move(this->parseSelection()));
+    selections.emplace_back(this->parseSelection());
   } while(!this->checkType(TokenType::CURLY_BRACES_R));
   this->tokenizer.advance();
   return selections;
@@ -309,6 +309,7 @@ internal::Schema documentToSchema(Document& doc) {
       docToSchema.completeInterface(interfaceDef, typeDefMap);
     }
   }
+  schema.setTypeDefMap(typeDefMap);
   return schema;
 }
 

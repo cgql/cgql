@@ -20,10 +20,10 @@ namespace cgql {
 
 namespace internal {
   class Field;
-  typedef std::unordered_map<
+  using GroupedField = std::unordered_map<
     std::string,
     cgqlContainer<cgqlSPtr<Field>>
-  > GroupedField;
+  >;
 }
 
 struct ResultMap;
@@ -32,13 +32,13 @@ struct Location {
   uint16_t column;
 };
 
-typedef std::variant<
+using Data = std::variant<
   GraphQLReturnTypes,
   cgqlSPtr<ResultMap>,
   cgqlContainer<GraphQLReturnTypes>,
   cgqlContainer<cgqlSPtr<ResultMap>>,
   std::monostate
-> Data;
+>;
 
 class Error {
 public:
@@ -51,17 +51,18 @@ private:
 struct ResultMap {
   std::unordered_map<std::string, Data> data;
   std::list<Error> errors;
+  std::string __typename;
 };
 
-typedef std::variant<
+using Arg = std::variant<
   Int,
   String
-> Arg;
+>;
 
-typedef std::unordered_map<
+using ArgsMap = std::unordered_map<
   std::string,
   Arg
-> ArgsMap;
+>;
 
 struct Args {
   ArgsMap argsMap;
@@ -81,7 +82,7 @@ using ResolverFunc = std::function<
   Data(const Args&)
 >;
 
-typedef std::unordered_map<std::string, ResolverFunc> ResolverMap;
+using ResolverMap = std::unordered_map<std::string, ResolverFunc>;
 
 }
 

@@ -1,17 +1,18 @@
 #ifndef TYPE_DEFINITIONS_HPP
 #define TYPE_DEFINITIONS_HPP
 
+#include "cgql/utilities/assert.h"
 #include "cgql/utilities/cgqlDefs.h"
 #include "cgql/base/cgqlPch.h"
 
 namespace cgql {
 
-typedef int32_t Int;
-typedef std::string_view String;
+using Int = int32_t;
+using String = std::string_view;
 
 namespace internal {
 
-enum DefinitionType : uint8_t {
+enum DefinitionType : uint16_t {
   INTERFACE_TYPE,
   OBJECT_TYPE,
   TYPE_DEF,
@@ -242,6 +243,10 @@ private:
   DefinitionType type;
 };
 
+using ImplementedInterfaces = std::unordered_map<
+  std::string,
+  cgqlContainer<cgqlSPtr<TypeDefinition>>
+>;
 
 class Schema {
 public:
@@ -253,8 +258,52 @@ public:
   const cgqlSPtr<ObjectTypeDefinition>& getQuery() const {
     return this->query;
   }
+  void setTypeDefMap(
+    const std::unordered_map<std::string, const cgqlSPtr<TypeDefinition>&> typeDefMap
+  ) {
+    for(auto const& [key, def] : typeDefMap) {
+      const cgqlContainer<cgqlSPtr<InterfaceTypeDefinition>>& implements = [this](const cgqlSPtr<TypeDefinition>& def) {
+        switch(def->getType()) {
+          case DefinitionType::OBJECT_TYPE: {
+            const cgqlSPtr<ObjectTypeDefinition>& object =
+              std::static_pointer_cast<ObjectTypeDefinition>(def);
+            return object->getImplementedInterfaces();
+          }
+          case DefinitionType::INTERFACE_TYPE: {
+            const cgqlSPtr<InterfaceTypeDefinition>& interface =
+              std::static_pointer_cast<InterfaceTypeDefinition>(def);
+            return interface->getImplementedInterfaces();
+          }
+          default: break;
+        }
+        cgqlAssert(true, "Unable to get implemented interfaces");
+        return this->query->getImplementedInterfaces();
+      }(def);
+      for(auto const& interface : implements) {
+        const auto& it = this->implementedInterfaces.find(interface->getName());
+        if(it != this->implementedInterfaces.end()) {
+          it->second.push_back(def);
+        } else {
+          cgqlContainer<cgqlSPtr<TypeDefinition>> typeDefVec;
+          typeDefVec.reserve(1);
+          typeDefVec.push_back(def);
+          this->implementedInterfaces.try_emplace(
+            interface->getName(), typeDefVec
+          );
+        }
+      }
+    }
+  }
+  template<typename T>
+  const cgqlContainer<cgqlSPtr<TypeDefinition>>& getPossibleTypes(
+    const T& abstractType
+  ) const {
+    const ImplementedInterfaces::const_iterator& it = this->implementedInterfaces.find(abstractType->getName());
+    return it->second;
+  }
 private:
   cgqlSPtr<ObjectTypeDefinition> query;
+  ImplementedInterfaces implementedInterfaces;
 };
 
 } // end of internal

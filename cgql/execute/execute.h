@@ -9,58 +9,68 @@
 namespace cgql {
 namespace internal {
 
+struct ExecutionContext {
+  cgqlSPtr<Schema> schema;
+  cgqlSPtr<ResolverMap> resolverMap;
+};
+
+template<typename T>
 const FieldTypeDefinition& findGraphQLFieldByName(
-  const cgqlSPtr<ObjectTypeDefinition>& objectType,
+  const cgqlSPtr<T>& objectType,
   const std::string& fieldName
 );
 
-GroupedField collectFields(
-  const ObjectTypeDefinition &objectType,
-  const SelectionSet &selectionSet
+template<typename T>
+void collectFields(
+  const cgqlSPtr<T>& objectType,
+  const SelectionSet &selectionSet,
+  GroupedField& groupedFields
 );
 
-SelectionSet mergeSelectionSet(
-  const cgqlContainer<cgqlSPtr<Field>>& fields
+void mergeSelectionSet(
+  const cgqlContainer<cgqlSPtr<Field>>& fields,
+  SelectionSet& mergedSelectionSet
 );
 
 Data coerceLeafValue(
-  const TypeDefinition& fieldType,
+  const cgqlSPtr<TypeDefinition>& fieldType,
   const Data& data
 );
 
 Data coerceVariedLeafValue(
-  const TypeDefinition& fieldType,
+  const cgqlSPtr<TypeDefinition>& fieldType,
   const Data& data
 );
 
 Data completeValue(
-  const TypeDefinition& fieldType,
+  const ExecutionContext& ctx,
+  const cgqlSPtr<TypeDefinition>& fieldType,
   const FieldTypeDefinition& field,
   const cgqlContainer<cgqlSPtr<Field>>& fields,
   const Data& result,
-  const std::optional<cgqlSPtr<ResultMap>>& source,
-  const ResolverMap& resolverMap
+  const std::optional<cgqlSPtr<ResultMap>>& source
 );
 
 Data executeField(
+  const ExecutionContext& ctx,
   const FieldTypeDefinition& field,
-  const TypeDefinition& fieldType,
+  const cgqlSPtr<TypeDefinition>& fieldType,
   const cgqlContainer<cgqlSPtr<Field>>& fields,
-  const std::optional<cgqlSPtr<ResultMap>>& source,
-  const ResolverMap& resolverMap
+  const std::optional<cgqlSPtr<ResultMap>>& source
 );
 
+template<typename T>
 cgqlUPtr<ResultMap> executeSelectionSet(
+  const ExecutionContext& ctx,
   const SelectionSet &selectionSet,
-  const cgqlSPtr<ObjectTypeDefinition> &objectType,
-  const std::optional<cgqlSPtr<ResultMap>>& source,
-  const ResolverMap& resolverMap
+  const cgqlSPtr<T> &objectType,
+  const std::optional<cgqlSPtr<ResultMap>>& source
 );
 
 cgqlUPtr<ResultMap> executeQuery(
+  const ExecutionContext& ctx,
   const OperationDefinition& query,
-  const cgqlSPtr<Schema>& schema,
-  const ResolverMap& resolverMap
+  const cgqlSPtr<Schema>& schema
 );
 
 const OperationDefinition& getOperation(

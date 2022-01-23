@@ -99,7 +99,9 @@ private:
 
 class InlineFragment : public Selection {
 public:
-  InlineFragment() = default;
+  InlineFragment() {
+    this->setSelectionType(SelectionType::INLINE_FRAGMENT);
+  };
   ~InlineFragment() {}
   void setTypeCondition(const std::string& typeCondition) {
     this->typeCondition = typeCondition;
@@ -125,10 +127,6 @@ private:
   OperationType operationType;
   SelectionSet selectionSet;
 };
-
-using RootTypeDefinition = std::variant<
-  ObjectTypeDefinition
->;
 
 using Definition = std::variant<
   OperationDefinition,
