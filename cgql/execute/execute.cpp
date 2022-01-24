@@ -49,9 +49,9 @@ void collectFields(
       } else {
         SelectionSet fields;
         fields.reserve(1);
-        fields.push_back(field);
+        fields.emplace_back(field);
         groupedFields.try_emplace(
-          responseKey, fields
+          responseKey, std::move(fields)
         );
       }
     } else if(type == SelectionType::INLINE_FRAGMENT) {

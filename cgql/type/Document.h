@@ -27,7 +27,6 @@ enum SelectionType {
 
 class Argument : public AbstractSchemaTypeDefinition {
 public:
-  Argument() = default;
   void setValue(const Arg& value) {
     this->value = value;
   }
@@ -48,7 +47,6 @@ using GroupedField = std::unordered_map<
 >;
 class Selection {
 public:
-  Selection() = default;
   ~Selection() {}
   void setSelectionSet(SelectionSet& selectionSet) {
     cgqlAssert(

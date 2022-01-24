@@ -10,8 +10,6 @@ namespace internal {
 
 class DocToSchema {
 public:
-  DocToSchema() = default;
-
   void completeImplementedInterface(
     cgqlContainer<cgqlSPtr<InterfaceTypeDefinition>>& interfaces,
     const std::unordered_map<std::string, const cgqlSPtr<TypeDefinition>&>& typeDefMap

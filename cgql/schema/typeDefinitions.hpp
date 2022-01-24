@@ -148,7 +148,6 @@ namespace BuiltinTypes {
 
 class ArgumentTypeDefinition : public AbstractSchemaTypeDefinition {
 public:
-  ArgumentTypeDefinition() = default;
   ~ArgumentTypeDefinition() {}
   void setType(const cgqlSPtr<TypeDefinition>& type) {
     this->type = type;
@@ -194,7 +193,6 @@ private:
 
 class FieldTypeDefinition : public AbstractSchemaTypeDefinition {
 public:
-  FieldTypeDefinition() = default;
   ~FieldTypeDefinition() {}
   void setType(const cgqlSPtr<TypeDefinition>& type) {
     this->type = type;
@@ -250,7 +248,6 @@ using ImplementedInterfaces = std::unordered_map<
 
 class Schema {
 public:
-  Schema() = default;
   ~Schema() {}
   void setQuery(cgqlSPtr<ObjectTypeDefinition>& query) {
     this->query.swap(query);
