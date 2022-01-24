@@ -1,0 +1,21 @@
+interface Character {
+  name: String!
+  friends: [Character]
+}
+
+type Human implements Character {
+  name: String!
+  friends: [Character]
+  age: Int
+  workedAt: [String!]!
+}
+
+type Pet implements Character {
+  name: String!
+  friends: [Character]
+  breed: String
+}
+
+type Query {
+  character: Character
+}

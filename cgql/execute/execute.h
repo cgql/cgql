@@ -12,6 +12,7 @@ namespace internal {
 struct ExecutionContext {
   cgqlSPtr<Schema> schema;
   cgqlSPtr<ResolverMap> resolverMap;
+  cgqlSPtr<TypeOfMap> typeOfMap;
 };
 
 template<typename T>
@@ -46,7 +47,7 @@ Data completeValue(
   const ExecutionContext& ctx,
   const cgqlSPtr<TypeDefinition>& fieldType,
   const FieldTypeDefinition& field,
-  const cgqlContainer<cgqlSPtr<Field>>& fields,
+  const SelectionSet& fields,
   const Data& result,
   const std::optional<cgqlSPtr<ResultMap>>& source
 );
@@ -55,7 +56,7 @@ Data executeField(
   const ExecutionContext& ctx,
   const FieldTypeDefinition& field,
   const cgqlSPtr<TypeDefinition>& fieldType,
-  const cgqlContainer<cgqlSPtr<Field>>& fields,
+  const SelectionSet& fields,
   const std::optional<cgqlSPtr<ResultMap>>& source
 );
 
@@ -83,7 +84,8 @@ const OperationDefinition& getOperation(
 cgqlUPtr<ResultMap> execute(
   const cgqlSPtr<internal::Schema>& schema,
   const internal::Document& document,
-  const ResolverMap& resolverMap
+  const ResolverMap& resolverMap,
+  const TypeOfMap& typeOfMap
 );
 
 }

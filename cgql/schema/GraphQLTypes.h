@@ -14,18 +14,6 @@ using GraphQLReturnTypes = std::variant<
   cgqlSPtr<internal::ObjectTypeDefinition>
 >;
 
-}
-
-namespace cgql {
-
-namespace internal {
-  class Field;
-  using GroupedField = std::unordered_map<
-    std::string,
-    cgqlContainer<cgqlSPtr<Field>>
-  >;
-}
-
 struct ResultMap;
 struct Location {
   uint16_t line;
@@ -82,7 +70,12 @@ using ResolverFunc = std::function<
   Data(const Args&)
 >;
 
+using IsTypeOfFunc = std::function<
+  String(const cgqlSPtr<ResultMap>&)
+>;
+
 using ResolverMap = std::unordered_map<std::string, ResolverFunc>;
+using TypeOfMap = std::unordered_map<std::string, IsTypeOfFunc>;
 
 }
 
