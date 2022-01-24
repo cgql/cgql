@@ -115,20 +115,6 @@ Data coerceLeafValue(
   return std::move(data);
 }
 
-Data coerceVariedLeafValue(
-  const cgqlSPtr<TypeDefinition>& fieldType,
-  const Data& data
-) {
-  switch(fieldType->getType()) {
-    case INT_TYPE:
-    case STRING_TYPE:
-      return coerceLeafValue(fieldType, data);
-    default:
-      cgqlAssert(true, "Unable to coerce resolved value");
-  }
-  /* silence compiler warning */ return (GraphQLReturnTypes)0;
-}
-
 template<typename T>
 Data completeListItem(
   const ExecutionContext& ctx,
@@ -330,7 +316,7 @@ Data completeValue(
       std::static_pointer_cast<InterfaceTypeDefinition>(fieldType);
     return completeAbstractType(ctx, schemaObj, fields, result, source);
   }
-  return coerceVariedLeafValue(fieldType, result);
+  return coerceLeafValue(fieldType, result);
 }
 
 Args buildArgumentMap(
@@ -346,7 +332,6 @@ Args buildArgumentMap(
     fieldType.getArgs();
   for(auto const& argDef : argumentDefinitions) {
     const std::string& argName = argDef.getName();
-    const cgqlSPtr<TypeDefinition>& argType = argDef.getType();
     const auto& it = std::find_if(
       argumentValues.begin(),
       argumentValues.end(),
@@ -355,11 +340,10 @@ Args buildArgumentMap(
       }
     );
     bool hasValue = it != argumentValues.end();
-    const Arg& argValue = it->getValue();
     if(hasValue) {
       arg.argsMap.try_emplace(
         argName,
-        argValue
+        it->getValue()
       );
     }
   }
@@ -373,7 +357,7 @@ Data executeField(
   const SelectionSet& fields,
   const std::optional<cgqlSPtr<ResultMap>>& source
 ) {
-  const ResolverMap::const_iterator& it = ctx.resolverMap->find(field.getName());
+  const auto& it = ctx.resolverMap->find(field.getName());
   Data result = [&]() {
     if(it != ctx.resolverMap->end()) {
       return it->second(buildArgumentMap(
@@ -423,27 +407,6 @@ cgqlUPtr<ResultMap> executeSelectionSet(
     groupedFieldSet,
     source
   );
-  /* for(auto const& [responseKey, fields] : groupedFieldSet) {
-    const cgqlSPtr<Field>& topLevelField =
-      std::static_pointer_cast<Field>(fields[0]);
-    const FieldTypeDefinition& field = findGraphQLFieldByName(
-      obj,
-      topLevelField->getName()
-    );
-    const cgqlSPtr<TypeDefinition>& fieldType = field.getType();
-    resultMap->data.try_emplace(
-      responseKey,
-      executeField(
-        ctx,
-        field,
-        fieldType,
-        fields,
-        source
-      )
-    );
-  } */
-  // return cgqlUMakePtr<ResultMap>(resultMap);
-  // return resultMap;
 }
 
 cgqlUPtr<ResultMap> executeQuery(
@@ -486,8 +449,8 @@ cgqlUPtr<ResultMap> execute(
   const internal::OperationDefinition& operation = internal::getOperation(document);
   internal::ExecutionContext ctx;
   ctx.schema = schema;
-  ctx.resolverMap = cgqlSMakePtr<ResolverMap>(resolverMap);
-  ctx.typeOfMap = cgqlSMakePtr<TypeOfMap>(typeOfMap);
+  ctx.resolverMap = cgqlUMakePtr<ResolverMap>(resolverMap);
+  ctx.typeOfMap = cgqlUMakePtr<TypeOfMap>(typeOfMap);
   return internal::executeQuery(
     ctx,
     operation

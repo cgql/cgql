@@ -11,8 +11,8 @@ namespace internal {
 
 struct ExecutionContext {
   cgqlSPtr<Schema> schema;
-  cgqlSPtr<ResolverMap> resolverMap;
-  cgqlSPtr<TypeOfMap> typeOfMap;
+  cgqlUPtr<ResolverMap> resolverMap;
+  cgqlUPtr<TypeOfMap> typeOfMap;
 };
 
 template<typename T>
@@ -34,11 +34,6 @@ void mergeSelectionSet(
 );
 
 Data coerceLeafValue(
-  const cgqlSPtr<TypeDefinition>& fieldType,
-  const Data& data
-);
-
-Data coerceVariedLeafValue(
   const cgqlSPtr<TypeDefinition>& fieldType,
   const Data& data
 );
