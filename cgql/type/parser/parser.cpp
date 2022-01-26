@@ -287,6 +287,7 @@ internal::Schema documentToSchema(Document& doc) {
   Schema schema;
   DocToSchema docToSchema;
   std::unordered_map<std::string, const cgqlSPtr<TypeDefinition>&> typeDefMap;
+  typeDefMap.reserve(doc.getDefinitions().size());
   for(Definition& def : doc.getDefinitions()) {
     const cgqlSPtr<TypeDefinition>& rootTypeDef =
       fromVariant<cgqlSPtr<TypeDefinition>>(def);
