@@ -19,6 +19,8 @@ public:
   );
 private:
   cgqlSPtr<internal::Schema> schema;
+
+  void init();
 };
 
 } // end of cgql

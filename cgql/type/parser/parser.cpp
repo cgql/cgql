@@ -78,21 +78,21 @@ Argument Parser::parseArgument() {
 }
 
 cgqlUPtr<Field> Parser::parseField() {
-  Field field;
+  cgqlUPtr<Field> field = cgqlUMakePtr<Field>();
   std::string aliasOrName(this->parseName());
   if(this->checkType(TokenType::COLON)) {
     this->tokenizer.advance();
     std::string name(this->parseName());
-    field.setAlias(aliasOrName); // alias
-    field.setName(name);
+    field->setAlias(aliasOrName); // alias
+    field->setName(name);
   } else {
-    field.setName(aliasOrName);
+    field->setName(aliasOrName);
   }
 
   if(this->checkType(TokenType::BRACES_L)) {
     this->tokenizer.advance();
     do {
-      field.addArgs(
+      field->addArgs(
         this->parseArgument()
       );
     } while(!this->checkType(TokenType::BRACES_R));
@@ -102,24 +102,25 @@ cgqlUPtr<Field> Parser::parseField() {
   bool hasSelectionSet = this->checkType(TokenType::CURLY_BRACES_L);
   if(hasSelectionSet) {
     SelectionSet selections = this->parseSelectionSet();
-    field.setSelectionSet(selections);
+    field->setSelectionSet(selections);
     cgqlAssert(
-      field.getSelectionSet().size() == 0,
+      field->getSelectionSet().size() == 0,
       "selectionSet should contain atleast one selection"
     );
   }
-  return cgqlUMakePtr<Field>(field);
+  return field;
 }
 
 cgqlUPtr<InlineFragment> Parser::parseInlineFragment() {
-  InlineFragment inlineFragment;
+  cgqlUPtr<InlineFragment> inlineFragment =
+    cgqlUMakePtr<InlineFragment>();
   this->tokenizer.advance();
   // TODO: handle error
   if(this->tokenizer.advance().getValue() != "on") {}
-  inlineFragment.setTypeCondition(this->parseName());
+  inlineFragment->setTypeCondition(this->parseName());
   SelectionSet selectionSet = this->parseSelectionSet();
-  inlineFragment.setSelectionSet(selectionSet);
-  return cgqlUMakePtr<InlineFragment>(inlineFragment);
+  inlineFragment->setSelectionSet(selectionSet);
+  return inlineFragment;
 }
 
 cgqlUPtr<Selection> Parser::parseSelection() {
@@ -169,11 +170,12 @@ cgqlSPtr<TypeDefinition> Parser::parseType() {
 }
 
 static cgqlUPtr<InterfaceTypeDefinition> parseImplementInterface(
-  const std::string& name
+  std::string name
 ) {
-  InterfaceTypeDefinition interface;
-  interface.setName(name);
-  return cgqlUMakePtr<InterfaceTypeDefinition>(interface);
+  cgqlUPtr<InterfaceTypeDefinition> interface =
+    cgqlUMakePtr<InterfaceTypeDefinition>();
+  interface->setName(name);
+  return interface;
 }
 
 cgqlContainer<cgqlSPtr<InterfaceTypeDefinition>> Parser::parseImplementInterfaces() {

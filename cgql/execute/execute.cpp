@@ -185,14 +185,14 @@ static cgqlUPtr<ResultMap> executeGroupedFieldSet(
   const GroupedField& groupedFieldSet,
   const std::optional<cgqlSPtr<ResultMap>>& source
 ) {
-  ResultMap resultMap;
+  cgqlUPtr<ResultMap> resultMap = cgqlUMakePtr<ResultMap>();
   for(auto const& [responseKey, fields] : groupedFieldSet) {
     const FieldTypeDefinition& field = findGraphQLFieldByName(
       objectType,
       responseKey
     );
     const cgqlSPtr<TypeDefinition>& fieldType = field.getType();
-    resultMap.data.try_emplace(
+    resultMap->data.try_emplace(
       responseKey,
       executeField(
         ctx,
@@ -203,7 +203,7 @@ static cgqlUPtr<ResultMap> executeGroupedFieldSet(
       )
     );
   }
-  return cgqlUMakePtr<ResultMap>(resultMap);
+  return resultMap;
 }
 
 template<typename T>

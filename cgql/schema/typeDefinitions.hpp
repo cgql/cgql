@@ -12,7 +12,7 @@ using String = std::string_view;
 
 namespace internal {
 
-enum DefinitionType : uint16_t {
+enum DefinitionType {
   INTERFACE_TYPE,
   OBJECT_TYPE,
   TYPE_DEF,
@@ -46,7 +46,7 @@ inline std::ostream& operator<<(std::ostream& os, const DefinitionType& type) {
 
 class AbstractSchemaTypeDefinition {
 public:
-  void setName(const std::string& name) {
+  void setName(std::string name) {
     this->name = name;
   }
   const std::string& getName() const {
@@ -149,7 +149,7 @@ namespace BuiltinTypes {
 class ArgumentTypeDefinition : public AbstractSchemaTypeDefinition {
 public:
   ~ArgumentTypeDefinition() {}
-  void setType(const cgqlSPtr<TypeDefinition>& type) {
+  void setType(cgqlSPtr<TypeDefinition> type) {
     this->type = type;
   }
   cgqlSPtr<TypeDefinition>& getType() const {
@@ -159,42 +159,10 @@ private:
   mutable cgqlSPtr<TypeDefinition> type;
 };
 
-class FieldTypeDefinition;
-class InterfaceTypeDefinition;
-class ObjectTypeDefinition : public TypeDefinition {
-public:
-  ObjectTypeDefinition() {
-    this->type = DefinitionType::OBJECT_TYPE;
-  };
-  ~ObjectTypeDefinition() {}
-  void addField(const FieldTypeDefinition& field) {
-    this->fieldDefs.emplace_back(field);
-  }
-  cgqlContainer<FieldTypeDefinition>& getFields() const {
-    return this->fieldDefs;
-  }
-  const DefinitionType& getType() const override {
-    return this->type;
-  }
-  void setEnumType(const DefinitionType& type) override {
-    this->type = type;
-  }
-  void setImplementedInterfaces(const cgqlContainer<cgqlSPtr<InterfaceTypeDefinition>>& interfaces) {
-    this->implements = interfaces;
-  }
-  cgqlContainer<cgqlSPtr<InterfaceTypeDefinition>>& getImplementedInterfaces() const {
-    return this->implements;
-  }
-private:
-  mutable cgqlContainer<FieldTypeDefinition> fieldDefs;
-  mutable cgqlContainer<cgqlSPtr<InterfaceTypeDefinition>> implements;
-  DefinitionType type;
-};
-
 class FieldTypeDefinition : public AbstractSchemaTypeDefinition {
 public:
   ~FieldTypeDefinition() {}
-  void setType(const cgqlSPtr<TypeDefinition>& type) {
+  void setType(cgqlSPtr<TypeDefinition> type) {
     this->type = type;
   }
   cgqlSPtr<TypeDefinition>& getType() const {
@@ -229,7 +197,7 @@ public:
   void setEnumType(const DefinitionType& type) override {
     this->type = type;
   }
-  void setImplementedInterfaces(const cgqlContainer<cgqlSPtr<InterfaceTypeDefinition>>& interfaces) {
+  void setImplementedInterfaces(cgqlContainer<cgqlSPtr<InterfaceTypeDefinition>> interfaces) {
     this->implements = interfaces;
   }
   cgqlContainer<cgqlSPtr<InterfaceTypeDefinition>>& getImplementedInterfaces() const {
@@ -237,6 +205,36 @@ public:
   }
 private:
   mutable cgqlContainer<FieldTypeDefinition> fields;
+  mutable cgqlContainer<cgqlSPtr<InterfaceTypeDefinition>> implements;
+  DefinitionType type;
+};
+
+class ObjectTypeDefinition : public TypeDefinition {
+public:
+  ObjectTypeDefinition() {
+    this->type = DefinitionType::OBJECT_TYPE;
+  };
+  ~ObjectTypeDefinition() {}
+  void addField(const FieldTypeDefinition& field) {
+    this->fieldDefs.emplace_back(field);
+  }
+  cgqlContainer<FieldTypeDefinition>& getFields() const {
+    return this->fieldDefs;
+  }
+  const DefinitionType& getType() const override {
+    return this->type;
+  }
+  void setEnumType(const DefinitionType& type) override {
+    this->type = type;
+  }
+  void setImplementedInterfaces(cgqlContainer<cgqlSPtr<InterfaceTypeDefinition>> interfaces) {
+    this->implements = interfaces;
+  }
+  cgqlContainer<cgqlSPtr<InterfaceTypeDefinition>>& getImplementedInterfaces() const {
+    return this->implements;
+  }
+private:
+  mutable cgqlContainer<FieldTypeDefinition> fieldDefs;
   mutable cgqlContainer<cgqlSPtr<InterfaceTypeDefinition>> implements;
   DefinitionType type;
 };
@@ -256,7 +254,7 @@ public:
     return this->query;
   }
   void setTypeDefMap(
-    const std::unordered_map<std::string, const cgqlSPtr<TypeDefinition>&> typeDefMap
+    const std::unordered_map<std::string, const cgqlSPtr<TypeDefinition>&>& typeDefMap
   ) {
     for(auto const& [key, def] : typeDefMap) {
       const cgqlContainer<cgqlSPtr<InterfaceTypeDefinition>>& implements = [this](const cgqlSPtr<TypeDefinition>& def) {

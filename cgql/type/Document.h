@@ -77,7 +77,7 @@ public:
     this->setSelectionType(SelectionType::FIELD);
   };
   ~Field() {}
-  void setAlias(const std::string& alias) {
+  void setAlias(std::string alias) {
     cgqlAssert(
       this->getName() == alias,
       "field should contain an alias different from its name"
@@ -105,7 +105,7 @@ public:
     this->setSelectionType(SelectionType::INLINE_FRAGMENT);
   };
   ~InlineFragment() {}
-  void setTypeCondition(const std::string& typeCondition) {
+  void setTypeCondition(std::string typeCondition) {
     this->typeCondition = typeCondition;
   }
   const std::string& getTypeCondition() const {
