@@ -393,8 +393,6 @@ cgqlUPtr<ResultMap> executeSelectionSet(
 ) {
   const cgqlSPtr<ObjectTypeDefinition>& obj =
     std::static_pointer_cast<ObjectTypeDefinition>(objectType);
-  cgqlUPtr<ResultMap> resultMap =
-    cgqlUMakePtr<ResultMap>();
   GroupedField groupedFieldSet;
   collectFields(
     obj,

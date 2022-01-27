@@ -16,9 +16,8 @@ public:
   ~Parser();
   Document parseDocument();
 private:
-  Token move(const TokenType& type);
-  bool moveUntil(const TokenType& type);
-  bool checkType(const TokenType& type);
+  Token move(TokenType type);
+  bool checkType(TokenType type);
 
   std::string document;
   Tokenizer tokenizer;

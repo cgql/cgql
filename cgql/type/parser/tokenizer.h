@@ -32,15 +32,15 @@ enum TokenType {
 };
 
 const char* tokenTypeToCharArray(const TokenType& type);
-inline std::ostream& operator<<(std::ostream& os, const TokenType& type) {
+inline std::ostream& operator<<(std::ostream& os, TokenType type) {
   os << tokenTypeToCharArray(type);
   return os;
 }
 
 class Token {
 public:
-  Token(const TokenType& type);
-  Token(const TokenType& type, const std::string& value);
+  Token(TokenType type);
+  Token(TokenType type, const std::string& value);
   ~Token();
 
   inline TokenType getType() const { return this->type; }

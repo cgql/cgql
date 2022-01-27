@@ -246,7 +246,6 @@ using ImplementedInterfaces = std::unordered_map<
 
 class Schema {
 public:
-  ~Schema() {}
   void setQuery(cgqlSPtr<ObjectTypeDefinition>& query) {
     this->query.swap(query);
   }
@@ -277,13 +276,13 @@ public:
       for(auto const& interface : implements) {
         const auto& it = this->implementedInterfaces.find(interface->getName());
         if(it != this->implementedInterfaces.end()) {
-          it->second.push_back(def);
+          it->second.emplace_back(def);
         } else {
           cgqlContainer<cgqlSPtr<TypeDefinition>> typeDefVec;
           typeDefVec.reserve(1);
-          typeDefVec.push_back(def);
+          typeDefVec.emplace_back(def);
           this->implementedInterfaces.try_emplace(
-            interface->getName(), typeDefVec
+            interface->getName(), std::move(typeDefVec)
           );
         }
       }

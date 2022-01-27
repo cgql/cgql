@@ -38,8 +38,7 @@ private:
 
 struct ResultMap {
   std::unordered_map<std::string, Data> data;
-  std::list<Error> errors;
-  std::string __typename;
+  cgqlContainer<Error> errors;
 };
 
 using Arg = std::variant<

@@ -49,16 +49,12 @@ class Selection {
 public:
   ~Selection() {}
   void setSelectionSet(SelectionSet& selectionSet) {
-    cgqlAssert(
-      this->selectionSet.size() != 0,
-      "selectionSet already contains fields"
-    );
     this->selectionSet.swap(selectionSet);
   }
   const SelectionSet& getSelectionSet() const {
     return this->selectionSet;
   }
-  void setSelectionType(const SelectionType& type) {
+  void setSelectionType(SelectionType type) {
     this->type = type;
   }
   const SelectionType& getSelectionType() const {

@@ -14,7 +14,7 @@ Parser::Parser(const char* document)
     tokenizer(document) {}
 Parser::~Parser() {}
 
-Token Parser::move(const TokenType& type) {
+Token Parser::move(TokenType type) {
   bool isValidType = this->checkType(type);
   if(!isValidType) {
     std::string errorMsg;
@@ -30,15 +30,7 @@ Token Parser::move(const TokenType& type) {
   return returnToken;
 }
 
-bool Parser::moveUntil(const TokenType& type) {
-  if(!this->checkType(type)) {
-    this->tokenizer.advance();
-    return true;
-  }
-  return false;
-}
-
-bool Parser::checkType(const TokenType& type) {
+bool Parser::checkType(TokenType type) {
   if(this->tokenizer.current.getType() == type)
     return true;
   return false;
@@ -254,24 +246,21 @@ cgqlUPtr<InterfaceTypeDefinition> Parser::parseInterfaceTypeDefinition() {
 }
 
 Definition Parser::parseDefinition() {
-  const Definition definition = [this]() -> Definition {;
-    if(this->checkType(TokenType::CURLY_BRACES_L)) {
-      return this->parseOperationDefinition();
-    } else if(this->checkType(TokenType::NAME)) {
-      String currentValue(this->tokenizer.current.getValue());
-      if(currentValue == "type")
-        return this->parseObjectTypeDefinition();
-      else if(currentValue == "interface")
-        return this->parseInterfaceTypeDefinition();
-    } else {
-      std::string errorMsg;
-      errorMsg += "Unexpected token ";
-      errorMsg += tokenTypeToCharArray(this->tokenizer.current.getType());
-      cgqlAssert(false, errorMsg.c_str());
-    }
-    return nullptr;
-  }();
-  return definition;
+  if(this->checkType(TokenType::CURLY_BRACES_L)) {
+    return this->parseOperationDefinition();
+  } else if(this->checkType(TokenType::NAME)) {
+    String currentValue(this->tokenizer.current.getValue());
+    if(currentValue == "type")
+      return this->parseObjectTypeDefinition();
+    else if(currentValue == "interface")
+      return this->parseInterfaceTypeDefinition();
+  } else {
+    std::string errorMsg;
+    errorMsg += "Unexpected token ";
+    errorMsg += tokenTypeToCharArray(this->tokenizer.current.getType());
+    cgqlAssert(false, errorMsg.c_str());
+  }
+  return nullptr;
 }
 
 Document Parser::parseDocument() {
