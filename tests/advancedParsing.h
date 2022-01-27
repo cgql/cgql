@@ -15,6 +15,7 @@ inline void runAdvancedParsing() {
   while(std::getline(file, line)) {
     schema += line;
   }
+  file.close();
 
   auto typedefs = parseSchema(schema.c_str());
   test.useSchema(typedefs);
