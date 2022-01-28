@@ -17,8 +17,7 @@ inline void runAdvancedParsing() {
   }
   file.close();
 
-  auto typedefs = parseSchema(schema.c_str());
-  test.useSchema(typedefs);
+  test.parseSchema(schema.c_str());
   ResolverMap root {
     {
       "character",
