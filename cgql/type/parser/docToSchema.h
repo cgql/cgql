@@ -2,6 +2,7 @@
 #define DOC_TO_SCHEMA_H
 
 #include "cgql/base/cgqlPch.h"
+#include "cgql/cgql.h"
 #include "cgql/schema/typeDefinitions.hpp"
 #include "cgql/utilities/assert.h"
 
@@ -10,30 +11,28 @@ namespace internal {
 
 class DocToSchema {
 public:
+  DocToSchema(TypeRegistry registry)
+    : registry(registry) {}
   void completeImplementedInterface(
-    cgqlContainer<cgqlSPtr<InterfaceTypeDefinition>>& interfaces,
-    const std::unordered_map<std::string, const cgqlSPtr<TypeDefinition>&>& typeDefMap
+    cgqlContainer<cgqlSPtr<InterfaceTypeDefinition>>& interfaces
   );
   void completeObject(
-    cgqlSPtr<ObjectTypeDefinition> const& object,
-    const std::unordered_map<std::string, const cgqlSPtr<TypeDefinition>&>& typeDefMap
+    cgqlSPtr<ObjectTypeDefinition> const& object
   );
   void completeInterface(
-    cgqlSPtr<InterfaceTypeDefinition> const& interface,
-    const std::unordered_map<std::string, const cgqlSPtr<TypeDefinition>&>& typeDefMap
+    cgqlSPtr<InterfaceTypeDefinition> const& interface
   );
   void completeField(
-    FieldTypeDefinition const& field,
-    const std::unordered_map<std::string, const cgqlSPtr<TypeDefinition>&>& typeDefMap
+    FieldTypeDefinition const& field
   );
   void completeArgument(
-    ArgumentTypeDefinition const& argument,
-    const std::unordered_map<std::string, const cgqlSPtr<TypeDefinition>&>& typeDefMap
+    ArgumentTypeDefinition const& argument
   );
   void completeType(
-    cgqlSPtr<TypeDefinition>& type,
-    const std::unordered_map<std::string, const cgqlSPtr<TypeDefinition>&>& typeDefMap
+    cgqlSPtr<TypeDefinition>& type
   );
+private:
+  TypeRegistry registry;
 };
 
 } // end of internal

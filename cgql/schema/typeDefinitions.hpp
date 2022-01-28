@@ -67,6 +67,7 @@ public:
   TypeDefinition() {
     this->type = DefinitionType::TYPE_DEF;
   };
+  ~TypeDefinition() {}
   const DefinitionType& getType() const override {
     return this->type;
   }
@@ -100,13 +101,15 @@ private:
 template<typename T>
 class ListTypeDefinition : public TypeDefinition {
 public:
-  ListTypeDefinition(const cgqlSPtr<T>& innerType)
-    : innerType(innerType) {
+  ListTypeDefinition() {
     this->type = DefinitionType::LIST_TYPE;
   }
   cgqlSPtr<T>& getInnerType() const {
     return this->innerType;
   };
+  void setInnerType(const cgqlSPtr<T>& innerType) {
+    this->innerType = innerType;
+  }
   const DefinitionType& getType() const override {
     return this->type;
   }
@@ -121,13 +124,15 @@ private:
 template<typename T>
 class NonNullTypeDefinition : public TypeDefinition {
 public:
-  NonNullTypeDefinition(const cgqlSPtr<T>& innerType)
-    : innerType(innerType) {
+  NonNullTypeDefinition() {
     this->type = DefinitionType::NON_NULL_TYPE;
   }
   cgqlSPtr<T>& getInnerType() const {
     return this->innerType;
   };
+  void setInnerType(const cgqlSPtr<T>& innerType) {
+    this->innerType = innerType;
+  }
   const DefinitionType& getType() const override {
     return this->type;
   }
@@ -139,16 +144,8 @@ private:
   DefinitionType type;
 };
 
-namespace BuiltinTypes {
-  inline cgqlSPtr<ScalarTypeDefinition<Int>> IntType =
-    cgqlSMakePtr<ScalarTypeDefinition<Int>>("Int", DefinitionType::INT_TYPE);
-  inline cgqlSPtr<ScalarTypeDefinition<String>> StringType =
-    cgqlSMakePtr<ScalarTypeDefinition<String>>("String", DefinitionType::STRING_TYPE);
-} // end of BuiltinTypes
-
 class ArgumentTypeDefinition : public AbstractSchemaTypeDefinition {
 public:
-  ~ArgumentTypeDefinition() {}
   void setType(cgqlSPtr<TypeDefinition> type) {
     this->type = type;
   }
@@ -161,7 +158,6 @@ private:
 
 class FieldTypeDefinition : public AbstractSchemaTypeDefinition {
 public:
-  ~FieldTypeDefinition() {}
   void setType(cgqlSPtr<TypeDefinition> type) {
     this->type = type;
   }
@@ -184,7 +180,6 @@ public:
   InterfaceTypeDefinition() {
     this->type = DefinitionType::INTERFACE_TYPE;
   };
-  ~InterfaceTypeDefinition() {}
   void addField(const FieldTypeDefinition& field) {
     this->fields.emplace_back(field);
   }
@@ -214,7 +209,6 @@ public:
   ObjectTypeDefinition() {
     this->type = DefinitionType::OBJECT_TYPE;
   };
-  ~ObjectTypeDefinition() {}
   void addField(const FieldTypeDefinition& field) {
     this->fieldDefs.emplace_back(field);
   }
@@ -253,7 +247,7 @@ public:
     return this->query;
   }
   void setTypeDefMap(
-    const std::unordered_map<std::string, const cgqlSPtr<TypeDefinition>&>& typeDefMap
+    const std::unordered_map<std::string, cgqlSPtr<TypeDefinition>>& typeDefMap
   ) {
     for(auto const& [key, def] : typeDefMap) {
       const cgqlContainer<cgqlSPtr<InterfaceTypeDefinition>>& implements = [this](const cgqlSPtr<TypeDefinition>& def) {
@@ -268,10 +262,8 @@ public:
               std::static_pointer_cast<InterfaceTypeDefinition>(def);
             return interface->getImplementedInterfaces();
           }
-          default: break;
+          default: return cgqlContainer<cgqlSPtr<InterfaceTypeDefinition>>{};
         }
-        cgqlAssert(true, "Unable to get implemented interfaces");
-        return this->query->getImplementedInterfaces();
       }(def);
       for(auto const& interface : implements) {
         const auto& it = this->implementedInterfaces.find(interface->getName());

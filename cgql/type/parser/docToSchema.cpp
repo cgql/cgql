@@ -5,80 +5,64 @@ namespace cgql {
 namespace internal {
 
 void DocToSchema::completeImplementedInterface(
-  cgqlContainer<cgqlSPtr<InterfaceTypeDefinition>>& interfaces,
-  const std::unordered_map<std::string, const cgqlSPtr<TypeDefinition>&>& typeDefMap
+  cgqlContainer<cgqlSPtr<InterfaceTypeDefinition>>& interfaces
 ) {
   for(cgqlSPtr<InterfaceTypeDefinition>& interface : interfaces) {
     cgqlSPtr<TypeDefinition> interfaceAsTypeDef =
       std::static_pointer_cast<TypeDefinition>(interface);
-    this->completeType(
-      interfaceAsTypeDef,
-      typeDefMap
-    );
+    this->completeType(interfaceAsTypeDef);
   }
 }
 
 void DocToSchema::completeObject(
-  cgqlSPtr<ObjectTypeDefinition> const &object,
-  const std::unordered_map<std::string, const cgqlSPtr<TypeDefinition>&>& typeDefMap
+  cgqlSPtr<ObjectTypeDefinition> const &object
 ) {
   for(FieldTypeDefinition& field : object->getFields()) {
-    this->completeField(field, typeDefMap);
+    this->completeField(field);
   }
-  this->completeImplementedInterface(object->getImplementedInterfaces(), typeDefMap);
+  this->completeImplementedInterface(object->getImplementedInterfaces());
 }
 
 void DocToSchema::completeInterface(
-  cgqlSPtr<InterfaceTypeDefinition> const& interface,
-  const std::unordered_map<std::string, const cgqlSPtr<TypeDefinition>&>& typeDefMap
+  cgqlSPtr<InterfaceTypeDefinition> const& interface
 ) {
   for(FieldTypeDefinition& field : interface->getFields()) {
-    this->completeField(field, typeDefMap);
+    this->completeField(field);
   }
-  this->completeImplementedInterface(interface->getImplementedInterfaces(), typeDefMap);
+  this->completeImplementedInterface(interface->getImplementedInterfaces());
 }
 
 void DocToSchema::completeField(
-  FieldTypeDefinition const& field,
-  const std::unordered_map<std::string, const cgqlSPtr<TypeDefinition>&>& typeDefMap
+  FieldTypeDefinition const& field
 ) {
-  this->completeType(field.getType(), typeDefMap);
+  this->completeType(field.getType());
   for(ArgumentTypeDefinition& argument : field.getArgs()) {
-    this->completeArgument(argument, typeDefMap);
+    this->completeArgument(argument);
   }
 }
 
 void DocToSchema::completeArgument(
-  ArgumentTypeDefinition const& argument,
-  const std::unordered_map<std::string, const cgqlSPtr<TypeDefinition>&>& typeDefMap
+  ArgumentTypeDefinition const& argument
 ) {
-  this->completeType(argument.getType(), typeDefMap);
+  this->completeType(argument.getType());
 }
 
 void DocToSchema::completeType(
-  cgqlSPtr<TypeDefinition>& type,
-  const std::unordered_map<std::string, const cgqlSPtr<TypeDefinition>&>& typeDefMap
+  cgqlSPtr<TypeDefinition>& type
 ) {
   if(type->getType() == DefinitionType::LIST_TYPE) {
     ListTypeDefinition<TypeDefinition>& list =
       static_cast<ListTypeDefinition<TypeDefinition>&>(*type);
-    this->completeType(list.getInnerType(), typeDefMap);
+    this->completeType(list.getInnerType());
     return;
   }
   if(type->getType() == DefinitionType::NON_NULL_TYPE) {
     NonNullTypeDefinition<TypeDefinition>& nonNull =
       static_cast<NonNullTypeDefinition<TypeDefinition>&>(*type);
-    this->completeType(nonNull.getInnerType(), typeDefMap);
+    this->completeType(nonNull.getInnerType());
     return;
   }
-  switch(type->getType()) {
-    case INT_TYPE: type = BuiltinTypes::IntType; break;
-    case STRING_TYPE: type = BuiltinTypes::StringType; break;
-    default:
-      auto const& it = typeDefMap.find(type->getName());
-      cgqlAssert(it == typeDefMap.end(), "Unable to find required type in schema");
-      type = it->second;
-  }
+  type = this->registry.getType(type->getName());
 }
 
 } // end of internal

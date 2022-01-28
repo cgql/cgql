@@ -10,14 +10,18 @@ namespace internal {
 
 class TypeRegistry {
 public:
-  TypeRegistry();
-  ~TypeRegistry();
-
+  TypeRegistry() = default;
   template<typename T>
-  void addType(const T& type);
-  cgqlSPtr<TypeDefinition> getType(const std::string& typeName);
+  void addType(const cgqlSPtr<T>& type) const {
+    this->types.try_emplace(type->getName(), type);
+  };
+  cgqlSPtr<TypeDefinition> getType(const std::string& typeName) const;
+  void init();
+  const auto& getAllTypes() const {
+    return this->types;
+  }
 private:
-  cgqlContainer<cgqlSPtr<TypeDefinition>> types;
+  mutable std::unordered_map<std::string, cgqlSPtr<TypeDefinition>> types;
 };
 
 } // end of internal

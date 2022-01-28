@@ -3,6 +3,7 @@
 
 #include "cgql/base/cgqlPch.h"
 
+#include "cgql/cgql.h"
 #include "cgql/type/Document.h"
 #include "cgql/schema/GraphQLTypes.h"
 #include "cgql/type/parser/tokenizer.h"
@@ -40,10 +41,12 @@ private:
   ArgumentTypeDefinition parseArgumentDefinition();
   cgqlContainer<cgqlSPtr<InterfaceTypeDefinition>> parseImplementInterfaces();
 };
+
+cgqlSPtr<Schema> parseSchema(const char* source, const TypeRegistry& registry);
+
 } // internal
 
 internal::Document parse(const char* source);
-cgqlSPtr<internal::Schema> parseSchema(const char* source);
 } // cgql
 
 #endif

@@ -3,25 +3,26 @@
 namespace cgql {
 namespace internal {
 
-TypeRegistry::TypeRegistry() {}
-TypeRegistry::~TypeRegistry() {}
-
-template<typename T>
-void TypeRegistry::addType(const T& type) {
-  this->types.push_back(cgqlSMakePtr<T>(type));
+void TypeRegistry::init() {
+  auto IntType = cgqlSMakePtr<ScalarTypeDefinition<Int>>(
+    "Int",
+    DefinitionType::INT_TYPE
+  );
+  this->addType(IntType);
+  auto StringType = cgqlSMakePtr<ScalarTypeDefinition<String>>(
+    "String",
+    DefinitionType::STRING_TYPE
+  );
+  this->addType(StringType);
 }
 
-cgqlSPtr<TypeDefinition> TypeRegistry::getType(const std::string &typeName) {
-  static std::unordered_map<std::string, const cgqlSPtr<TypeDefinition>&> typeAccessCache;
-  auto const& cachedType = typeAccessCache.find(typeName);
-  if(cachedType != typeAccessCache.end()) return cachedType->second;
-  for(auto const& type : this->types) {
-    if(type->getName() == typeName) {
-      typeAccessCache.try_emplace(typeName, type);
-      return type;
-    }
-  }
-  return nullptr;
+cgqlSPtr<TypeDefinition> TypeRegistry::getType(const std::string &typeName) const {
+  // static std::unordered_map<std::string, const cgqlSPtr<TypeDefinition>&> typeAccessCache;
+  // auto const& cachedType = typeAccessCache.find(typeName);
+  // if(cachedType != typeAccessCache.end()) return cachedType->second;
+  auto const& it = this->types.find(typeName);
+  cgqlAssert(it == this->types.end(), "Unable to find type");
+  return it->second;
 }
 
 } // end of internal

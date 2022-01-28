@@ -5,9 +5,8 @@ file(GLOB SOURCES
   base/*.h
   base/*.cpp
   schema/*.cpp
-  schema/GraphQLObject/*.h
-  schema/GraphQLObject/*.cpp
   schema/*.h
+  schema/*.hpp
   logger/logger.h
   type/*.h
   type/*.cpp

@@ -143,20 +143,19 @@ cgqlSPtr<TypeDefinition> Parser::parseType() {
   cgqlSPtr<TypeDefinition> type;
   if(this->checkType(TokenType::SQUARE_BRACES_L)) {
     this->tokenizer.advance();
-    type = cgqlUMakePtr<ListTypeDefinition<TypeDefinition>>(
-      this->parseType()
-    );
+    ListTypeDefinition<TypeDefinition> list;
+    list.setInnerType(this->parseType());
+    type = cgqlSMakePtr<ListTypeDefinition<TypeDefinition>>(list);
     this->move(TokenType::SQUARE_BRACES_R);
   } else {
     type = cgqlUMakePtr<TypeDefinition>();
-    std::string name(this->parseName());
-    if(name == "Int") type->setEnumType(DefinitionType::INT_TYPE);
-    else if(name == "String") type->setEnumType(DefinitionType::STRING_TYPE);
-    type->setName(name);
+    type->setName(this->parseName());
   }
   if(this->checkType(TokenType::BANG)) {
     this->tokenizer.advance();
-    return cgqlSMakePtr<NonNullTypeDefinition<TypeDefinition>>(type);
+    NonNullTypeDefinition<TypeDefinition> nonNull;
+    nonNull.setInnerType(type);
+    return cgqlSMakePtr<NonNullTypeDefinition<TypeDefinition>>(nonNull);
   }
   return type;
 }
@@ -274,35 +273,38 @@ Document Parser::parseDocument() {
   };
 };
 
-internal::Schema documentToSchema(Document& doc) {
+internal::Schema documentToSchema(Document& doc, const TypeRegistry& registry) {
   Schema schema;
-  DocToSchema docToSchema;
-  std::unordered_map<std::string, const cgqlSPtr<TypeDefinition>&> typeDefMap;
-  typeDefMap.reserve(doc.getDefinitions().size());
   for(Definition& def : doc.getDefinitions()) {
     const cgqlSPtr<TypeDefinition>& rootTypeDef =
       fromVariant<cgqlSPtr<TypeDefinition>>(def);
-    typeDefMap.try_emplace(rootTypeDef->getName(), rootTypeDef);
+    registry.addType<TypeDefinition>(rootTypeDef);
   }
-  for(Definition& def : doc.getDefinitions()) {
-    cgqlSPtr<TypeDefinition> const& rootTypeDef =
-      fromVariant<cgqlSPtr<TypeDefinition>>(def);
+  DocToSchema docToSchema(registry);
+  for(auto& [key, rootTypeDef] : registry.getAllTypes()) {
     DefinitionType const& type = rootTypeDef->getType();
     if(type == DefinitionType::OBJECT_TYPE) {
       cgqlSPtr<ObjectTypeDefinition> objDef =
         std::static_pointer_cast<ObjectTypeDefinition>(rootTypeDef);
-      docToSchema.completeObject(objDef, typeDefMap);
+      docToSchema.completeObject(objDef);
       if(rootTypeDef->getName() == "Query") {
         schema.setQuery(objDef);
       }
     } else if(type == DefinitionType::INTERFACE_TYPE) {
       cgqlSPtr<InterfaceTypeDefinition> const& interfaceDef =
         std::static_pointer_cast<InterfaceTypeDefinition>(rootTypeDef);
-      docToSchema.completeInterface(interfaceDef, typeDefMap);
+      docToSchema.completeInterface(interfaceDef);
     }
   }
-  schema.setTypeDefMap(typeDefMap);
+  schema.setTypeDefMap(registry.getAllTypes());
   return schema;
+}
+
+cgqlSPtr<internal::Schema> parseSchema(const char *source, const TypeRegistry& registry) {
+  internal::Parser parser(source);
+  internal::Document doc = parser.parseDocument();
+  internal::Schema schema = internal::documentToSchema(doc, registry);
+  return cgqlSMakePtr<internal::Schema>(schema);
 }
 
 } // internal
@@ -312,12 +314,5 @@ internal::Document parse(const char *document) {
   internal::Document doc = parser.parseDocument();
   return doc;
 };
-
-cgqlSPtr<internal::Schema> parseSchema(const char *source) {
-  internal::Parser parser(source);
-  internal::Document doc = parser.parseDocument();
-  internal::Schema schema = internal::documentToSchema(doc);
-  return cgqlSMakePtr<internal::Schema>(schema);
-}
 
 } // cgql
