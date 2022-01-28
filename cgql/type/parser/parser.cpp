@@ -10,8 +10,7 @@ namespace cgql {
 namespace internal {
 
 Parser::Parser(const char* document)
-  : document(document),
-    tokenizer(document) {}
+  : tokenizer(document) {}
 Parser::~Parser() {}
 
 Token Parser::move(TokenType type) {
@@ -108,7 +107,8 @@ cgqlUPtr<InlineFragment> Parser::parseInlineFragment() {
     cgqlUMakePtr<InlineFragment>();
   this->tokenizer.advance();
   // TODO: handle error
-  if(this->tokenizer.advance().getValue() != "on") {}
+  if(this->tokenizer.current.getValue() != "on") {}
+  this->tokenizer.advance();
   inlineFragment->setTypeCondition(this->parseName());
   SelectionSet selectionSet = this->parseSelectionSet();
   inlineFragment->setSelectionSet(selectionSet);
@@ -126,7 +126,7 @@ SelectionSet Parser::parseSelectionSet() {
   this->move(TokenType::CURLY_BRACES_L);
   SelectionSet selections;
   do {
-    selections.emplace_back(this->parseSelection());
+    selections.emplace_back((this->parseSelection()));
   } while(!this->checkType(TokenType::CURLY_BRACES_R));
   this->tokenizer.advance();
   return selections;

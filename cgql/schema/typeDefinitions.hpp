@@ -17,8 +17,7 @@ enum DefinitionType {
   OBJECT_TYPE,
   TYPE_DEF,
 
-  INT_TYPE,
-  STRING_TYPE,
+  SCALAR_TYPE,
 
   LIST_TYPE,
   NON_NULL_TYPE
@@ -30,10 +29,8 @@ inline std::ostream& operator<<(std::ostream& os, const DefinitionType& type) {
       os << "OBJECT_TYPE"; break;
     case TYPE_DEF:
       os << "TYPE_DEF"; break;
-    case INT_TYPE:
-      os << "INT_TYPE"; break;
-    case STRING_TYPE:
-      os << "STRING_TYPE"; break;
+    case SCALAR_TYPE:
+      os << "SCALAR_TYPE"; break;
     case LIST_TYPE:
       os << "LIST_TYPE"; break;
     case NON_NULL_TYPE:
@@ -59,7 +56,6 @@ private:
 class AbstractTypeDefinition {
 public:
   virtual const DefinitionType& getType() const = 0;
-  virtual void setEnumType(const DefinitionType& type) = 0;
 };
 
 class TypeDefinition : public AbstractTypeDefinition, public AbstractSchemaTypeDefinition {
@@ -71,9 +67,6 @@ public:
   const DefinitionType& getType() const override {
     return this->type;
   }
-  void setEnumType(const DefinitionType& type) override {
-    this->type = type;
-  }
 private:
   DefinitionType type;
 };
@@ -82,17 +75,13 @@ template<typename T>
 class ScalarTypeDefinition : public TypeDefinition {
 public:
   ScalarTypeDefinition(
-    const std::string& name,
-    const DefinitionType& type
+    const std::string& name
   ) {
     this->setName(name);
-    this->type = type;
+    this->type = DefinitionType::SCALAR_TYPE;
   }
   const DefinitionType& getType() const override {
     return this->type;
-  }
-  void setEnumType(const DefinitionType& type) override {
-    this->type = type;
   }
 private:
   DefinitionType type;
@@ -113,9 +102,6 @@ public:
   const DefinitionType& getType() const override {
     return this->type;
   }
-  void setEnumType(const DefinitionType& type) override {
-    this->type = type;
-  }
 private:
   mutable cgqlSPtr<T> innerType;
   DefinitionType type;
@@ -135,9 +121,6 @@ public:
   }
   const DefinitionType& getType() const override {
     return this->type;
-  }
-  void setEnumType(const DefinitionType& type) override {
-    this->type = type;
   }
 private:
   mutable cgqlSPtr<T> innerType;
@@ -189,9 +172,6 @@ public:
   const DefinitionType& getType() const override {
     return this->type;
   }
-  void setEnumType(const DefinitionType& type) override {
-    this->type = type;
-  }
   void setImplementedInterfaces(cgqlContainer<cgqlSPtr<InterfaceTypeDefinition>> interfaces) {
     this->implements = interfaces;
   }
@@ -217,9 +197,6 @@ public:
   }
   const DefinitionType& getType() const override {
     return this->type;
-  }
-  void setEnumType(const DefinitionType& type) override {
-    this->type = type;
   }
   void setImplementedInterfaces(cgqlContainer<cgqlSPtr<InterfaceTypeDefinition>> interfaces) {
     this->implements = interfaces;

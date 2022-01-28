@@ -20,7 +20,6 @@ private:
   Token move(TokenType type);
   bool checkType(TokenType type);
 
-  std::string document;
   Tokenizer tokenizer;
 
   Definition parseDefinition();

@@ -5,13 +5,11 @@ namespace internal {
 
 void TypeRegistry::init() {
   auto IntType = cgqlSMakePtr<ScalarTypeDefinition<Int>>(
-    "Int",
-    DefinitionType::INT_TYPE
+    "Int"
   );
   this->addType(IntType);
   auto StringType = cgqlSMakePtr<ScalarTypeDefinition<String>>(
-    "String",
-    DefinitionType::STRING_TYPE
+    "String"
   );
   this->addType(StringType);
 }
