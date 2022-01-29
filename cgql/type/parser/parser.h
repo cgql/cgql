@@ -33,7 +33,8 @@ private:
 
   std::string parseName();
 
-  cgqlSPtr<TypeDefinition> parseType();
+  template<typename T = TypeDefinition>
+  cgqlSPtr<T> parseType();
   cgqlUPtr<ObjectTypeDefinition> parseObjectTypeDefinition();
   cgqlUPtr<InterfaceTypeDefinition> parseInterfaceTypeDefinition();
   FieldTypeDefinition parseFieldTypeDefinition();

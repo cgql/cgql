@@ -139,23 +139,22 @@ OperationDefinition Parser::parseOperationDefinition() {
   };
 }
 
-cgqlSPtr<TypeDefinition> Parser::parseType() {
-  cgqlSPtr<TypeDefinition> type;
+template<typename T>
+cgqlSPtr<T> Parser::parseType() {
+  cgqlSPtr<T> type;
   if(this->checkType(TokenType::SQUARE_BRACES_L)) {
     this->tokenizer.advance();
-    ListTypeDefinition<TypeDefinition> list;
-    list.setInnerType(this->parseType());
-    type = cgqlSMakePtr<ListTypeDefinition<TypeDefinition>>(list);
+    type = cgqlSMakePtr<ListTypeDefinition<TypeDefinition>>(
+      this->parseType<TypeDefinition>()
+    );
     this->move(TokenType::SQUARE_BRACES_R);
   } else {
-    type = cgqlUMakePtr<TypeDefinition>();
+    type = cgqlSMakePtr<T>();
     type->setName(this->parseName());
   }
   if(this->checkType(TokenType::BANG)) {
     this->tokenizer.advance();
-    NonNullTypeDefinition<TypeDefinition> nonNull;
-    nonNull.setInnerType(type);
-    return cgqlSMakePtr<NonNullTypeDefinition<TypeDefinition>>(nonNull);
+    return cgqlSMakePtr<NonNullTypeDefinition<TypeDefinition>>(type);
   }
   return type;
 }

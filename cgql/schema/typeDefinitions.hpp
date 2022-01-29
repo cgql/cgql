@@ -90,15 +90,13 @@ private:
 template<typename T>
 class ListTypeDefinition : public TypeDefinition {
 public:
-  ListTypeDefinition() {
+  ListTypeDefinition(cgqlSPtr<T> innerType) {
+    this->innerType = innerType;
     this->type = DefinitionType::LIST_TYPE;
   }
   cgqlSPtr<T>& getInnerType() const {
     return this->innerType;
   };
-  void setInnerType(const cgqlSPtr<T>& innerType) {
-    this->innerType = innerType;
-  }
   const DefinitionType& getType() const override {
     return this->type;
   }
@@ -110,15 +108,13 @@ private:
 template<typename T>
 class NonNullTypeDefinition : public TypeDefinition {
 public:
-  NonNullTypeDefinition() {
+  NonNullTypeDefinition(cgqlSPtr<T> innerType) {
+    this->innerType = innerType;
     this->type = DefinitionType::NON_NULL_TYPE;
   }
   cgqlSPtr<T>& getInnerType() const {
     return this->innerType;
   };
-  void setInnerType(const cgqlSPtr<T>& innerType) {
-    this->innerType = innerType;
-  }
   const DefinitionType& getType() const override {
     return this->type;
   }
