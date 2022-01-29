@@ -275,13 +275,13 @@ Document Parser::parseDocument() {
 internal::Schema documentToSchema(Document& doc, const TypeRegistry& registry) {
   Schema schema;
   for(Definition& def : doc.getDefinitions()) {
-    const cgqlSPtr<TypeDefinition>& rootTypeDef =
+    cgqlSPtr<TypeDefinition> rootTypeDef =
       fromVariant<cgqlSPtr<TypeDefinition>>(def);
     registry.addType<TypeDefinition>(rootTypeDef);
   }
   DocToSchema docToSchema(registry);
   for(auto& [key, rootTypeDef] : registry.getAllTypes()) {
-    DefinitionType const& type = rootTypeDef->getType();
+    DefinitionType type = rootTypeDef->getType();
     if(type == DefinitionType::OBJECT_TYPE) {
       cgqlSPtr<ObjectTypeDefinition> objDef =
         std::static_pointer_cast<ObjectTypeDefinition>(rootTypeDef);
@@ -290,7 +290,7 @@ internal::Schema documentToSchema(Document& doc, const TypeRegistry& registry) {
         schema.setQuery(objDef);
       }
     } else if(type == DefinitionType::INTERFACE_TYPE) {
-      cgqlSPtr<InterfaceTypeDefinition> const& interfaceDef =
+      cgqlSPtr<InterfaceTypeDefinition> interfaceDef =
         std::static_pointer_cast<InterfaceTypeDefinition>(rootTypeDef);
       docToSchema.completeInterface(interfaceDef);
     }

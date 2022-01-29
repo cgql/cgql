@@ -269,7 +269,7 @@ Data completeValue(
   const Data& result,
   const std::optional<cgqlSPtr<ResultMap>>& source
 ) {
-  const DefinitionType& type = fieldType->getType();
+  DefinitionType type = fieldType->getType();
   if(type == NON_NULL_TYPE) {
     const cgqlSPtr<NonNullTypeDefinition<TypeDefinition>>& nonNull =
       std::static_pointer_cast<NonNullTypeDefinition<TypeDefinition>>(fieldType);
