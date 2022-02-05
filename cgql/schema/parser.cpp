@@ -4,12 +4,12 @@ namespace cgql {
 namespace internal {
 
 template<typename T>
-cgqlSPtr<T> SchemaParser::parseType() {
+cgqlSPtr<T> SchemaParser::parseType(const TypeRegistry& registry) {
   cgqlSPtr<T> type;
   if(this->checkType(TokenType::SQUARE_BRACES_L)) {
     this->tokenizer.advance();
     type = cgqlSMakePtr<ListTypeDefinition<TypeDefinition>>(
-      this->parseType<TypeDefinition>()
+      this->parseType<TypeDefinition>(registry)
     );
     this->move(TokenType::SQUARE_BRACES_R);
   } else {
@@ -32,7 +32,7 @@ static cgqlUPtr<InterfaceTypeDefinition> parseImplementInterface(
   return interface;
 }
 
-cgqlContainer<cgqlSPtr<InterfaceTypeDefinition>> SchemaParser::parseImplementInterfaces() {
+cgqlContainer<cgqlSPtr<InterfaceTypeDefinition>> SchemaParser::parseImplementInterfaces(const TypeRegistry& registry) {
   if(this->tokenizer.current.getValue() != "implements") return {};
   cgqlContainer<cgqlSPtr<InterfaceTypeDefinition>> interfaces;
   do {
@@ -42,45 +42,45 @@ cgqlContainer<cgqlSPtr<InterfaceTypeDefinition>> SchemaParser::parseImplementInt
   return interfaces;
 }
 
-ArgumentTypeDefinition SchemaParser::parseArgumentDefinition() {
+ArgumentTypeDefinition SchemaParser::parseArgumentDefinition(const TypeRegistry& registry) {
   std::string name(this->parseName());
   this->move(TokenType::COLON);
   ArgumentTypeDefinition arg;
-  cgqlSPtr<TypeDefinition> type = this->parseType();
+  cgqlSPtr<TypeDefinition> type = this->parseType(registry);
   arg.setName(name);
   arg.setType(type);
   return arg;
 }
 
-FieldTypeDefinition SchemaParser::parseFieldTypeDefinition() {
+FieldTypeDefinition SchemaParser::parseFieldTypeDefinition(const TypeRegistry& registry) {
   FieldTypeDefinition field;
   std::string name(this->parseName());
   if(this->checkType(TokenType::BRACES_L)) {
     this->tokenizer.advance();
     do {
-      field.addArg(this->parseArgumentDefinition());
+      field.addArg(this->parseArgumentDefinition(registry));
     } while(!this->checkType(TokenType::BRACES_R));
     this->tokenizer.advance();
   }
   this->move(TokenType::COLON);
-  cgqlSPtr<TypeDefinition> type = this->parseType();
+  cgqlSPtr<TypeDefinition> type = this->parseType(registry);
   field.setName(name);
   field.setType(type);
   return field;
 }
 
-cgqlUPtr<ObjectTypeDefinition> SchemaParser::parseObjectTypeDefinition() {
+cgqlUPtr<ObjectTypeDefinition> SchemaParser::parseObjectTypeDefinition(const TypeRegistry& registry) {
   this->tokenizer.advance();
   std::string name(this->parseName());
   cgqlUPtr<ObjectTypeDefinition> obj =
     cgqlUMakePtr<ObjectTypeDefinition>();
   obj->setName(name);
-  obj->setImplementedInterfaces(this->parseImplementInterfaces());
+  obj->setImplementedInterfaces(this->parseImplementInterfaces(registry));
   if(this->checkType(TokenType::CURLY_BRACES_L)) {
     this->tokenizer.advance();
     do {
       obj->addField(
-        this->parseFieldTypeDefinition()
+        this->parseFieldTypeDefinition(registry)
       );
     } while(!this->checkType(TokenType::CURLY_BRACES_R));
   }
@@ -88,18 +88,18 @@ cgqlUPtr<ObjectTypeDefinition> SchemaParser::parseObjectTypeDefinition() {
   return obj;
 }
 
-cgqlUPtr<InterfaceTypeDefinition> SchemaParser::parseInterfaceTypeDefinition() {
+cgqlUPtr<InterfaceTypeDefinition> SchemaParser::parseInterfaceTypeDefinition(const TypeRegistry& registry) {
   this->tokenizer.advance();
   std::string name(this->parseName());
   cgqlUPtr<InterfaceTypeDefinition> interface =
     cgqlUMakePtr<InterfaceTypeDefinition>();
   interface->setName(name);
-  interface->setImplementedInterfaces(this->parseImplementInterfaces());
+  interface->setImplementedInterfaces(this->parseImplementInterfaces(registry));
   if(this->checkType(TokenType::CURLY_BRACES_L)) {
     this->tokenizer.advance();
     do {
       interface->addField(
-        this->parseFieldTypeDefinition()
+        this->parseFieldTypeDefinition(registry)
       );
     } while(!this->checkType(TokenType::CURLY_BRACES_R));
   }

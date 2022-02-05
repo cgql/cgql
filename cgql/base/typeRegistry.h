@@ -20,8 +20,11 @@ public:
   auto getAllTypes() const {
     return this->types;
   }
-  auto getOrDefaultConstructType(std::string typeName) const {
-    return this->types[typeName];
+  template<typename T>
+  cgqlSPtr<T> getTypeOrDefaultConstruct(std::string name) {
+    auto defaultConstruct = cgqlSMakePtr<T>(name);
+    this->types[name] = defaultConstruct;
+    return this->types[name];
   }
 private:
   mutable std::unordered_map<std::string, cgqlSPtr<TypeDefinition>> types;

@@ -12,12 +12,12 @@ namespace internal {
 class SchemaParser : public BaseParser {
 private:
   template<typename T = TypeDefinition>
-  cgqlSPtr<T> parseType();
-  cgqlUPtr<ObjectTypeDefinition> parseObjectTypeDefinition();
-  cgqlUPtr<InterfaceTypeDefinition> parseInterfaceTypeDefinition();
-  FieldTypeDefinition parseFieldTypeDefinition();
-  ArgumentTypeDefinition parseArgumentDefinition();
-  cgqlContainer<cgqlSPtr<InterfaceTypeDefinition>> parseImplementInterfaces();
+  cgqlSPtr<T> parseType(const TypeRegistry& registry);
+  cgqlUPtr<ObjectTypeDefinition> parseObjectTypeDefinition(const TypeRegistry& registry);
+  cgqlUPtr<InterfaceTypeDefinition> parseInterfaceTypeDefinition(const TypeRegistry& registry);
+  FieldTypeDefinition parseFieldTypeDefinition(const TypeRegistry& registry);
+  ArgumentTypeDefinition parseArgumentDefinition(const TypeRegistry& registry);
+  cgqlContainer<cgqlSPtr<InterfaceTypeDefinition>> parseImplementInterfaces(const TypeRegistry& registry);
 };
 
 cgqlSPtr<internal::Schema> parseSchema(const char *source, const TypeRegistry& registry);

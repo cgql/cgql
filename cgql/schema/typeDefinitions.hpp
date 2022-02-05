@@ -63,6 +63,9 @@ public:
   TypeDefinition() {
     this->type = DefinitionType::TYPE_DEF;
   };
+  TypeDefinition(const std::string& name) {
+    this->setName(name);
+  }
   ~TypeDefinition() {}
   const DefinitionType& getType() const override {
     return this->type;
