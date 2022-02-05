@@ -14,9 +14,7 @@ cgqlSPtr<TypeDefinition> TypeRegistry::getType(std::string typeName) const {
   // static std::unordered_map<std::string, const cgqlSPtr<TypeDefinition>&> typeAccessCache;
   // auto const& cachedType = typeAccessCache.find(typeName);
   // if(cachedType != typeAccessCache.end()) return cachedType->second;
-  auto const& it = this->types.find(typeName);
-  cgqlAssert(it == this->types.end(), "Unable to find type");
-  return it->second;
+  return this->types[typeName];
 }
 
 } // end of internal

@@ -13,12 +13,15 @@ public:
   TypeRegistry() = default;
   template<typename T>
   void addType(const cgqlSPtr<T>& type) const {
-    this->types.try_emplace(type->getName(), type);
+    this->types.insert_or_assign(type->getName(), type);
   };
   cgqlSPtr<TypeDefinition> getType(std::string typeName) const;
   void init();
   auto getAllTypes() const {
     return this->types;
+  }
+  auto getOrDefaultConstructType(std::string typeName) const {
+    return this->types[typeName];
   }
 private:
   mutable std::unordered_map<std::string, cgqlSPtr<TypeDefinition>> types;
