@@ -299,13 +299,6 @@ internal::Schema documentToSchema(Document& doc, const TypeRegistry& registry) {
   return schema;
 }
 
-cgqlSPtr<internal::Schema> parseSchema(const char *source, const TypeRegistry& registry) {
-  internal::Parser parser(source);
-  internal::Document doc = parser.parseDocument();
-  internal::Schema schema = internal::documentToSchema(doc, registry);
-  return cgqlSMakePtr<internal::Schema>(schema);
-}
-
 } // internal
 
 internal::Document parse(const char *document) {

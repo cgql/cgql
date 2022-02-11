@@ -10,9 +10,5 @@ void TypeRegistry::init() {
   this->addType(MAKE_SCALAR("String", String));
 }
 
-cgqlSPtr<TypeDefinition> TypeRegistry::getType(std::string typeName) const {
-  return this->types[typeName];
-}
-
 } // end of internal
 } // end of cgql

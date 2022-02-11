@@ -15,16 +15,17 @@ public:
   void addType(const cgqlSPtr<T>& type) const {
     this->types.insert_or_assign(type->getName(), type);
   };
-  cgqlSPtr<TypeDefinition> getType(std::string typeName) const;
+  template<typename T>
+  cgqlSPtr<T> getType(std::string typeName) const {
+    auto type = this->types[typeName];
+    if(type) return std::static_pointer_cast<T>(type);
+    type = cgqlSMakePtr<T>();
+    type->setName(typeName);
+    return std::static_pointer_cast<T>(type);
+  }
   void init();
   auto getAllTypes() const {
     return this->types;
-  }
-  template<typename T>
-  cgqlSPtr<T> getTypeOrDefaultConstruct(std::string name) {
-    auto defaultConstruct = cgqlSMakePtr<T>(name);
-    this->types[name] = defaultConstruct;
-    return this->types[name];
   }
 private:
   mutable std::unordered_map<std::string, cgqlSPtr<TypeDefinition>> types;

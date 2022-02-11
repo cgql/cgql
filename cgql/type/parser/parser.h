@@ -42,8 +42,6 @@ private:
   cgqlContainer<cgqlSPtr<InterfaceTypeDefinition>> parseImplementInterfaces();
 };
 
-cgqlSPtr<Schema> parseSchema(const char* source, const TypeRegistry& registry);
-
 } // internal
 
 internal::Document parse(const char* source);

@@ -3,6 +3,7 @@
 #include "cgql/schema/GraphQLTypes.h"
 #include "cgql/base/typeRegistry.h"
 #include "cgql/type/parser/parser.h"
+#include "cgql/schema/parser.h"
 
 namespace cgql {
 

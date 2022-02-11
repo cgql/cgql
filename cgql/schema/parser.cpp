@@ -13,8 +13,7 @@ cgqlSPtr<T> SchemaParser::parseType(const TypeRegistry& registry) {
     );
     this->move(TokenType::SQUARE_BRACES_R);
   } else {
-    type = cgqlSMakePtr<T>();
-    type->setName(this->parseName());
+    type = registry.getType<TypeDefinition>(this->parseName());
   }
   if(this->checkType(TokenType::BANG)) {
     this->tokenizer.advance();
@@ -69,11 +68,10 @@ FieldTypeDefinition SchemaParser::parseFieldTypeDefinition(const TypeRegistry& r
   return field;
 }
 
-cgqlUPtr<ObjectTypeDefinition> SchemaParser::parseObjectTypeDefinition(const TypeRegistry& registry) {
+void SchemaParser::parseObjectTypeDefinition(const TypeRegistry& registry) {
   this->tokenizer.advance();
   std::string name(this->parseName());
-  cgqlUPtr<ObjectTypeDefinition> obj =
-    cgqlUMakePtr<ObjectTypeDefinition>();
+  cgqlSPtr<ObjectTypeDefinition> obj = registry.getType<ObjectTypeDefinition>(name);
   obj->setName(name);
   obj->setImplementedInterfaces(this->parseImplementInterfaces(registry));
   if(this->checkType(TokenType::CURLY_BRACES_L)) {
@@ -85,14 +83,12 @@ cgqlUPtr<ObjectTypeDefinition> SchemaParser::parseObjectTypeDefinition(const Typ
     } while(!this->checkType(TokenType::CURLY_BRACES_R));
   }
   this->tokenizer.advance();
-  return obj;
 }
 
-cgqlUPtr<InterfaceTypeDefinition> SchemaParser::parseInterfaceTypeDefinition(const TypeRegistry& registry) {
+void SchemaParser::parseInterfaceTypeDefinition(const TypeRegistry& registry) {
   this->tokenizer.advance();
   std::string name(this->parseName());
-  cgqlUPtr<InterfaceTypeDefinition> interface =
-    cgqlUMakePtr<InterfaceTypeDefinition>();
+  cgqlSPtr<InterfaceTypeDefinition> interface = registry.getType<InterfaceTypeDefinition>(name);
   interface->setName(name);
   interface->setImplementedInterfaces(this->parseImplementInterfaces(registry));
   if(this->checkType(TokenType::CURLY_BRACES_L)) {
@@ -104,12 +100,12 @@ cgqlUPtr<InterfaceTypeDefinition> SchemaParser::parseInterfaceTypeDefinition(con
     } while(!this->checkType(TokenType::CURLY_BRACES_R));
   }
   this->tokenizer.advance();
-  return interface;
 }
 
-/* cgqlSPtr<internal::Schema> parseSchema(const char *source, const TypeRegistry& registry) {
-  SchemaParser parser;
-} */
+cgqlSPtr<internal::Schema> parseSchema(const char *source, const TypeRegistry& registry) {
+  SchemaParser parser(source);
+  return cgqlSMakePtr<internal::Schema>();
+}
 
 } /* internal */ 
 } /* cgql */ 

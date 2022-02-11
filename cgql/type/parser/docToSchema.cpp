@@ -62,7 +62,7 @@ void DocToSchema::completeType(
     this->completeType(nonNull.getInnerType());
     return;
   }
-  type = this->registry.getType(type->getName());
+  // type = this->registry.getType(type->getName());
 }
 
 } // end of internal
