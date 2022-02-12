@@ -216,8 +216,8 @@ using ImplementedInterfaces = std::unordered_map<
 
 class Schema {
 public:
-  void setQuery(cgqlSPtr<ObjectTypeDefinition>& query) {
-    this->query.swap(query);
+  void setQuery(const cgqlSPtr<ObjectTypeDefinition>& query) {
+    this->query = query;
   }
   const cgqlSPtr<ObjectTypeDefinition>& getQuery() const {
     return this->query;
@@ -231,6 +231,9 @@ public:
           case DefinitionType::OBJECT_TYPE: {
             const cgqlSPtr<ObjectTypeDefinition>& object =
               std::static_pointer_cast<ObjectTypeDefinition>(def);
+            if(object->getName() == "Query") {
+              this->setQuery(object);
+            }
             return object->getImplementedInterfaces();
           }
           case DefinitionType::INTERFACE_TYPE: {

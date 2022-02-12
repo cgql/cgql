@@ -12,6 +12,8 @@ namespace internal {
 class SchemaParser : public BaseParser {
 public:
   using BaseParser::BaseParser;
+
+  void parse(const TypeRegistry& registry);
 private:
   template<typename T = TypeDefinition>
   cgqlSPtr<T> parseType(const TypeRegistry& registry);
@@ -20,6 +22,8 @@ private:
   FieldTypeDefinition parseFieldTypeDefinition(const TypeRegistry& registry);
   ArgumentTypeDefinition parseArgumentDefinition(const TypeRegistry& registry);
   cgqlContainer<cgqlSPtr<InterfaceTypeDefinition>> parseImplementInterfaces(const TypeRegistry& registry);
+
+  void parseDefinition(const TypeRegistry& registry);
 };
 
 cgqlSPtr<internal::Schema> parseSchema(const char *source, const TypeRegistry& registry);

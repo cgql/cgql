@@ -19,9 +19,9 @@ public:
   cgqlSPtr<T> getType(std::string typeName) const {
     auto type = this->types[typeName];
     if(type) return std::static_pointer_cast<T>(type);
-    type = cgqlSMakePtr<T>();
-    type->setName(typeName);
-    return std::static_pointer_cast<T>(type);
+    this->types[typeName] = cgqlSMakePtr<T>();
+    this->types[typeName]->setName(typeName);
+    return std::static_pointer_cast<T>(this->types[typeName]);
   }
   void init();
   auto getAllTypes() const {

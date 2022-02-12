@@ -102,9 +102,28 @@ void SchemaParser::parseInterfaceTypeDefinition(const TypeRegistry& registry) {
   this->tokenizer.advance();
 }
 
+void SchemaParser::parseDefinition(const TypeRegistry& registry) {
+  String currentValue(this->tokenizer.current.getValue());
+  if(currentValue == "type")
+    return this->parseObjectTypeDefinition(registry);
+  else if(currentValue == "interface")
+    return this->parseInterfaceTypeDefinition(registry);
+}
+
+void SchemaParser::parse(const TypeRegistry& registry) {
+  this->move(TokenType::START_OF_QUERY);
+  do {
+    this->parseDefinition(registry);
+  } while (!this->checkType(TokenType::END_OF_QUERY));
+}
+
 cgqlSPtr<internal::Schema> parseSchema(const char *source, const TypeRegistry& registry) {
+  using namespace cgql::internal;
   SchemaParser parser(source);
-  return cgqlSMakePtr<internal::Schema>();
+  parser.parse(registry);
+  cgqlSPtr<Schema> schema = cgqlSMakePtr<Schema>();
+  schema->setTypeDefMap(registry.getAllTypes());
+  return schema;
 }
 
 } /* internal */ 
