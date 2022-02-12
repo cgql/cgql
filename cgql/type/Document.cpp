@@ -54,20 +54,8 @@ void printSelectionSet(const internal::SelectionSet selectionSet, int level) {
 
 void printDocumentNode(const internal::Document &doc) {
   for(const internal::Definition& def : doc.getDefinitions()) {
-    if(def.index() == 0) {
-      internal::OperationDefinition opDef =
-        fromVariant<internal::OperationDefinition>(def);
-      logger::info(opDef.getOperationType());
-      printSelectionSet(opDef.getSelectionSet(), 0);
-    } else if(def.index() == 1) {
-      cgqlSPtr<internal::TypeDefinition> typeDef =
-        fromVariant<cgqlSPtr<internal::TypeDefinition>>(def);
-      if(typeDef->getType() == internal::DefinitionType::OBJECT_TYPE) {
-        cgqlSPtr<internal::ObjectTypeDefinition> objDef =
-          std::static_pointer_cast<internal::ObjectTypeDefinition>(typeDef);
-        // printGQLObj(objDef, 2);
-      }
-    }
+    logger::info(def.getOperationType());
+    printSelectionSet(def.getSelectionSet(), 0);
   }
 }
 

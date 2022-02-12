@@ -12,12 +12,12 @@ class TypeRegistry {
 public:
   TypeRegistry() = default;
   template<typename T>
-  void addType(const cgqlSPtr<T>& type) const {
+  void addType(cgqlSPtr<T> type) const {
     this->types.insert_or_assign(type->getName(), type);
   };
   template<typename T>
   cgqlSPtr<T> getType(std::string typeName) const {
-    auto type = this->types[typeName];
+    cgqlSPtr<TypeDefinition> type = this->types[typeName];
     if(type) return std::static_pointer_cast<T>(type);
     this->types[typeName] = cgqlSMakePtr<T>();
     this->types[typeName]->setName(typeName);

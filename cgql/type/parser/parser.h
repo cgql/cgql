@@ -7,21 +7,17 @@
 #include "cgql/type/Document.h"
 #include "cgql/schema/GraphQLTypes.h"
 #include "cgql/type/parser/tokenizer.h"
+#include "cgql/base/baseParser.h"
 
 namespace cgql {
 namespace internal {
 
-class Parser {
+class QueryParser : BaseParser {
 public:
-  Parser(const char* document);
-  ~Parser();
-  Document parseDocument();
+  using BaseParser::BaseParser;
+
+  Document parse();
 private:
-  Token move(TokenType type);
-  bool checkType(TokenType type);
-
-  Tokenizer tokenizer;
-
   Definition parseDefinition();
   OperationDefinition parseOperationDefinition();
   SelectionSet parseSelectionSet();
@@ -30,16 +26,6 @@ private:
   cgqlUPtr<InlineFragment> parseInlineFragment();
   Argument parseArgument();
   Arg parseValue();
-
-  std::string parseName();
-
-  template<typename T = TypeDefinition>
-  cgqlSPtr<T> parseType();
-  cgqlUPtr<ObjectTypeDefinition> parseObjectTypeDefinition();
-  cgqlUPtr<InterfaceTypeDefinition> parseInterfaceTypeDefinition();
-  FieldTypeDefinition parseFieldTypeDefinition();
-  ArgumentTypeDefinition parseArgumentDefinition();
-  cgqlContainer<cgqlSPtr<InterfaceTypeDefinition>> parseImplementInterfaces();
 };
 
 } // internal

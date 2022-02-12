@@ -38,9 +38,7 @@ void collectFields(
       const cgqlSPtr<Field>& field =
         std::static_pointer_cast<Field>(selection);
 
-      const std::string& responseKey =
-        field->getAlias().empty() ?
-          field->getName() : field->getAlias();
+      const std::string& responseKey = field->getResponseKey();
 
       const GroupedField::iterator& it =
         groupedFields.find(responseKey);
@@ -189,7 +187,7 @@ static cgqlUPtr<ResultMap> executeGroupedFieldSet(
   for(auto const& [responseKey, fields] : groupedFieldSet) {
     const FieldTypeDefinition& field = findGraphQLFieldByName(
       objectType,
-      responseKey
+      std::static_pointer_cast<Field>(fields[0])->getName()
     );
     const cgqlSPtr<TypeDefinition>& fieldType = field.getType();
     resultMap->data.try_emplace(
@@ -426,11 +424,8 @@ const OperationDefinition& getOperation(
   OperationType operationName
 ) {
   for(auto const& def : document.getDefinitions()) {
-    if(def.index() == 0) {
-      const OperationDefinition& opDef = fromVariant<OperationDefinition>(def);
-      if(opDef.getOperationType() == operationName) {
-        return opDef;
-      }
+    if(def.getOperationType() == operationName) {
+      return def;
     }
   }
   throw operationName;

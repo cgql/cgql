@@ -50,7 +50,7 @@ inline void runAdvancedParsing() {
   for(int i = 0; i < 50000; i++) {
     auto doc = parse(
       "{"
-      "  character {"
+      "  cw3dv: character {"
       "    name"
       "    ... on Human {"
       "      age"

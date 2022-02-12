@@ -89,6 +89,9 @@ public:
   const cgqlContainer<Argument>& getArgs() const {
     return this->args;
   }
+  const std::string& getResponseKey() const {
+    return this->alias.empty() ? this->getName() : this->alias;
+  }
 private:
   std::string alias;
   cgqlContainer<Argument> args;
@@ -126,10 +129,7 @@ private:
   SelectionSet selectionSet;
 };
 
-using Definition = std::variant<
-  OperationDefinition,
-  cgqlSPtr<TypeDefinition>
->;
+using Definition = OperationDefinition;
 
 class Document {
 public:

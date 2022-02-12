@@ -70,9 +70,8 @@ FieldTypeDefinition SchemaParser::parseFieldTypeDefinition(const TypeRegistry& r
 
 void SchemaParser::parseObjectTypeDefinition(const TypeRegistry& registry) {
   this->tokenizer.advance();
-  std::string name(this->parseName());
-  cgqlSPtr<ObjectTypeDefinition> obj = registry.getType<ObjectTypeDefinition>(name);
-  obj->setName(name);
+  cgqlSPtr<ObjectTypeDefinition> obj =
+    registry.getType<ObjectTypeDefinition>(this->parseName());
   obj->setImplementedInterfaces(this->parseImplementInterfaces(registry));
   if(this->checkType(TokenType::CURLY_BRACES_L)) {
     this->tokenizer.advance();
@@ -87,9 +86,8 @@ void SchemaParser::parseObjectTypeDefinition(const TypeRegistry& registry) {
 
 void SchemaParser::parseInterfaceTypeDefinition(const TypeRegistry& registry) {
   this->tokenizer.advance();
-  std::string name(this->parseName());
-  cgqlSPtr<InterfaceTypeDefinition> interface = registry.getType<InterfaceTypeDefinition>(name);
-  interface->setName(name);
+  cgqlSPtr<InterfaceTypeDefinition> interface =
+    registry.getType<InterfaceTypeDefinition>(this->parseName());
   interface->setImplementedInterfaces(this->parseImplementInterfaces(registry));
   if(this->checkType(TokenType::CURLY_BRACES_L)) {
     this->tokenizer.advance();
