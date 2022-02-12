@@ -96,7 +96,7 @@ void printResultMap(const ResultMap& rm, uint8_t level) {
   for(auto const& [key, value] : rm.data) {
     if(value.index() == 0) {
       printScalarValue(key, value, indentation);
-    } else if(isList(value)) {
+    } else if(internal::isList(value)) {
       switch(value.index()) {
         case 2:
           printList(key, fromVariant<cgqlContainer<GraphQLReturnTypes>>(value), indentation);

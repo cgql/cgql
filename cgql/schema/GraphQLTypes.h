@@ -10,8 +10,7 @@ namespace cgql {
 
 using GraphQLReturnTypes = std::variant<
   Int,
-  String,
-  cgqlSPtr<internal::ObjectTypeDefinition>
+  String
 >;
 
 struct ResultMap;
