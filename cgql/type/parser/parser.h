@@ -20,10 +20,12 @@ public:
 private:
   Definition parseDefinition();
   OperationDefinition parseOperationDefinition();
+  FragmentDefinition parseFragmentDefinition();
   SelectionSet parseSelectionSet();
   cgqlUPtr<Selection> parseSelection();
   cgqlUPtr<Field> parseField();
   cgqlUPtr<InlineFragment> parseInlineFragment();
+  cgqlUPtr<Fragment> parseFragment();
   Argument parseArgument();
   Arg parseValue();
 };

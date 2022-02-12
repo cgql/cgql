@@ -74,7 +74,6 @@ cgqlUPtr<Field> QueryParser::parseField() {
 cgqlUPtr<InlineFragment> QueryParser::parseInlineFragment() {
   cgqlUPtr<InlineFragment> inlineFragment =
     cgqlUMakePtr<InlineFragment>();
-  this->tokenizer.advance();
   // TODO: handle error
   if(this->tokenizer.current.getValue() != "on") {}
   this->tokenizer.advance();
@@ -84,9 +83,32 @@ cgqlUPtr<InlineFragment> QueryParser::parseInlineFragment() {
   return inlineFragment;
 }
 
+cgqlUPtr<Fragment> QueryParser::parseFragment() {
+  cgqlUPtr<Fragment> fragment =
+    cgqlUMakePtr<Fragment>();
+  fragment->setName(this->parseName());
+  return fragment;
+}
+
+FragmentDefinition QueryParser::parseFragmentDefinition() {
+  FragmentDefinition fragment;
+  this->tokenizer.advance();
+  fragment.setName(this->parseName());
+  // TODO: handle error
+  if(this->tokenizer.current.getValue() != "on") {}
+  this->tokenizer.advance();
+  fragment.setTypeCondition(this->parseName());
+  SelectionSet selectionSet = this->parseSelectionSet();
+  fragment.setSelectionSet(selectionSet);
+  return fragment;
+}
+
 cgqlUPtr<Selection> QueryParser::parseSelection() {
   if(this->checkType(TokenType::SPREAD)) {
-    return this->parseInlineFragment();
+    this->tokenizer.advance();
+    if(this->tokenizer.current.getValue() == "on")
+      return this->parseInlineFragment();
+    return this->parseFragment();
   }
   return this->parseField();
 }
@@ -112,6 +134,8 @@ Definition QueryParser::parseDefinition() {
   if(this->checkType(TokenType::CURLY_BRACES_L)) {
     return this->parseOperationDefinition();
   }
+  String lookAhead(this->tokenizer.current.getValue());
+  if(lookAhead == "fragment") return this->parseFragmentDefinition();
   std::string errorMsg;
   errorMsg += "Unexpected token ";
   errorMsg += tokenTypeToCharArray(this->tokenizer.current.getType());
@@ -123,7 +147,7 @@ Document QueryParser::parse() {
   cgqlContainer<Definition> definitions;
   this->move(TokenType::START_OF_QUERY);
   do {
-    definitions.emplace_back(this->parseOperationDefinition());
+    definitions.emplace_back(this->parseDefinition());
   } while (!this->checkType(TokenType::END_OF_QUERY));
   return {
     definitions

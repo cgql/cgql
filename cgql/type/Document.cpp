@@ -54,8 +54,12 @@ void printSelectionSet(const internal::SelectionSet selectionSet, int level) {
 
 void printDocumentNode(const internal::Document &doc) {
   for(const internal::Definition& def : doc.getDefinitions()) {
-    logger::info(def.getOperationType());
-    printSelectionSet(def.getSelectionSet(), 0);
+    if(def.index() == 0)  {
+      const internal::OperationDefinition& opDef =
+        fromVariant<internal::OperationDefinition>(def);
+      logger::info(opDef.getOperationType());
+      printSelectionSet(opDef.getSelectionSet(), 0);
+    }
   }
 }
 

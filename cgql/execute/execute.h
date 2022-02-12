@@ -13,6 +13,7 @@ struct ExecutionContext {
   cgqlSPtr<Schema> schema;
   cgqlUPtr<ResolverMap> resolverMap;
   cgqlUPtr<TypeOfMap> typeOfMap;
+  cgqlContainer<FragmentDefinition> fragments;
 };
 
 template<typename T>
@@ -23,6 +24,7 @@ const FieldTypeDefinition& findGraphQLFieldByName(
 
 template<typename T>
 void collectFields(
+  const ExecutionContext& ctx,
   const cgqlSPtr<T>& objectType,
   const SelectionSet &selectionSet,
   GroupedField& groupedFields

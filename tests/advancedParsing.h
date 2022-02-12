@@ -54,12 +54,16 @@ inline void runAdvancedParsing() {
       "    name"
       "    ... on Human {"
       "      age"
-      "      workedAt"
+      "      ...HumanFragment"
       "    }"
       "    ... on Pet {"
       "      breed"
       "    }"
       "  }"
+      "}"
+      ""
+      "fragment HumanFragment on Human {"
+      "  workedAt"
       "}"
     );
     auto r = test.executeWith(doc, root, typeOfMap);

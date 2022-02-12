@@ -27,6 +27,7 @@ const FieldTypeDefinition& findGraphQLFieldByName(
 
 template<typename T>
 void collectFields(
+  const ExecutionContext& ctx,
   const cgqlSPtr<T>& objectType,
   const SelectionSet &selectionSet,
   GroupedField& groupedFields
@@ -66,19 +67,33 @@ void collectFields(
       if(!shouldNotSkip) continue;
 
       const SelectionSet& selectionSet = inlineFragment->getSelectionSet();
-      collectFields(objectType, selectionSet, groupedFields);
+      collectFields(ctx, objectType, selectionSet, groupedFields);
+    } else if(type == SelectionType::FRAGMENT) {
+      const cgqlSPtr<Fragment>& fragment =
+        std::static_pointer_cast<Fragment>(selection);
+      const cgqlContainer<FragmentDefinition>::const_iterator& it =
+        std::find_if(
+          ctx.fragments.begin(),
+          ctx.fragments.end(),
+          [&fragment](const FragmentDefinition& fragmentDef) {
+            return fragment->getName() == fragmentDef.getName();
+          }
+        );
+      collectFields(ctx, objectType, it->getSelectionSet(), groupedFields);
     }
   }
 }
 
 template<typename T>
 void collectSubFields(
+  const ExecutionContext& ctx,
   const cgqlSPtr<T>& objectType,
   const SelectionSet& selectionSet,
   GroupedField& groupedFields
 ) {
   for(auto const& selection : selectionSet) {
     collectFields(
+      ctx,
       objectType,
       selection->getSelectionSet(),
       groupedFields
@@ -246,7 +261,7 @@ static Data completeAbstractType(
       const cgqlSPtr<ObjectTypeDefinition>& object =
         std::static_pointer_cast<ObjectTypeDefinition>(possibleType);
       GroupedField groupedFields;
-      collectSubFields(object, fields, groupedFields);
+      collectSubFields(ctx, object, fields, groupedFields);
       return executeGroupedFieldSet(
         ctx,
         object,
@@ -393,6 +408,7 @@ cgqlUPtr<ResultMap> executeSelectionSet(
     std::static_pointer_cast<ObjectTypeDefinition>(objectType);
   GroupedField groupedFieldSet;
   collectFields(
+    ctx,
     obj,
     selectionSet,
     groupedFieldSet
@@ -424,12 +440,27 @@ const OperationDefinition& getOperation(
   OperationType operationName
 ) {
   for(auto const& def : document.getDefinitions()) {
-    if(def.getOperationType() == operationName) {
-      return def;
+    if(def.index() == 0) {
+      const OperationDefinition& opDef =
+        fromVariant<OperationDefinition>(def);
+      if(opDef.getOperationType() == operationName) {
+        return opDef;
+      }
     }
   }
   throw operationName;
 }
+
+cgqlContainer<FragmentDefinition> getFragmentsFromQuery(const internal::Document& document) {
+  cgqlContainer<FragmentDefinition> fragments;
+  for(auto const& def : document.getDefinitions()) {
+    if(def.index() == 1) {
+      fragments.emplace_back(fromVariant<FragmentDefinition>(def));
+    }
+  }
+  return fragments;
+}
+
 } // internal
 
 cgqlUPtr<ResultMap> execute(
@@ -444,6 +475,7 @@ cgqlUPtr<ResultMap> execute(
   ctx.schema = schema;
   ctx.resolverMap = cgqlUMakePtr<ResolverMap>(resolverMap);
   ctx.typeOfMap = cgqlUMakePtr<TypeOfMap>(typeOfMap);
+  ctx.fragments = internal::getFragmentsFromQuery(document);
   return internal::executeQuery(
     ctx,
     operation

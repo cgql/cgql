@@ -22,7 +22,8 @@ enum OperationType {
 enum SelectionType {
   BASE,
   FIELD,
-  INLINE_FRAGMENT
+  INLINE_FRAGMENT,
+  FRAGMENT
 };
 
 class Argument : public AbstractSchemaTypeDefinition {
@@ -114,6 +115,15 @@ private:
   std::string typeCondition;
 };
 
+class Fragment
+  : public Selection,
+    public AbstractSchemaTypeDefinition {
+public:
+  Fragment() {
+    this->setSelectionType(SelectionType::FRAGMENT);
+  }
+};
+
 class OperationDefinition {
 public:
   OperationDefinition(
@@ -129,7 +139,29 @@ private:
   SelectionSet selectionSet;
 };
 
-using Definition = OperationDefinition;
+class FragmentDefinition : public AbstractSchemaTypeDefinition  {
+public:
+  void setTypeCondition(std::string typeCondition) {
+    this->typeCondition = typeCondition;
+  }
+  const std::string& getTypeCondition() const {
+    return this->typeCondition;
+  }
+  void setSelectionSet(SelectionSet& selectionSet) {
+    this->selectionSet.swap(selectionSet);
+  }
+  const SelectionSet& getSelectionSet() const {
+    return this->selectionSet;
+  }
+private:
+  std::string typeCondition;
+  SelectionSet selectionSet;
+};
+
+using Definition = std::variant<
+  OperationDefinition,
+  FragmentDefinition
+>;
 
 class Document {
 public:
