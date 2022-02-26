@@ -32,16 +32,16 @@ void collectFields(
   const SelectionSet &selectionSet,
   GroupedField& groupedFields
 ) {
-  for(auto const& selection : selectionSet) {
+  for(cgqlSPtr<Selection> selection : selectionSet) {
     SelectionType type = selection->getSelectionType();
     if(type == SelectionType::FIELD) {
       // holds a Field*
-      const cgqlSPtr<Field>& field =
+      cgqlSPtr<Field> field =
         std::static_pointer_cast<Field>(selection);
 
       const std::string& responseKey = field->getResponseKey();
 
-      const GroupedField::iterator& it =
+      GroupedField::iterator it =
         groupedFields.find(responseKey);
       if(it != groupedFields.end()) {
         it->second.emplace_back(field);
@@ -54,7 +54,7 @@ void collectFields(
         );
       }
     } else if(type == SelectionType::INLINE_FRAGMENT) {
-      const cgqlSPtr<InlineFragment>& inlineFragment =
+      cgqlSPtr<InlineFragment> inlineFragment =
         std::static_pointer_cast<InlineFragment>(selection);
       const std::string& typeCondition = inlineFragment->getTypeCondition();
       
@@ -69,9 +69,9 @@ void collectFields(
       const SelectionSet& selectionSet = inlineFragment->getSelectionSet();
       collectFields(ctx, objectType, selectionSet, groupedFields);
     } else if(type == SelectionType::FRAGMENT) {
-      const cgqlSPtr<Fragment>& fragment =
+      cgqlSPtr<Fragment> fragment =
         std::static_pointer_cast<Fragment>(selection);
-      const cgqlContainer<FragmentDefinition>::const_iterator& it =
+      cgqlContainer<FragmentDefinition>::const_iterator it =
         std::find_if(
           ctx.fragments.begin(),
           ctx.fragments.end(),
@@ -91,7 +91,7 @@ void collectSubFields(
   const SelectionSet& selectionSet,
   GroupedField& groupedFields
 ) {
-  for(auto const& selection : selectionSet) {
+  for(cgqlSPtr<Selection> selection : selectionSet) {
     collectFields(
       ctx,
       objectType,
@@ -105,10 +105,10 @@ void mergeSelectionSet(
   const SelectionSet& fields,
   SelectionSet& mergedSelectionSet
 ) {
-  for(auto const& field : fields) {
+  for(cgqlSPtr<Selection> field : fields) {
     const SelectionSet& fieldSelectionSet = field->getSelectionSet();
     if(fieldSelectionSet.empty()) continue;
-    for(auto const& subField : fieldSelectionSet) {
+    for(cgqlSPtr<Selection> subField : fieldSelectionSet) {
       mergedSelectionSet.emplace_back(subField);
     }
   }
@@ -141,7 +141,7 @@ Data completeListItem(
     fromVariant<cgqlContainer<T>>(result);
   cgqlContainer<T> resultList;
   resultList.reserve(rawResultList.size());
-  for(auto const& rawResult : rawResultList) {
+  for(T const& rawResult : rawResultList) {
     resultList.emplace_back(
       fromVariant<T>(completeValue(
         ctx,
@@ -199,6 +199,7 @@ static cgqlUPtr<ResultMap> executeGroupedFieldSet(
   const std::optional<cgqlSPtr<ResultMap>>& source
 ) {
   cgqlUPtr<ResultMap> resultMap = cgqlUMakePtr<ResultMap>();
+  resultMap->data.reserve(groupedFieldSet.size());
   for(auto const& [responseKey, fields] : groupedFieldSet) {
     const FieldTypeDefinition& field = findGraphQLFieldByName(
       objectType,
@@ -250,8 +251,8 @@ static Data completeAbstractType(
     fromVariant<cgqlSPtr<ResultMap>>(result);
   const cgqlContainer<cgqlSPtr<TypeDefinition>>& possibleTypes =
     ctx.schema->getPossibleTypes(fieldType);
-  const TypeOfMap::const_iterator& it = ctx.typeOfMap->find(fieldType->getName());
-  for(auto const& possibleType : possibleTypes) {
+  TypeOfMap::const_iterator it = ctx.typeOfMap->find(fieldType->getName());
+  for(cgqlSPtr<TypeDefinition> possibleType : possibleTypes) {
     String typeName = it->second(resultMap);
     if(possibleType->getName() == typeName) {
       cgqlAssert(
@@ -370,7 +371,7 @@ Data executeField(
   const SelectionSet& fields,
   const std::optional<cgqlSPtr<ResultMap>>& source
 ) {
-  const auto& it = ctx.resolverMap->find(field.getName());
+  ResolverMap::const_iterator it = ctx.resolverMap->find(field.getName());
   Data result = [&]() {
     if(it != ctx.resolverMap->end()) {
       return it->second(buildArgumentMap(
