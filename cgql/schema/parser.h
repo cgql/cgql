@@ -19,6 +19,7 @@ private:
   cgqlSPtr<T> parseType(const TypeRegistry& registry);
   void parseObjectTypeDefinition(const TypeRegistry& registry);
   void parseInterfaceTypeDefinition(const TypeRegistry& registry);
+  void parseUnionTypeDefinition(const TypeRegistry& registry);
   FieldTypeDefinition parseFieldTypeDefinition(const TypeRegistry& registry);
   ArgumentTypeDefinition parseArgumentDefinition(const TypeRegistry& registry);
   cgqlContainer<cgqlSPtr<InterfaceTypeDefinition>> parseImplementInterfaces(const TypeRegistry& registry);

@@ -100,6 +100,21 @@ void SchemaParser::parseInterfaceTypeDefinition(const TypeRegistry& registry) {
   this->tokenizer.advance();
 }
 
+void SchemaParser::parseUnionTypeDefinition(const TypeRegistry& registry) {
+  this->tokenizer.advance();
+  cgqlSPtr<UnionTypeDefinition> unionType =
+    registry.getType<UnionTypeDefinition>(this->parseName());
+  if(this->checkType(TokenType::EQUAL)) {
+    this->tokenizer.advance();
+    do {
+      unionType->addMember(
+        registry.getType<UnionTypeDefinition>(this->parseName())
+      );
+    } while(!this->checkType(TokenType::PIPE));
+  }
+  this->tokenizer.advance();
+}
+
 void SchemaParser::parseDefinition(const TypeRegistry& registry) {
   String currentValue(this->tokenizer.current.getValue());
   if(currentValue == "type")

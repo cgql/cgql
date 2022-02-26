@@ -28,7 +28,9 @@ enum TokenType {
   BANG,
   AMPERSAND,
 
-  SPREAD
+  SPREAD,
+  EQUAL,
+  PIPE
 };
 
 const char* tokenTypeToCharArray(const TokenType& type);

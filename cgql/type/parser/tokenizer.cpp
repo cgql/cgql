@@ -51,6 +51,12 @@ const char* tokenTypeToCharArray(const TokenType& type) {
     case TokenType::SPREAD:
       return "SPREAD";
       break;
+    case TokenType::EQUAL:
+      return "EQUAL";
+      break;
+    case TokenType::PIPE:
+      return "PIPE";
+      break;
   }
   return "";
 }
@@ -171,6 +177,12 @@ Token Tokenizer::nextToken() {
           this->advanceCursor(3);
           return generateToken(TokenType::SPREAD);
         }
+      case 0x003D:
+        this->advanceCursor(1);
+        return generateToken(TokenType::EQUAL);
+      case 0x007C:
+        this->advanceCursor(1);
+        return generateToken(TokenType::PIPE);
     }
   }
   return generateToken(TokenType::END_OF_QUERY);

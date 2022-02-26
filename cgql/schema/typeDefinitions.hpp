@@ -15,6 +15,7 @@ namespace internal {
 enum DefinitionType {
   INTERFACE_TYPE,
   OBJECT_TYPE,
+  UNION_TYPE,
   TYPE_DEF,
 
   SCALAR_TYPE,
@@ -27,6 +28,8 @@ inline std::ostream& operator<<(std::ostream& os, const DefinitionType& type) {
   switch(type) {
     case OBJECT_TYPE:
       os << "OBJECT_TYPE"; break;
+    case UNION_TYPE:
+      os << "UNION_TYPE"; break;
     case TYPE_DEF:
       os << "TYPE_DEF"; break;
     case SCALAR_TYPE:
@@ -207,6 +210,22 @@ private:
   mutable cgqlContainer<FieldTypeDefinition> fieldDefs;
   mutable cgqlContainer<cgqlSPtr<InterfaceTypeDefinition>> implements;
   DefinitionType type;
+};
+
+class UnionTypeDefinition : public TypeDefinition {
+public:
+  UnionTypeDefinition() {
+    type = DefinitionType::UNION_TYPE;
+  }
+  void addMember(const cgqlSPtr<TypeDefinition>& member) {
+    this->members.emplace_back(member);
+  }
+  const DefinitionType& getType() const override {
+    return this->type;
+  }
+private:
+  DefinitionType type;
+  mutable cgqlContainer<std::weak_ptr<TypeDefinition>> members;
 };
 
 using ImplementedInterfaces = std::unordered_map<
