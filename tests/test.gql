@@ -1,21 +1,15 @@
-interface Character {
-  name: String!
-  friends: [Character]
-}
+union SearchResult = Person | Photo 
 
-type Human implements Character {
-  name: String!
-  friends: [Character]
+type Person {
+  name: String
   age: Int
-  workedAt: [String!]!
 }
 
-type Pet implements Character {
-  name: String!
-  friends: [Character]
-  breed: String
+type Photo {
+  height: Int
+  width: Int
 }
 
 type Query {
-  character: Character
+  firstSearchResult: SearchResult
 }

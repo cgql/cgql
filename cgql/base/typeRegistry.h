@@ -17,8 +17,10 @@ public:
   };
   template<typename T>
   cgqlSPtr<T> getType(std::string typeName) const {
-    cgqlSPtr<TypeDefinition> type = this->types[typeName];
-    if(type) return std::static_pointer_cast<T>(type);
+    return std::static_pointer_cast<T>(this->types[typeName]);
+  }
+  template<typename T>
+  cgqlSPtr<T> defaultConstruct(std::string typeName) const {
     this->types[typeName] = cgqlSMakePtr<T>();
     this->types[typeName]->setName(typeName);
     return std::static_pointer_cast<T>(this->types[typeName]);

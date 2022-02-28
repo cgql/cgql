@@ -69,7 +69,7 @@ public:
   TypeDefinition(const std::string& name) {
     this->setName(name);
   }
-  ~TypeDefinition() {}
+  virtual ~TypeDefinition() {}
   const DefinitionType& getType() const override {
     return this->type;
   }

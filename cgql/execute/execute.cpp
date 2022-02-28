@@ -330,6 +330,9 @@ Data completeValue(
       std::static_pointer_cast<InterfaceTypeDefinition>(fieldType);
     return completeAbstractType(ctx, schemaObj, fields, result, source);
   }
+  if(type == DefinitionType::UNION_TYPE) {
+    logger::info("he");
+  }
   return coerceLeafValue(fieldType, result);
 }
 

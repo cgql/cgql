@@ -48,7 +48,7 @@ using GroupedField = std::unordered_map<
 >;
 class Selection {
 public:
-  ~Selection() {}
+  virtual ~Selection() {}
   void setSelectionSet(SelectionSet& selectionSet) {
     this->selectionSet.swap(selectionSet);
   }

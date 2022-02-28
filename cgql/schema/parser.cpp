@@ -3,6 +3,9 @@
 namespace cgql {
 namespace internal {
 
+#define CURRENT_TOKEN_TYPE this->tokenizer.current.getType()
+#define CURRENT_TOKEN_VALUE this->tokenizer.current.getValue()
+
 template<typename T>
 cgqlSPtr<T> SchemaParser::parseType(const TypeRegistry& registry) {
   cgqlSPtr<T> type;
@@ -13,7 +16,7 @@ cgqlSPtr<T> SchemaParser::parseType(const TypeRegistry& registry) {
     );
     this->move(TokenType::SQUARE_BRACES_R);
   } else {
-    type = registry.getType<TypeDefinition>(this->parseName());
+    type = registry.defaultConstruct<TypeDefinition>(this->parseName());
   }
   if(this->checkType(TokenType::BANG)) {
     this->tokenizer.advance();
@@ -71,7 +74,7 @@ FieldTypeDefinition SchemaParser::parseFieldTypeDefinition(const TypeRegistry& r
 void SchemaParser::parseObjectTypeDefinition(const TypeRegistry& registry) {
   this->tokenizer.advance();
   cgqlSPtr<ObjectTypeDefinition> obj =
-    registry.getType<ObjectTypeDefinition>(this->parseName());
+    registry.defaultConstruct<ObjectTypeDefinition>(this->parseName());
   obj->setImplementedInterfaces(this->parseImplementInterfaces(registry));
   if(this->checkType(TokenType::CURLY_BRACES_L)) {
     this->tokenizer.advance();
@@ -87,7 +90,7 @@ void SchemaParser::parseObjectTypeDefinition(const TypeRegistry& registry) {
 void SchemaParser::parseInterfaceTypeDefinition(const TypeRegistry& registry) {
   this->tokenizer.advance();
   cgqlSPtr<InterfaceTypeDefinition> interface =
-    registry.getType<InterfaceTypeDefinition>(this->parseName());
+    registry.defaultConstruct<InterfaceTypeDefinition>(this->parseName());
   interface->setImplementedInterfaces(this->parseImplementInterfaces(registry));
   if(this->checkType(TokenType::CURLY_BRACES_L)) {
     this->tokenizer.advance();
@@ -103,24 +106,31 @@ void SchemaParser::parseInterfaceTypeDefinition(const TypeRegistry& registry) {
 void SchemaParser::parseUnionTypeDefinition(const TypeRegistry& registry) {
   this->tokenizer.advance();
   cgqlSPtr<UnionTypeDefinition> unionType =
-    registry.getType<UnionTypeDefinition>(this->parseName());
+    registry.defaultConstruct<UnionTypeDefinition>(this->parseName());
   if(this->checkType(TokenType::EQUAL)) {
-    this->tokenizer.advance();
     do {
+      this->tokenizer.advance();
       unionType->addMember(
-        registry.getType<UnionTypeDefinition>(this->parseName())
+        registry.defaultConstruct<TypeDefinition>(this->parseName())
       );
-    } while(!this->checkType(TokenType::PIPE));
+    } while(this->checkType(TokenType::PIPE));
   }
-  this->tokenizer.advance();
 }
 
 void SchemaParser::parseDefinition(const TypeRegistry& registry) {
   String currentValue(this->tokenizer.current.getValue());
   if(currentValue == "type")
-    return this->parseObjectTypeDefinition(registry);
+    this->parseObjectTypeDefinition(registry);
   else if(currentValue == "interface")
-    return this->parseInterfaceTypeDefinition(registry);
+    this->parseInterfaceTypeDefinition(registry);
+  else if(currentValue == "union")
+    this->parseUnionTypeDefinition(registry);
+  else {
+    std::string msg;
+    msg += "Failed to parse type definition which starts with ";
+    msg += currentValue.length() ? currentValue : "NULL";
+    cgqlAssert(true, msg.c_str());
+  }
 }
 
 void SchemaParser::parse(const TypeRegistry& registry) {

@@ -20,19 +20,12 @@ inline void runAdvancedParsing() {
   test.parseSchema(schema.c_str());
   ResolverMap root {
     {
-      "character",
+      "firstSearchResult",
       [](const Args& args) -> Data {
         ResultMap human {
           {
             { "name", "cw3dv" },
-            { "age", 14 },
-            { "workedAt",
-              cgqlContainer<GraphQLReturnTypes>{
-                "Google",
-                "Microsoft",
-                "Github"
-              }
-            }
+            { "age", 14 }
           }
         };
         return cgqlSMakePtr<ResultMap>(human);
@@ -41,29 +34,28 @@ inline void runAdvancedParsing() {
   };
   TypeOfMap typeOfMap {
     {
-      "Character",
+      "SearchResult",
       [](const cgqlSPtr<ResultMap>& result) -> String {
-        return "Human";
+        return "Person";
       }
     }
   };
-  for(int i = 0; i < 50000; i++) {
+  for(int i = 0; i < 1; i++) {
     auto doc = parse(
       "{"
-      "  cw3dv: character {"
-      "    name"
+      "  cw3dv: firstSearchResult {"
       "    ... on Human {"
-      "      age"
+      "      name"
       "      ...HumanFragment"
       "    }"
-      "    ... on Pet {"
-      "      breed"
+      "    ... on Photo {"
+      "      width"
       "    }"
       "  }"
       "}"
       ""
       "fragment HumanFragment on Human {"
-      "  workedAt"
+      "  age"
       "}"
     );
     auto r = test.executeWith(doc, root, typeOfMap);

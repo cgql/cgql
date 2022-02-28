@@ -130,12 +130,6 @@ Token Tokenizer::nextToken() {
   uint16_t* i = &this->cursor;
 
   for(; *i < len; *i = *i + 1) {
-    if(isDigit(this->source[*i])) {
-      return this->tokenizeDigits();
-    }
-    if(isNameStart(this->source[*i])) {
-      return this->tokenizeName();
-    }
     switch ((uint32_t)this->source[*i]) {
       case 0xFEFF:
       case 0x0009:
@@ -183,6 +177,12 @@ Token Tokenizer::nextToken() {
       case 0x007C:
         this->advanceCursor(1);
         return generateToken(TokenType::PIPE);
+    }
+    if(isDigit(this->source[*i])) {
+      return this->tokenizeDigits();
+    }
+    if(isNameStart(this->source[*i])) {
+      return this->tokenizeName();
     }
   }
   return generateToken(TokenType::END_OF_QUERY);
