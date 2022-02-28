@@ -1,15 +1,16 @@
-union SearchResult = Person | Photo 
-
-type Person {
-  name: String
-  age: Int
+type Address {
+  city: String
+  houseName: String
 }
 
-type Photo {
-  height: Int
-  width: Int
+type Person {
+  name: String!
+  age: Int
+  address: Address
+  partner: Person
+  workedAt: [String]
 }
 
 type Query {
-  firstSearchResult: SearchResult
+  person(id: Int): Person
 }

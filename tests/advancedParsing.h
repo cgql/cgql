@@ -20,21 +20,42 @@ inline void runAdvancedParsing() {
   test.parseSchema(schema.c_str());
   ResolverMap root {
     {
-      "firstSearchResult",
+      "person",
       [](const Args& args) -> Data {
-        ResultMap human {
+        Int id = fromVariant<Int>(args["id"]);
+        ResultMap a {
           {
-            { "name", "cw3dv" },
-            { "age", 14 }
+            { "city", "0xFF-Park" },
+            { "houseName", "cw3dv's-homeeeee" }
           }
         };
-        return cgqlSMakePtr<ResultMap>(human);
+        ResultMap r {
+          {
+            { "name", "cw3dv1" }
+          }
+        };
+        ResultMap p {
+          {
+            { "name", "cw3dv" },
+            { "age", id },
+            { "address", cgqlSMakePtr<ResultMap>(a) },
+            { "partner", cgqlSMakePtr<ResultMap>(r) },
+            { "workedAt",
+              (cgqlContainer<GraphQLReturnTypes>){
+                "Google",
+                "Microsoft",
+                "Github"
+              }
+            }
+          }
+        };
+        return cgqlSMakePtr<ResultMap>(p);
       }
     },
   };
   TypeOfMap typeOfMap {
     {
-      "SearchResult",
+      "Entity",
       [](const cgqlSPtr<ResultMap>& result) -> String {
         return "Person";
       }
@@ -43,22 +64,21 @@ inline void runAdvancedParsing() {
   for(int i = 0; i < 50000; i++) {
     auto doc = parse(
       "{"
-      "  cw3dv: firstSearchResult {"
-      "    ... on Person {"
+      "  cw3dv: person(id: 65) {"
+      "    name"
+      "    age"
+      "    addr: address {"
+      "      city"
+      "      houseName"
+      "    }"
+      "    partner {"
       "      name"
-      "      ...HumanFragment"
       "    }"
-      "    ... on Photo {"
-      "      width"
-      "    }"
+      "    workedAt"
       "  }"
-      "}"
-      ""
-      "fragment HumanFragment on Human {"
-      "  age"
       "}"
     );
     auto r = test.executeWith(doc, root, typeOfMap);
-    // printResultMap(*r);
+    printResultMap(*r);
   }
 }

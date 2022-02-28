@@ -16,7 +16,7 @@ cgqlSPtr<T> SchemaParser::parseType(const TypeRegistry& registry) {
     );
     this->move(TokenType::SQUARE_BRACES_R);
   } else {
-    type = registry.getType<TypeDefinition>(this->parseName());
+    type = cgqlSMakePtr<DefaultWrapTypeDefinition<TypeDefinition>>(registry.getType<TypeDefinition>(this->parseName()));
   }
   if(this->checkType(TokenType::BANG)) {
     this->tokenizer.advance();

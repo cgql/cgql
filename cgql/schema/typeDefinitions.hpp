@@ -13,6 +13,7 @@ using String = std::string_view;
 namespace internal {
 
 enum DefinitionType {
+  DEFAULT_WRAP,
   INTERFACE_TYPE,
   OBJECT_TYPE,
   UNION_TYPE,
@@ -26,6 +27,8 @@ enum DefinitionType {
 
 inline std::ostream& operator<<(std::ostream& os, const DefinitionType& type) {
   switch(type) {
+    case DEFAULT_WRAP:
+      os << "DEFAULT_WRAP"; break;
     case OBJECT_TYPE:
       os << "OBJECT_TYPE"; break;
     case UNION_TYPE:
@@ -126,6 +129,24 @@ public:
   }
 private:
   mutable cgqlSPtr<T> innerType;
+  DefinitionType type;
+};
+
+template<typename T>
+class DefaultWrapTypeDefinition : public TypeDefinition {
+public:
+  DefaultWrapTypeDefinition(cgqlSPtr<T> innerType) {
+    this->innerType = innerType;
+    this->type = DefinitionType::DEFAULT_WRAP;
+  }
+  cgqlSPtr<T> getInnerType() const {
+    return this->innerType.lock();
+  };
+  const DefinitionType& getType() const override {
+    return this->type;
+  }
+private:
+  mutable std::weak_ptr<T> innerType;
   DefinitionType type;
 };
 
