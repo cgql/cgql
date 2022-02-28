@@ -174,15 +174,15 @@ public:
   const DefinitionType& getType() const override {
     return this->type;
   }
-  void setImplementedInterfaces(cgqlContainer<cgqlSPtr<InterfaceTypeDefinition>> interfaces) {
+  void setImplementedInterfaces(cgqlContainer<std::string> interfaces) {
     this->implements = interfaces;
   }
-  cgqlContainer<cgqlSPtr<InterfaceTypeDefinition>>& getImplementedInterfaces() const {
+  cgqlContainer<std::string>& getImplementedInterfaces() const {
     return this->implements;
   }
 private:
   mutable cgqlContainer<FieldTypeDefinition> fields;
-  mutable cgqlContainer<cgqlSPtr<InterfaceTypeDefinition>> implements;
+  mutable cgqlContainer<std::string> implements;
   DefinitionType type;
 };
 
@@ -200,15 +200,15 @@ public:
   const DefinitionType& getType() const override {
     return this->type;
   }
-  void setImplementedInterfaces(cgqlContainer<cgqlSPtr<InterfaceTypeDefinition>> interfaces) {
+  void setImplementedInterfaces(cgqlContainer<std::string> interfaces) {
     this->implements = interfaces;
   }
-  cgqlContainer<cgqlSPtr<InterfaceTypeDefinition>>& getImplementedInterfaces() const {
+  cgqlContainer<std::string>& getImplementedInterfaces() const {
     return this->implements;
   }
 private:
   mutable cgqlContainer<FieldTypeDefinition> fieldDefs;
-  mutable cgqlContainer<cgqlSPtr<InterfaceTypeDefinition>> implements;
+  mutable cgqlContainer<std::string> implements;
   DefinitionType type;
 };
 
@@ -217,15 +217,18 @@ public:
   UnionTypeDefinition() {
     type = DefinitionType::UNION_TYPE;
   }
-  void addMember(const cgqlSPtr<TypeDefinition>& member) {
+  void addMember(const cgqlSPtr<ObjectTypeDefinition>& member) {
     this->members.emplace_back(member);
   }
   const DefinitionType& getType() const override {
     return this->type;
   }
+  cgqlContainer<cgqlSPtr<TypeDefinition>> getMembers() const {
+    return members;
+  }
 private:
   DefinitionType type;
-  mutable cgqlContainer<std::weak_ptr<TypeDefinition>> members;
+  mutable cgqlContainer<cgqlSPtr<TypeDefinition>> members;
 };
 
 using ImplementedInterfaces = std::unordered_map<
@@ -245,7 +248,7 @@ public:
     const std::unordered_map<std::string, cgqlSPtr<TypeDefinition>>& typeDefMap
   ) {
     for(auto const& [key, def] : typeDefMap) {
-      const cgqlContainer<cgqlSPtr<InterfaceTypeDefinition>>& implements = [this](const cgqlSPtr<TypeDefinition>& def) {
+      const cgqlContainer<std::string>& implements = [this](const cgqlSPtr<TypeDefinition>& def) {
         switch(def->getType()) {
           case DefinitionType::OBJECT_TYPE: {
             const cgqlSPtr<ObjectTypeDefinition>& object =
@@ -260,11 +263,11 @@ public:
               std::static_pointer_cast<InterfaceTypeDefinition>(def);
             return interface->getImplementedInterfaces();
           }
-          default: return cgqlContainer<cgqlSPtr<InterfaceTypeDefinition>>{};
+          default: return cgqlContainer<std::string>{};
         }
       }(def);
       for(auto const& interface : implements) {
-        const auto& it = this->implementedInterfaces.find(interface->getName());
+        const auto& it = this->implementedInterfaces.find(interface);
         if(it != this->implementedInterfaces.end()) {
           it->second.emplace_back(def);
         } else {
@@ -272,16 +275,19 @@ public:
           typeDefVec.reserve(1);
           typeDefVec.emplace_back(def);
           this->implementedInterfaces.try_emplace(
-            interface->getName(), std::move(typeDefVec)
+            interface, std::move(typeDefVec)
           );
         }
       }
     }
   }
   template<typename T>
-  const cgqlContainer<cgqlSPtr<TypeDefinition>>& getPossibleTypes(
+  cgqlContainer<cgqlSPtr<TypeDefinition>> getPossibleTypes(
     const T& abstractType
   ) const {
+    if(abstractType->getType() == DefinitionType::UNION_TYPE) {
+      return std::dynamic_pointer_cast<UnionTypeDefinition>(abstractType)->getMembers();
+    }
     const ImplementedInterfaces::const_iterator& it = this->implementedInterfaces.find(abstractType->getName());
     return it->second;
   }

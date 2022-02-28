@@ -254,13 +254,10 @@ static Data completeAbstractType(
   TypeOfMap::const_iterator it = ctx.typeOfMap->find(fieldType->getName());
   for(cgqlSPtr<TypeDefinition> possibleType : possibleTypes) {
     String typeName = it->second(resultMap);
-    if(possibleType->getName() == typeName) {
-      cgqlAssert(
-        possibleType->getType() != DefinitionType::OBJECT_TYPE,
-        "Type needs to he an object"
-      );
+    cgqlSPtr<TypeDefinition> possibleTypeLocked = possibleType;
+    if(possibleTypeLocked->getName() == typeName) {
       const cgqlSPtr<ObjectTypeDefinition>& object =
-        std::static_pointer_cast<ObjectTypeDefinition>(possibleType);
+        std::dynamic_pointer_cast<ObjectTypeDefinition>(possibleTypeLocked);
       GroupedField groupedFields;
       collectSubFields(ctx, object, fields, groupedFields);
       return executeGroupedFieldSet(
@@ -331,7 +328,9 @@ Data completeValue(
     return completeAbstractType(ctx, schemaObj, fields, result, source);
   }
   if(type == DefinitionType::UNION_TYPE) {
-    logger::info("he");
+    const cgqlSPtr<UnionTypeDefinition>& schemaObj =
+      std::static_pointer_cast<UnionTypeDefinition>(fieldType);
+    return completeAbstractType(ctx, schemaObj, fields, result, source);
   }
   return coerceLeafValue(fieldType, result);
 }

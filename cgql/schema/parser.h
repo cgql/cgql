@@ -22,7 +22,7 @@ private:
   void parseUnionTypeDefinition(const TypeRegistry& registry);
   FieldTypeDefinition parseFieldTypeDefinition(const TypeRegistry& registry);
   ArgumentTypeDefinition parseArgumentDefinition(const TypeRegistry& registry);
-  cgqlContainer<cgqlSPtr<InterfaceTypeDefinition>> parseImplementInterfaces(const TypeRegistry& registry);
+  cgqlContainer<std::string> parseImplementInterfaces(const TypeRegistry& registry);
 
   void parseDefinition(const TypeRegistry& registry);
 };
