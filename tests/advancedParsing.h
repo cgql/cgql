@@ -40,11 +40,11 @@ inline void runAdvancedParsing() {
       }
     }
   };
-  for(int i = 0; i < 1; i++) {
+  for(int i = 0; i < 50000; i++) {
     auto doc = parse(
       "{"
       "  cw3dv: firstSearchResult {"
-      "    ... on Human {"
+      "    ... on Person {"
       "      name"
       "      ...HumanFragment"
       "    }"
