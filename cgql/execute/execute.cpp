@@ -118,13 +118,6 @@ Data coerceLeafValue(
   const cgqlSPtr<TypeDefinition>& fieldType,
   const Data& data
 ) {
-  cgqlAssert(data.index() == 4, "Result cannot be null");
-  /* const GraphQLTypesBase<T>& type =
-    fromVariant<GraphQLTypesBase<T>>(fieldType);
-  const GraphQLReturnTypes& variedValue =
-    fromVariant<GraphQLReturnTypes>(data);
-  const T& value = fromVariant<T>(variedValue);
-  return type.getSerializer()(value); */
   return std::move(data);
 }
 
@@ -299,40 +292,43 @@ Data completeValue(
   if(result.index() == 4) {
     return std::monostate{};
   }
-  if(type == LIST_TYPE) {
-    const cgqlSPtr<ListTypeDefinition<TypeDefinition>>& list =
-      std::static_pointer_cast<ListTypeDefinition<TypeDefinition>>(fieldType);
-    return completeList(
-      ctx,
-      list,
-      field,
-      fields,
-      result,
-      source
-    );
-  }
-  if(type == DefinitionType::OBJECT_TYPE) {
-    const cgqlSPtr<ObjectTypeDefinition>& schemaObj =
-      std::static_pointer_cast<ObjectTypeDefinition>(fieldType);
+  switch (type) {
+    case LIST_TYPE: {
+      const cgqlSPtr<ListTypeDefinition<TypeDefinition>>& list =
+        std::static_pointer_cast<ListTypeDefinition<TypeDefinition>>(fieldType);
+      return completeList(
+        ctx,
+        list,
+        field,
+        fields,
+        result,
+        source
+      );
+    }
+    case OBJECT_TYPE: {
+      const cgqlSPtr<ObjectTypeDefinition>& schemaObj =
+        std::static_pointer_cast<ObjectTypeDefinition>(fieldType);
 
-    return executeInnerSelectionSet<ObjectTypeDefinition>(
-      ctx,
-      schemaObj,
-      result,
-      fields
-    );
+      return executeInnerSelectionSet<ObjectTypeDefinition>(
+        ctx,
+        schemaObj,
+        result,
+        fields
+      );
+    }
+    case INTERFACE_TYPE: {
+      const cgqlSPtr<InterfaceTypeDefinition>& schemaObj =
+        std::static_pointer_cast<InterfaceTypeDefinition>(fieldType);
+      return completeAbstractType(ctx, schemaObj, fields, result, source);
+    }
+    case UNION_TYPE: {
+      const cgqlSPtr<UnionTypeDefinition>& schemaObj =
+        std::static_pointer_cast<UnionTypeDefinition>(fieldType);
+      return completeAbstractType(ctx, schemaObj, fields, result, source);
+    }
+    default:
+      return coerceLeafValue(fieldType, result);
   }
-  if(type == DefinitionType::INTERFACE_TYPE) {
-    const cgqlSPtr<InterfaceTypeDefinition>& schemaObj =
-      std::static_pointer_cast<InterfaceTypeDefinition>(fieldType);
-    return completeAbstractType(ctx, schemaObj, fields, result, source);
-  }
-  if(type == DefinitionType::UNION_TYPE) {
-    const cgqlSPtr<UnionTypeDefinition>& schemaObj =
-      std::static_pointer_cast<UnionTypeDefinition>(fieldType);
-    return completeAbstractType(ctx, schemaObj, fields, result, source);
-  }
-  return coerceLeafValue(fieldType, result);
 }
 
 Args buildArgumentMap(
