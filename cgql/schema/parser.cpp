@@ -3,9 +3,6 @@
 namespace cgql {
 namespace internal {
 
-#define CURRENT_TOKEN_TYPE this->tokenizer.current.getType()
-#define CURRENT_TOKEN_VALUE this->tokenizer.current.getValue()
-
 template<typename T>
 cgqlSPtr<T> SchemaParser::parseType(const TypeRegistry& registry) {
   cgqlSPtr<T> type;
@@ -23,15 +20,6 @@ cgqlSPtr<T> SchemaParser::parseType(const TypeRegistry& registry) {
     return cgqlSMakePtr<NonNullTypeDefinition<TypeDefinition>>(type);
   }
   return type;
-}
-
-static cgqlUPtr<InterfaceTypeDefinition> parseImplementInterface(
-  std::string name
-) {
-  cgqlUPtr<InterfaceTypeDefinition> interface =
-    cgqlUMakePtr<InterfaceTypeDefinition>();
-  interface->setName(name);
-  return interface;
 }
 
 cgqlContainer<std::string> SchemaParser::parseImplementInterfaces(const TypeRegistry& registry) {
@@ -117,6 +105,19 @@ void SchemaParser::parseUnionTypeDefinition(const TypeRegistry& registry) {
   }
 }
 
+void SchemaParser::parseEnumTypeDefinition(const TypeRegistry& registry) {
+  this->tokenizer.advance();
+  cgqlSPtr<EnumTypeDefinition> enumType =
+    registry.getType<EnumTypeDefinition>(this->parseName());
+  if(this->checkType(TokenType::CURLY_BRACES_L)) {
+    this->tokenizer.advance();
+    do {
+      enumType->addValue(this->parseName());
+    } while(!this->checkType(TokenType::CURLY_BRACES_R));
+  }
+  this->tokenizer.advance();
+}
+
 void SchemaParser::parseDefinition(const TypeRegistry& registry) {
   String currentValue(this->tokenizer.current.getValue());
   if(currentValue == "type")
@@ -125,6 +126,8 @@ void SchemaParser::parseDefinition(const TypeRegistry& registry) {
     this->parseInterfaceTypeDefinition(registry);
   else if(currentValue == "union")
     this->parseUnionTypeDefinition(registry);
+  else if(currentValue == "enum")
+    this->parseEnumTypeDefinition(registry);
   else {
     std::string msg;
     msg += "Failed to parse type definition which starts with ";

@@ -2,7 +2,7 @@ project(cgqlTests)
 
 add_executable(
   cgqlTests
-  ./basicExecution.h
+  ./basicTest.h
   ./advancedParsing.h
   ./test.cpp
 )

@@ -11,8 +11,8 @@ namespace internal {
 
 struct ExecutionContext {
   cgqlSPtr<Schema> schema;
-  cgqlUPtr<ResolverMap> resolverMap;
-  cgqlUPtr<TypeOfMap> typeOfMap;
+  ResolverMap resolverMap;
+  TypeOfMap typeOfMap;
   cgqlContainer<FragmentDefinition> fragments;
 };
 

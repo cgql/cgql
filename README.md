@@ -77,14 +77,16 @@ target_link_libraries(
 
 An example of executing a basic request
 ```cpp
-#include <cgql/execute/execute.h>
+#include <cgql/cgql.h>
 #include <cgql/type/parser/parser.h>
 
 using namespace cgql;
 
 int main() {
+  // configuration part
+  CgqlInstance test;
   // schema
-  auto typeDef = parseSchema(
+  test.parseSchema(
     "type Person {"
     "  name: String"
     "  age: Int"
@@ -102,14 +104,17 @@ int main() {
       [](const Args& args) -> Data {
         Int id = fromVariant<Int>(args["id"]); // argument
         ResultMap p {
-          { "name", "cw3dv" },
-          { "age", 14 }
+          {
+            { "name", "cw3dv" },
+            { "age", 14 }
+          }
         };
         return cgqlSMakePtr<ResultMap>(p);
       }
     }
   };
-
+  // TypeOfMap (used for abstract types)
+  TypeOfMap typeOfMap;
   // query
   auto query = parse(
     "{"
@@ -121,7 +126,7 @@ int main() {
   );
 
   // execution
-  auto executionResult = execute(schema, query, resolvers);
+  auto executionResult = test.execute(query, resolvers, typeOfMap);
   printResultMap(executionResult);
   /* prints result to stdout
 

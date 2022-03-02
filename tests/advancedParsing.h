@@ -40,6 +40,7 @@ inline void runAdvancedParsing() {
             { "age", id },
             { "address", cgqlSMakePtr<ResultMap>(a) },
             { "partner", cgqlSMakePtr<ResultMap>(r) },
+            { "gender", "MALE" },
             { "workedAt",
               (cgqlContainer<GraphQLReturnTypes>){
                 "Google",

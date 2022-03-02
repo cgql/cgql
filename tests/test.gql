@@ -1,3 +1,9 @@
+enum Gender {
+  MALE
+  FEMALE
+  PREFER_NOT_TO_SAY
+}
+
 type Address {
   city: String
   houseName: String
@@ -9,6 +15,7 @@ type Person {
   address: Address
   partner: Person
   workedAt: [String]
+  gender: Gender!
 }
 
 type Query {

@@ -20,6 +20,7 @@ private:
   void parseObjectTypeDefinition(const TypeRegistry& registry);
   void parseInterfaceTypeDefinition(const TypeRegistry& registry);
   void parseUnionTypeDefinition(const TypeRegistry& registry);
+  void parseEnumTypeDefinition(const TypeRegistry& registry);
   FieldTypeDefinition parseFieldTypeDefinition(const TypeRegistry& registry);
   ArgumentTypeDefinition parseArgumentDefinition(const TypeRegistry& registry);
   cgqlContainer<std::string> parseImplementInterfaces(const TypeRegistry& registry);

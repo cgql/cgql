@@ -17,6 +17,7 @@ enum DefinitionType {
   INTERFACE_TYPE,
   OBJECT_TYPE,
   UNION_TYPE,
+  ENUM_TYPE,
   TYPE_DEF,
 
   SCALAR_TYPE,
@@ -33,6 +34,8 @@ inline std::ostream& operator<<(std::ostream& os, const DefinitionType& type) {
       os << "OBJECT_TYPE"; break;
     case UNION_TYPE:
       os << "UNION_TYPE"; break;
+    case ENUM_TYPE:
+      os << "ENUM_TYPE"; break;
     case TYPE_DEF:
       os << "TYPE_DEF"; break;
     case SCALAR_TYPE:
@@ -61,23 +64,20 @@ private:
 
 class AbstractTypeDefinition {
 public:
-  virtual const DefinitionType& getType() const = 0;
+  virtual DefinitionType getType() const = 0;
 };
 
 class TypeDefinition : public AbstractTypeDefinition, public AbstractSchemaTypeDefinition {
 public:
-  TypeDefinition() {
-    this->type = DefinitionType::TYPE_DEF;
-  };
+  TypeDefinition() = default;
   TypeDefinition(const std::string& name) {
     this->setName(name);
   }
   virtual ~TypeDefinition() {}
-  const DefinitionType& getType() const override {
-    return this->type;
+  DefinitionType getType() const override {
+    return DefinitionType::TYPE_DEF;
   }
 private:
-  DefinitionType type;
 };
 
 template<typename T>
@@ -87,13 +87,11 @@ public:
     const std::string& name
   ) {
     this->setName(name);
-    this->type = DefinitionType::SCALAR_TYPE;
   }
-  const DefinitionType& getType() const override {
-    return this->type;
+  DefinitionType getType() const override {
+    return DefinitionType::SCALAR_TYPE;
   }
 private:
-  DefinitionType type;
 };
 
 template<typename T>
@@ -101,17 +99,15 @@ class ListTypeDefinition : public TypeDefinition {
 public:
   ListTypeDefinition(cgqlSPtr<T> innerType) {
     this->innerType = innerType;
-    this->type = DefinitionType::LIST_TYPE;
   }
   cgqlSPtr<T>& getInnerType() const {
     return this->innerType;
   };
-  const DefinitionType& getType() const override {
-    return this->type;
+  DefinitionType getType() const override {
+    return DefinitionType::LIST_TYPE;
   }
 private:
   mutable cgqlSPtr<T> innerType;
-  DefinitionType type;
 };
 
 template<typename T>
@@ -119,17 +115,15 @@ class NonNullTypeDefinition : public TypeDefinition {
 public:
   NonNullTypeDefinition(cgqlSPtr<T> innerType) {
     this->innerType = innerType;
-    this->type = DefinitionType::NON_NULL_TYPE;
   }
   cgqlSPtr<T>& getInnerType() const {
     return this->innerType;
   };
-  const DefinitionType& getType() const override {
-    return this->type;
+  DefinitionType getType() const override {
+    return DefinitionType::NON_NULL_TYPE;
   }
 private:
   mutable cgqlSPtr<T> innerType;
-  DefinitionType type;
 };
 
 template<typename T>
@@ -137,17 +131,15 @@ class DefaultWrapTypeDefinition : public TypeDefinition {
 public:
   DefaultWrapTypeDefinition(cgqlSPtr<T> innerType) {
     this->innerType = innerType;
-    this->type = DefinitionType::DEFAULT_WRAP;
   }
   cgqlSPtr<T> getInnerType() const {
     return this->innerType.lock();
   };
-  const DefinitionType& getType() const override {
-    return this->type;
+  DefinitionType getType() const override {
+    return DefinitionType::DEFAULT_WRAP;
   }
 private:
   mutable std::weak_ptr<T> innerType;
-  DefinitionType type;
 };
 
 class ArgumentTypeDefinition : public AbstractSchemaTypeDefinition {
@@ -183,17 +175,14 @@ private:
 
 class InterfaceTypeDefinition : public TypeDefinition {
 public:
-  InterfaceTypeDefinition() {
-    this->type = DefinitionType::INTERFACE_TYPE;
-  };
   void addField(const FieldTypeDefinition& field) {
     this->fields.emplace_back(field);
   }
   cgqlContainer<FieldTypeDefinition>& getFields() const {
     return this->fields;
   }
-  const DefinitionType& getType() const override {
-    return this->type;
+  DefinitionType getType() const override {
+    return DefinitionType::INTERFACE_TYPE;
   }
   void setImplementedInterfaces(cgqlContainer<std::string> interfaces) {
     this->implements = interfaces;
@@ -204,22 +193,18 @@ public:
 private:
   mutable cgqlContainer<FieldTypeDefinition> fields;
   mutable cgqlContainer<std::string> implements;
-  DefinitionType type;
 };
 
 class ObjectTypeDefinition : public TypeDefinition {
 public:
-  ObjectTypeDefinition() {
-    this->type = DefinitionType::OBJECT_TYPE;
-  };
   void addField(const FieldTypeDefinition& field) {
     this->fieldDefs.emplace_back(field);
   }
   cgqlContainer<FieldTypeDefinition>& getFields() const {
     return this->fieldDefs;
   }
-  const DefinitionType& getType() const override {
-    return this->type;
+  DefinitionType getType() const override {
+    return DefinitionType::OBJECT_TYPE;
   }
   void setImplementedInterfaces(cgqlContainer<std::string> interfaces) {
     this->implements = interfaces;
@@ -230,26 +215,36 @@ public:
 private:
   mutable cgqlContainer<FieldTypeDefinition> fieldDefs;
   mutable cgqlContainer<std::string> implements;
-  DefinitionType type;
 };
 
 class UnionTypeDefinition : public TypeDefinition {
 public:
-  UnionTypeDefinition() {
-    type = DefinitionType::UNION_TYPE;
-  }
   void addMember(const cgqlSPtr<ObjectTypeDefinition>& member) {
     this->members.emplace_back(member);
   }
-  const DefinitionType& getType() const override {
-    return this->type;
+  DefinitionType getType() const override {
+    return DefinitionType::UNION_TYPE;
   }
   cgqlContainer<cgqlSPtr<TypeDefinition>> getMembers() const {
     return members;
   }
 private:
-  DefinitionType type;
   mutable cgqlContainer<cgqlSPtr<TypeDefinition>> members;
+};
+
+class EnumTypeDefinition : public TypeDefinition {
+public:
+  void addValue(std::string value) {
+    values.emplace_back(value);
+  }
+  DefinitionType getType() const override {
+    return DefinitionType::ENUM_TYPE;
+  }
+  cgqlContainer<std::string> getValues() const {
+    return this->values;
+  }
+private:
+  mutable cgqlContainer<std::string> values;
 };
 
 using ImplementedInterfaces = std::unordered_map<
