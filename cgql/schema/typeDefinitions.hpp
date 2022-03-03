@@ -133,13 +133,13 @@ public:
     this->innerType = innerType;
   }
   cgqlSPtr<T> getInnerType() const {
-    return this->innerType.lock();
+    return cgqlSMakePtr<T>(*innerType);
   };
   DefinitionType getType() const override {
     return DefinitionType::DEFAULT_WRAP;
   }
 private:
-  mutable std::weak_ptr<T> innerType;
+  mutable cgqlWeakPtr<T> innerType;
 };
 
 class ArgumentTypeDefinition : public AbstractSchemaTypeDefinition {
