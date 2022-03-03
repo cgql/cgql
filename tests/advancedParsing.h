@@ -13,6 +13,7 @@ inline void runAdvancedParsing() {
   std::string line;
 
   while(std::getline(file, line)) {
+    line += "\n";
     schema += line;
   }
   file.close();

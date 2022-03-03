@@ -30,7 +30,8 @@ enum TokenType {
 
   SPREAD,
   EQUAL,
-  PIPE
+  PIPE,
+  HASH
 };
 
 const char* tokenTypeToCharArray(const TokenType& type);
@@ -59,6 +60,7 @@ public:
   Token nextToken();
   Token current;
   void advance();
+  void skipComments();
 private:
   std::string source;
   uint16_t cursor;

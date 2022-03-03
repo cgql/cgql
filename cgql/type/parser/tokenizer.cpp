@@ -57,6 +57,9 @@ const char* tokenTypeToCharArray(const TokenType& type) {
     case TokenType::PIPE:
       return "PIPE";
       break;
+    case TokenType::HASH:
+      return "HASH";
+      break;
   }
   return "";
 }
@@ -124,6 +127,20 @@ Token Tokenizer::tokenizeDigits() {
   );
 }
 
+void Tokenizer::skipComments() {
+  uint16_t* i = &this->cursor;
+
+  for(; *i < this->source.length();) {
+    if(
+      this->source[*i] == 0x000A ||
+      this->source[*i] == 0x000D
+    ) {
+      break;
+    }
+    this->advanceCursor(1);
+  }
+}
+
 Token Tokenizer::nextToken() {
   size_t len = this->source.length();
 
@@ -177,6 +194,10 @@ Token Tokenizer::nextToken() {
       case 0x007C:
         this->advanceCursor(1);
         return generateToken(TokenType::PIPE);
+      case 0x0023:
+        this->advanceCursor(1);
+        this->skipComments();
+        continue;
     }
     if(isDigit(this->source[*i])) {
       return this->tokenizeDigits();
