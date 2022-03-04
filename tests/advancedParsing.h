@@ -22,8 +22,8 @@ inline void runAdvancedParsing() {
   ResolverMap root {
     {
       "person",
-      [](const Args& args) -> Data {
-        Int id = fromVariant<Int>(args["id"]);
+      [](const Args& arguments) -> Data {
+        auto args = fromVariant<InputObject>(arguments["args"]);
         ResultMap a {
           {
             { "city", "0xFF-Park" },
@@ -38,7 +38,7 @@ inline void runAdvancedParsing() {
         ResultMap p {
           {
             { "name", "cw3dv" },
-            { "age", id },
+            { "age", fromVariant<Int>(args->argsMap["id"]) },
             { "address", cgqlSMakePtr<ResultMap>(a) },
             { "partner", cgqlSMakePtr<ResultMap>(r) },
             { "gender", "MALE" },
@@ -66,7 +66,7 @@ inline void runAdvancedParsing() {
   for(int i = 0; i < 50000; i++) {
     auto doc = parse(
       "{"
-      "  cw3dv: person(id: 65) {"
+      "  cw3dv: person(args: { id: 65 }) {"
       "    name"
       "    age"
       "    addr: address {"
