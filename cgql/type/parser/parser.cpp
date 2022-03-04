@@ -8,22 +8,23 @@
 namespace cgql {
 namespace internal {
 
+std::string QueryParser::getKey() {
+  std::string name = this->parseName();
+  this->move(TokenType::COLON);
+  return name;
+}
+
 InputObject QueryParser::parseObject() {
   InputObject inputObject = cgqlSMakePtr<Args>();
-
-  auto getKey = [this]() -> std::string {
-    std::string name = this->parseName();
-    this->move(TokenType::COLON);
-    return name;
-  };
 
   do {
     this->tokenizer.advance();
     inputObject->argsMap.try_emplace(
-      getKey(), this->parseValue()
+      this->getKey(), this->parseValue()
     );
   } while(!this->checkType(TokenType::CURLY_BRACES_R));
   this->tokenizer.advance();
+
   return inputObject;
 }
 

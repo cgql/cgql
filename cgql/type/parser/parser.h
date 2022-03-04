@@ -28,6 +28,8 @@ private:
   Argument parseArgument();
   Arg parseValue();
   InputObject parseObject();
+
+  std::string getKey();
 };
 
 } // internal
