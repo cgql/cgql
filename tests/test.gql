@@ -25,5 +25,5 @@ type Person {
 }
 
 type Query {
-  person(id: Int): Person
+  person(args: PersonQueryInput): Person
 }

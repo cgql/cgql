@@ -8,23 +8,43 @@
 namespace cgql {
 namespace internal {
 
+InputObject QueryParser::parseObject() {
+  InputObject inputObject = cgqlSMakePtr<Args>();
+
+  auto getKey = [this]() -> std::string {
+    std::string name = this->parseName();
+    this->move(TokenType::COLON);
+    return name;
+  };
+
+  do {
+    this->tokenizer.advance();
+    inputObject->argsMap.try_emplace(
+      getKey(), this->parseValue()
+    );
+  } while(!this->checkType(TokenType::CURLY_BRACES_R));
+  this->tokenizer.advance();
+  return inputObject;
+}
+
 Arg QueryParser::parseValue() {
   TokenType curr = this->tokenizer.current.getType();
-  std::string valueAsStr = [&curr, this](){;
-    switch(curr) {
-      case TokenType::NAME:
-        return this->parseName();
-        break;
-      default:
-        return this->move(curr).getValue();
+  switch(curr) {
+    case TokenType::NAME:
+      return this->parseName();
+    case TokenType::INT: {
+      std::string valueAsStr = this->move(curr).getValue();
+      uint8_t start = charToInt<uint8_t>(valueAsStr[0]);
+      if(isAsciiDigit(start)) {
+        // potentially an integer
+        return strToInt<Int>(valueAsStr);
+      }
     }
-  }();
-  uint8_t start = charToInt<uint8_t>(valueAsStr[0]);
-  if(isAsciiDigit(start)) {
-    // potentially an integer
-    return strToInt<Int>(valueAsStr);
+    case TokenType::CURLY_BRACES_L:
+      return this->parseObject();
+    default:
+      return this->move(curr).getValue();
   }
-  return valueAsStr;
 }
 
 Argument QueryParser::parseArgument() {

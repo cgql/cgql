@@ -27,6 +27,7 @@ private:
   cgqlUPtr<Fragment> parseFragment();
   Argument parseArgument();
   Arg parseValue();
+  InputObject parseObject();
 };
 
 } // internal

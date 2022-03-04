@@ -39,9 +39,14 @@ struct ResultMap {
   cgqlContainer<Error> errors;
 };
 
+struct Args;
+
+using InputObject = cgqlSPtr<Args>;
+
 using Arg = std::variant<
   Int,
-  String
+  String,
+  InputObject
 >;
 
 using ArgsMap = std::unordered_map<
