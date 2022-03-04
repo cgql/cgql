@@ -1,5 +1,9 @@
 # hello
 
+input PersonQueryInput {
+  id: Int
+}
+
 enum Gender {
   MALE
   FEMALE

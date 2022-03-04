@@ -1,5 +1,4 @@
-#ifndef CGQL_DEFS_H
-#define CGQL_DEFS_H
+#pragma once
 
 #include "cgql/base/cgqlPch.h"
 
@@ -55,5 +54,3 @@ namespace internal {
 }
 
 } // cgql
-
-#endif /* ifndef CGQL_DEFS_H */

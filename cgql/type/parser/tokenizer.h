@@ -1,5 +1,4 @@
-#ifndef TOKENIZER_H
-#define TOKENIZER_H
+#pragma once
 
 #include "cgql/base/cgqlPch.h"
 
@@ -75,5 +74,3 @@ Token generateToken(TokenType type);
 
 } // internal
 } // cgql
-
-#endif

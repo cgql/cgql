@@ -1,5 +1,4 @@
-#ifndef BASE_PARSER_H
-#define BASE_PARSER_H
+#pragma once
 
 #include "cgql/base/cgqlPch.h"
 #include "cgql/type/parser/tokenizer.h"
@@ -21,5 +20,3 @@ protected:
 
 } /* internal */ 
 } /* cgql */
-
-#endif /* end of include guard: BASE_PARSER_H */

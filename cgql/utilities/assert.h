@@ -1,5 +1,4 @@
-#ifndef CGQL_ASSERT
-#define CGQL_ASSERT
+#pragma once
 
 #include "cgql/logger/logger.h"
 
@@ -51,5 +50,3 @@ inline void cgqlAssertImpl(
 
 } // internal
 } // cgql
-
-#endif /* ifndef CGQL_ASSERT */

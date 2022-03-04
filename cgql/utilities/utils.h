@@ -1,5 +1,4 @@
-#ifndef CGQL_UTILS_H
-#define CGQL_UTILS_H
+#pragma once
 
 #include "cgql/base/cgqlPch.h"
 
@@ -56,5 +55,3 @@ constexpr inline T strToInt(const std::string& str) {
 
 } // internal
 } // cgql
-
-#endif

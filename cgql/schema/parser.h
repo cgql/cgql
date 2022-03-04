@@ -1,5 +1,4 @@
-#ifndef SCHEMA_PARSER_H
-#define SCHEMA_PARSER_H
+#pragma once
 
 #include "cgql/base/baseParser.h"
 #include "cgql/base/typeRegistry.h"
@@ -21,7 +20,9 @@ private:
   void parseInterfaceTypeDefinition(const TypeRegistry& registry);
   void parseUnionTypeDefinition(const TypeRegistry& registry);
   void parseEnumTypeDefinition(const TypeRegistry& registry);
+  void parseInputObjectTypeDefinition(const TypeRegistry& registry);
   FieldTypeDefinition parseFieldTypeDefinition(const TypeRegistry& registry);
+  InputValueDefinition parseInputValueDefinition(const TypeRegistry& registry);
   ArgumentTypeDefinition parseArgumentDefinition(const TypeRegistry& registry);
   cgqlContainer<std::string> parseImplementInterfaces(const TypeRegistry& registry);
 
@@ -32,5 +33,3 @@ cgqlSPtr<internal::Schema> parseSchema(const char *source, const TypeRegistry& r
 
 } /* internal */ 
 } /* cgql */ 
-
-#endif /* end of include guard: SCHEMA_PARSER_H */

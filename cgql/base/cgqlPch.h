@@ -1,5 +1,4 @@
-#ifndef CGQL_PCH
-#define CGQL_PCH
+#pragma once
 
 #include <iostream>
 
@@ -17,5 +16,3 @@
 
 #include <algorithm>
 #include <type_traits>
-
-#endif

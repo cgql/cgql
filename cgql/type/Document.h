@@ -1,5 +1,4 @@
-#ifndef DOCUMENT_H
-#define DOCUMENT_H
+#pragma once
 
 #include "cgql/base/cgqlPch.h"
 
@@ -179,5 +178,3 @@ private:
 void printDocumentNode(const internal::Document& doc);
 void printResultMap(const ResultMap& rm, uint8_t level = 0);
 } // cgql
-
-#endif

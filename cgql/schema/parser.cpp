@@ -118,6 +118,31 @@ void SchemaParser::parseEnumTypeDefinition(const TypeRegistry& registry) {
   this->tokenizer.advance();
 }
 
+InputValueDefinition SchemaParser::parseInputValueDefinition(const TypeRegistry& registry) {
+  InputValueDefinition field;
+  std::string name(this->parseName());
+  this->move(TokenType::COLON);
+  cgqlSPtr<TypeDefinition> type = this->parseType(registry);
+  field.setName(name);
+  field.setType(type);
+  return field;
+}
+
+void SchemaParser::parseInputObjectTypeDefinition(const TypeRegistry& registry) {
+  this->tokenizer.advance();
+  cgqlSPtr<InputObjectTypeDefinition> inputType =
+    registry.getType<InputObjectTypeDefinition>(this->parseName());
+  if(this->checkType(TokenType::CURLY_BRACES_L)) {
+    this->tokenizer.advance();
+    do {
+      inputType->addField(
+        this->parseInputValueDefinition(registry)
+      );
+    } while(!this->checkType(TokenType::CURLY_BRACES_R));
+  }
+  this->tokenizer.advance();
+}
+
 void SchemaParser::parseDefinition(const TypeRegistry& registry) {
   String currentValue(this->tokenizer.current.getValue());
   if(currentValue == "type")
@@ -128,6 +153,8 @@ void SchemaParser::parseDefinition(const TypeRegistry& registry) {
     this->parseUnionTypeDefinition(registry);
   else if(currentValue == "enum")
     this->parseEnumTypeDefinition(registry);
+  else if(currentValue == "input")
+    this->parseInputObjectTypeDefinition(registry);
   else {
     std::string msg;
     msg += "Failed to parse type definition which starts with ";

@@ -1,5 +1,4 @@
-#ifndef TYPE_DEFINITIONS_HPP
-#define TYPE_DEFINITIONS_HPP
+#pragma once
 
 #include "cgql/utilities/assert.h"
 #include "cgql/utilities/cgqlDefs.h"
@@ -247,6 +246,30 @@ private:
   mutable cgqlContainer<std::string> values;
 };
 
+class InputValueDefinition : public AbstractSchemaTypeDefinition {
+public:
+  void setType(cgqlSPtr<TypeDefinition> type) {
+    this->type = type;
+  }
+  cgqlSPtr<TypeDefinition>& getType() const {
+    return this->type;
+  }
+private:
+  mutable cgqlSPtr<TypeDefinition> type;
+};
+
+class InputObjectTypeDefinition : public TypeDefinition {
+public:
+  void addField(InputValueDefinition field) {
+    fields.emplace_back(field);
+  }
+  cgqlContainer<InputValueDefinition> getFields() const {
+    return this->fields;
+  }
+private:
+  cgqlContainer<InputValueDefinition> fields;
+};
+
 using ImplementedInterfaces = std::unordered_map<
   std::string,
   cgqlContainer<cgqlSPtr<TypeDefinition>>
@@ -314,5 +337,3 @@ private:
 
 } // end of internal
 } // end of cgql
-
-#endif /* end of include guard: TYPE_DEFINITIONS_HPP */

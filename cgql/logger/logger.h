@@ -1,5 +1,4 @@
-#ifndef LOGGER_H
-#define LOGGER_H
+#pragma once
 
 #include "cgql/base/cgqlPch.h"
 
@@ -30,5 +29,3 @@ public:
 }; // logger
 
 } // cgql
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef GRAPHQL_TYPES_H
-#define GRAPHQL_TYPES_H
+#pragma once
 
 #include "cgql/base/cgqlPch.h"
 #include "cgql/schema/typeDefinitions.hpp"
@@ -76,6 +75,3 @@ using ResolverMap = std::unordered_map<std::string, ResolverFunc>;
 using TypeOfMap = std::unordered_map<std::string, IsTypeOfFunc>;
 
 }
-
-
-#endif

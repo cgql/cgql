@@ -1,5 +1,4 @@
-#ifndef EXECUTE_H
-#define EXECUTE_H
+#pragma once
 
 #include "cgql/base/cgqlPch.h"
 #include "cgql/schema/typeDefinitions.hpp"
@@ -86,4 +85,3 @@ cgqlUPtr<ResultMap> execute(
 );
 
 }
-#endif

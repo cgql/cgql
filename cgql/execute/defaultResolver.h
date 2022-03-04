@@ -1,5 +1,4 @@
-#ifndef DEFAULT_RESOLVER_H
-#define DEFAULT_RESOLVER_H
+#pragma once
 
 #include "cgql/schema/GraphQLTypes.h"
 
@@ -19,4 +18,3 @@ inline const std::optional<Data> defaultFieldResolver(
 
 } // internal
 } // cgql
-#endif

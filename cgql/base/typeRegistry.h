@@ -1,5 +1,4 @@
-#ifndef TYPE_REGISTRY_H
-#define TYPE_REGISTRY_H
+#pragma once
 
 #include "cgql/base/cgqlPch.h"
 #include "cgql/schema/typeDefinitions.hpp"
@@ -37,5 +36,3 @@ private:
 
 } // end of internal
 } // end of cgql
-
-#endif /* end of include guard: TYPE_REGISTRY_H */
