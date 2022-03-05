@@ -1,5 +1,7 @@
 # hello
 
+scalar X
+
 input PersonQueryInput {
   id: Int
 }

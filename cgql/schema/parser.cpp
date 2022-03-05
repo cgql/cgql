@@ -1,4 +1,5 @@
 #include "cgql/schema/parser.h"
+#include "cgql/schema/typeDefinitions.hpp"
 
 namespace cgql {
 namespace internal {
@@ -143,6 +144,12 @@ void SchemaParser::parseInputObjectTypeDefinition(const TypeRegistry& registry) 
   this->tokenizer.advance();
 }
 
+void SchemaParser::parseScalarTypeDefinition(const TypeRegistry& registry) {
+  this->tokenizer.advance();
+  cgqlSPtr<ScalarTypeDefinition> scalar =
+    registry.getType<ScalarTypeDefinition>(this->parseName());
+}
+
 void SchemaParser::parseDefinition(const TypeRegistry& registry) {
   String currentValue(this->tokenizer.current.getValue());
   if(currentValue == "type")
@@ -155,6 +162,8 @@ void SchemaParser::parseDefinition(const TypeRegistry& registry) {
     this->parseEnumTypeDefinition(registry);
   else if(currentValue == "input")
     this->parseInputObjectTypeDefinition(registry);
+  else if(currentValue == "scalar")
+    this->parseScalarTypeDefinition(registry);
   else {
     std::string msg;
     msg += "Failed to parse type definition which starts with ";

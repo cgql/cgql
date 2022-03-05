@@ -14,6 +14,7 @@ namespace internal {
 enum DefinitionType {
   DEFAULT_WRAP,
   INTERFACE_TYPE,
+  INPUT_OBJECT_TYPE,
   OBJECT_TYPE,
   UNION_TYPE,
   ENUM_TYPE,
@@ -29,6 +30,8 @@ inline std::ostream& operator<<(std::ostream& os, const DefinitionType& type) {
   switch(type) {
     case DEFAULT_WRAP:
       os << "DEFAULT_WRAP"; break;
+    case INPUT_OBJECT_TYPE:
+      os << "INPUT_OBJECT_TYPE"; break;
     case OBJECT_TYPE:
       os << "OBJECT_TYPE"; break;
     case UNION_TYPE:
@@ -79,12 +82,10 @@ public:
 private:
 };
 
-template<typename T>
 class ScalarTypeDefinition : public TypeDefinition {
 public:
-  ScalarTypeDefinition(
-    const std::string& name
-  ) {
+  ScalarTypeDefinition() = default;
+  ScalarTypeDefinition(const std::string& name) {
     this->setName(name);
   }
   DefinitionType getType() const override {
@@ -266,6 +267,9 @@ public:
   cgqlContainer<InputValueDefinition> getFields() const {
     return this->fields;
   }
+  DefinitionType getType() const override {
+    return DefinitionType::INPUT_OBJECT_TYPE;
+  } 
 private:
   cgqlContainer<InputValueDefinition> fields;
 };
@@ -287,6 +291,10 @@ public:
     const std::unordered_map<std::string, cgqlSPtr<TypeDefinition>>& typeDefMap
   ) {
     for(auto const& [key, def] : typeDefMap) {
+      cgqlAssert(
+        def->getType() == DefinitionType::TYPE_DEF,
+        "Type is empty"
+      );
       const cgqlContainer<std::string>& implements = [this](const cgqlSPtr<TypeDefinition>& def) {
         switch(def->getType()) {
           case DefinitionType::OBJECT_TYPE: {

@@ -21,6 +21,7 @@ private:
   void parseUnionTypeDefinition(const TypeRegistry& registry);
   void parseEnumTypeDefinition(const TypeRegistry& registry);
   void parseInputObjectTypeDefinition(const TypeRegistry& registry);
+  void parseScalarTypeDefinition(const TypeRegistry& registry);
   FieldTypeDefinition parseFieldTypeDefinition(const TypeRegistry& registry);
   InputValueDefinition parseInputValueDefinition(const TypeRegistry& registry);
   ArgumentTypeDefinition parseArgumentDefinition(const TypeRegistry& registry);

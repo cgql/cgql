@@ -3,11 +3,11 @@
 namespace cgql {
 namespace internal {
 
-#define MAKE_SCALAR(name, DataType) cgqlSMakePtr<ScalarTypeDefinition<DataType>>(name)
+#define MAKE_SCALAR(name) cgqlSMakePtr<ScalarTypeDefinition>(name)
 
 void TypeRegistry::init() {
-  this->addType(MAKE_SCALAR("Int", Int));
-  this->addType(MAKE_SCALAR("String", String));
+  this->addType(MAKE_SCALAR("Int"));
+  this->addType(MAKE_SCALAR("String"));
 }
 
 } // end of internal

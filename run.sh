@@ -15,7 +15,7 @@ if [[ $1 != "" ]] && [[ $1 = "-c" ]]; then
 fi
 
 function build() {
-  cd build && make -j4 && cd ..
+  cd build && make -j3 && cd ..
   chmod +x build/tests/cgqlTests
   time build/tests/cgqlTests
 }
