@@ -30,7 +30,8 @@ enum TokenType {
   SPREAD,
   EQUAL,
   PIPE,
-  HASH
+  HASH,
+  DOUBLE_QUOTE
 };
 
 const char* tokenTypeToCharArray(const TokenType& type);
@@ -67,6 +68,7 @@ private:
 
   Token tokenizeName();
   Token tokenizeDigits();
+  Token tokenizeString();
 };
 
 Token generateToken(TokenType type, const std::string& value);

@@ -60,6 +60,9 @@ const char* tokenTypeToCharArray(const TokenType& type) {
     case TokenType::HASH:
       return "HASH";
       break;
+    case TokenType::DOUBLE_QUOTE:
+      return "DOUBLE_QUOTE";
+      break;
   }
   return "";
 }
@@ -141,6 +144,22 @@ void Tokenizer::skipComments() {
   }
 }
 
+Token Tokenizer::tokenizeString() {
+  this->advanceCursor(1);
+
+  std::string tokenizedString;
+
+  uint16_t* i = &this->cursor;
+  for(; *i < this->source.length();) {
+    if(this->source[*i] == 0x0022) break;
+    tokenizedString += this->source[*i];
+  }
+  return generateToken(
+    TokenType::STRING,
+    tokenizedString
+  );
+}
+
 Token Tokenizer::nextToken() {
   size_t len = this->source.length();
 
@@ -198,6 +217,8 @@ Token Tokenizer::nextToken() {
         this->advanceCursor(1);
         this->skipComments();
         continue;
+      case 0x0022:
+        return this->tokenizeString();
     }
     if(isDigit(this->source[*i])) {
       return this->tokenizeDigits();
