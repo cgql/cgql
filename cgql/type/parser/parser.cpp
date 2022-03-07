@@ -17,8 +17,8 @@ std::string QueryParser::getKey() {
 InputObject QueryParser::parseObject() {
   InputObject inputObject = cgqlSMakePtr<Args>();
 
+  this->tokenizer.advance();
   do {
-    this->tokenizer.advance();
     inputObject->argsMap.try_emplace(
       this->getKey(), this->parseValue()
     );
