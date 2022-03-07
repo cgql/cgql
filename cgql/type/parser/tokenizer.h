@@ -12,6 +12,7 @@ enum TokenType {
 
   INT,
   STRING,
+  BLOCK_STRING,
 
   CURLY_BRACES_L,
   CURLY_BRACES_R,
@@ -61,6 +62,8 @@ public:
   Token current;
   void advance();
   void skipComments();
+
+  std::string lookAhead();
 private:
   std::string source;
   uint16_t cursor;
@@ -69,6 +72,7 @@ private:
   Token tokenizeName();
   Token tokenizeDigits();
   Token tokenizeString();
+  Token tokenizeBlockString();
 };
 
 Token generateToken(TokenType type, const std::string& value);

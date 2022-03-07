@@ -4,6 +4,18 @@
 namespace cgql {
 namespace internal {
 
+std::string SchemaParser::parseDescription() {
+  if(
+    this->tokenizer.current.getType() == TokenType::STRING ||
+    this->tokenizer.current.getType() == TokenType::BLOCK_STRING
+  ) {
+    std::string description = this->tokenizer.current.getValue();
+    this->tokenizer.advance();
+    return description;
+  }
+  return "";
+}
+
 template<typename T>
 cgqlSPtr<T> SchemaParser::parseType(const TypeRegistry& registry) {
   cgqlSPtr<T> type;
@@ -23,7 +35,7 @@ cgqlSPtr<T> SchemaParser::parseType(const TypeRegistry& registry) {
   return type;
 }
 
-cgqlContainer<std::string> SchemaParser::parseImplementInterfaces(const TypeRegistry& registry) {
+cgqlContainer<std::string> SchemaParser::parseImplementInterfaces() {
   if(this->tokenizer.current.getValue() != "implements") return {};
   cgqlContainer<std::string> interfaces;
   do {
@@ -34,17 +46,20 @@ cgqlContainer<std::string> SchemaParser::parseImplementInterfaces(const TypeRegi
 }
 
 ArgumentTypeDefinition SchemaParser::parseArgumentDefinition(const TypeRegistry& registry) {
+  std::string description(this->parseDescription());
   std::string name(this->parseName());
   this->move(TokenType::COLON);
   ArgumentTypeDefinition arg;
   cgqlSPtr<TypeDefinition> type = this->parseType(registry);
   arg.setName(name);
   arg.setType(type);
+  arg.setDescription(description);
   return arg;
 }
 
 FieldTypeDefinition SchemaParser::parseFieldTypeDefinition(const TypeRegistry& registry) {
   FieldTypeDefinition field;
+  std::string description(this->parseDescription());
   std::string name(this->parseName());
   if(this->checkType(TokenType::BRACES_L)) {
     this->tokenizer.advance();
@@ -56,15 +71,18 @@ FieldTypeDefinition SchemaParser::parseFieldTypeDefinition(const TypeRegistry& r
   this->move(TokenType::COLON);
   cgqlSPtr<TypeDefinition> type = this->parseType(registry);
   field.setName(name);
+  field.setDescription(description);
   field.setType(type);
   return field;
 }
 
 void SchemaParser::parseObjectTypeDefinition(const TypeRegistry& registry) {
+  std::string description = this->parseDescription();
   this->tokenizer.advance();
   cgqlSPtr<ObjectTypeDefinition> obj =
     registry.getType<ObjectTypeDefinition>(this->parseName());
-  obj->setImplementedInterfaces(this->parseImplementInterfaces(registry));
+  obj->setImplementedInterfaces(this->parseImplementInterfaces());
+  obj->setDescription(description);
   if(this->checkType(TokenType::CURLY_BRACES_L)) {
     this->tokenizer.advance();
     do {
@@ -77,10 +95,12 @@ void SchemaParser::parseObjectTypeDefinition(const TypeRegistry& registry) {
 }
 
 void SchemaParser::parseInterfaceTypeDefinition(const TypeRegistry& registry) {
+  std::string description = this->parseDescription();
   this->tokenizer.advance();
   cgqlSPtr<InterfaceTypeDefinition> interface =
     registry.getType<InterfaceTypeDefinition>(this->parseName());
-  interface->setImplementedInterfaces(this->parseImplementInterfaces(registry));
+  interface->setImplementedInterfaces(this->parseImplementInterfaces());
+  interface->setDescription(description);
   if(this->checkType(TokenType::CURLY_BRACES_L)) {
     this->tokenizer.advance();
     do {
@@ -93,9 +113,11 @@ void SchemaParser::parseInterfaceTypeDefinition(const TypeRegistry& registry) {
 }
 
 void SchemaParser::parseUnionTypeDefinition(const TypeRegistry& registry) {
+  std::string description = this->parseDescription();
   this->tokenizer.advance();
   cgqlSPtr<UnionTypeDefinition> unionType =
     registry.getType<UnionTypeDefinition>(this->parseName());
+  unionType->setDescription(description);
   if(this->checkType(TokenType::EQUAL)) {
     do {
       this->tokenizer.advance();
@@ -107,13 +129,15 @@ void SchemaParser::parseUnionTypeDefinition(const TypeRegistry& registry) {
 }
 
 void SchemaParser::parseEnumTypeDefinition(const TypeRegistry& registry) {
+  std::string description = this->parseDescription();
   this->tokenizer.advance();
   cgqlSPtr<EnumTypeDefinition> enumType =
     registry.getType<EnumTypeDefinition>(this->parseName());
+  enumType->setDescription(description);
   if(this->checkType(TokenType::CURLY_BRACES_L)) {
     this->tokenizer.advance();
     do {
-      enumType->addValue(this->parseName());
+      enumType->addValue({ this->parseDescription(), this->parseName() });
     } while(!this->checkType(TokenType::CURLY_BRACES_R));
   }
   this->tokenizer.advance();
@@ -121,18 +145,22 @@ void SchemaParser::parseEnumTypeDefinition(const TypeRegistry& registry) {
 
 InputValueDefinition SchemaParser::parseInputValueDefinition(const TypeRegistry& registry) {
   InputValueDefinition field;
+  std::string description(this->parseDescription());
   std::string name(this->parseName());
   this->move(TokenType::COLON);
   cgqlSPtr<TypeDefinition> type = this->parseType(registry);
   field.setName(name);
   field.setType(type);
+  field.setDescription(description);
   return field;
 }
 
 void SchemaParser::parseInputObjectTypeDefinition(const TypeRegistry& registry) {
+  std::string description = this->parseDescription();
   this->tokenizer.advance();
   cgqlSPtr<InputObjectTypeDefinition> inputType =
     registry.getType<InputObjectTypeDefinition>(this->parseName());
+  inputType->setDescription(description);
   if(this->checkType(TokenType::CURLY_BRACES_L)) {
     this->tokenizer.advance();
     do {
@@ -145,13 +173,15 @@ void SchemaParser::parseInputObjectTypeDefinition(const TypeRegistry& registry) 
 }
 
 void SchemaParser::parseScalarTypeDefinition(const TypeRegistry& registry) {
+  std::string description = this->parseDescription();
   this->tokenizer.advance();
   cgqlSPtr<ScalarTypeDefinition> scalar =
     registry.getType<ScalarTypeDefinition>(this->parseName());
+  scalar->setDescription(description);
 }
 
 void SchemaParser::parseDefinition(const TypeRegistry& registry) {
-  String currentValue(this->tokenizer.current.getValue());
+  std::string currentValue(this->tokenizer.lookAhead());
   if(currentValue == "type")
     this->parseObjectTypeDefinition(registry);
   else if(currentValue == "interface")

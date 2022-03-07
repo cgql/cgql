@@ -25,9 +25,11 @@ private:
   FieldTypeDefinition parseFieldTypeDefinition(const TypeRegistry& registry);
   InputValueDefinition parseInputValueDefinition(const TypeRegistry& registry);
   ArgumentTypeDefinition parseArgumentDefinition(const TypeRegistry& registry);
-  cgqlContainer<std::string> parseImplementInterfaces(const TypeRegistry& registry);
+  cgqlContainer<std::string> parseImplementInterfaces();
 
   void parseDefinition(const TypeRegistry& registry);
+
+  std::string parseDescription();
 };
 
 cgqlSPtr<internal::Schema> parseSchema(const char *source, const TypeRegistry& registry);

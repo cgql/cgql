@@ -54,13 +54,21 @@ inline std::ostream& operator<<(std::ostream& os, const DefinitionType& type) {
 
 class AbstractSchemaTypeDefinition {
 public:
+  virtual ~AbstractSchemaTypeDefinition() {}
   void setName(std::string name) {
     this->name = name;
   }
   const std::string& getName() const {
     return this->name;
   }
+  void setDescription(std::string description) {
+    this->description = description;
+  }
+  const std::string& getDescription() const {
+    return this->description;
+  }
 private:
+  std::string description;
   std::string name;
 };
 
@@ -75,7 +83,6 @@ public:
   TypeDefinition(const std::string& name) {
     this->setName(name);
   }
-  virtual ~TypeDefinition() {}
   DefinitionType getType() const override {
     return DefinitionType::TYPE_DEF;
   }
@@ -232,19 +239,26 @@ private:
   mutable cgqlContainer<cgqlSPtr<TypeDefinition>> members;
 };
 
+struct EnumValueDefinition : public AbstractSchemaTypeDefinition {
+  EnumValueDefinition(std::string description, std::string name) {
+    this->setDescription(description);
+    this->setName(name);
+  }
+};
+
 class EnumTypeDefinition : public TypeDefinition {
 public:
-  void addValue(std::string value) {
+  void addValue(EnumValueDefinition value) {
     values.emplace_back(value);
   }
   DefinitionType getType() const override {
     return DefinitionType::ENUM_TYPE;
   }
-  cgqlContainer<std::string> getValues() const {
+  cgqlContainer<EnumValueDefinition> getValues() const {
     return this->values;
   }
 private:
-  mutable cgqlContainer<std::string> values;
+  mutable cgqlContainer<EnumValueDefinition> values;
 };
 
 class InputValueDefinition : public AbstractSchemaTypeDefinition {

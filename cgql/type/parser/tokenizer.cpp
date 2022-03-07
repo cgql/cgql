@@ -15,6 +15,9 @@ const char* tokenTypeToCharArray(const TokenType& type) {
     case TokenType::STRING:
       return "STRING";
       break;
+    case TokenType::BLOCK_STRING:
+      return "BLOCK_STRING";
+      break;
     case TokenType::CURLY_BRACES_L:
       return "CURLY_BRACES_L";
       break;
@@ -85,6 +88,17 @@ void Tokenizer::advance() {
   this->current = this->nextToken();
 }
 
+std::string Tokenizer::lookAhead() {
+  if(
+    this->current.getType() != TokenType::STRING &&
+    this->current.getType() != TokenType::BLOCK_STRING
+  ) return this->current.getValue();
+  uint16_t oldCursor = this->cursor;
+  Token next = this->nextToken();
+  this->cursor = oldCursor;
+  return next.getValue();
+}
+
 Token generateToken(TokenType type) {
   Token generatedToken(type);
   return generatedToken;
@@ -153,10 +167,34 @@ Token Tokenizer::tokenizeString() {
   for(; *i < this->source.length();) {
     if(this->source[*i] == 0x0022) break;
     tokenizedString += this->source[*i];
+    this->advanceCursor(1);
   }
+  this->advanceCursor(1);
   return generateToken(
     TokenType::STRING,
     tokenizedString
+  );
+}
+
+Token Tokenizer::tokenizeBlockString() {
+  this->advanceCursor(3);
+
+  std::string blockString;
+
+  uint16_t* i = &this->cursor;
+  for(; *i < this->source.length();) {
+    if(
+      this->source[*i]     == 0x0022 &&
+      this->source[*i + 1] == 0x0022 &&
+      this->source[*i + 2] == 0x0022
+    ) break;
+    blockString += this->source[*i];
+    this->advanceCursor(1);
+  }
+  this->advanceCursor(3);
+  return generateToken(
+    TokenType::BLOCK_STRING,
+    blockString
   );
 }
 
@@ -218,6 +256,12 @@ Token Tokenizer::nextToken() {
         this->skipComments();
         continue;
       case 0x0022:
+        if(
+          this->source[*i + 1] == 0x0022 &&
+          this->source[*i + 2] == 0x0022
+        ) {
+          return this->tokenizeBlockString();
+        }
         return this->tokenizeString();
     }
     if(isDigit(this->source[*i])) {
