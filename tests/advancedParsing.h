@@ -37,8 +37,8 @@ inline void runAdvancedParsing() {
         };
         ResultMap p {
           {
-            { "name", "cw3dv" },
-            { "age", fromVariant<Int>(args->argsMap["id"]) },
+            { "name", fromVariant<String>(fromVariant<GraphQLReturnTypes>(args->argsMap["name"])) },
+            { "age", fromVariant<Int>(fromVariant<GraphQLReturnTypes>(args->argsMap["id"])) },
             { "address", cgqlSMakePtr<ResultMap>(a) },
             { "partner", cgqlSMakePtr<ResultMap>(r) },
             { "gender", "MALE" },
@@ -54,6 +54,13 @@ inline void runAdvancedParsing() {
         return cgqlSMakePtr<ResultMap>(p);
       }
     },
+    {
+      "test",
+      [](const Args& args) -> Data {
+        Int i = fromVariant<Int>(fromVariant<GraphQLReturnTypes>(args["arg"]));
+        return 0;
+      }
+    }
   };
   TypeOfMap typeOfMap {
     {
@@ -64,9 +71,9 @@ inline void runAdvancedParsing() {
     }
   };
   for(int i = 0; i < 50000; i++) {
-    auto doc = parse(
+    /* auto doc = parse(
       "{"
-      "  cw3dv: person(args: { id: 65 }) {"
+      "  cw3dv: person(args: { id: 65 } ) {"
       "    name"
       "    age"
       "    addr: address {"
@@ -79,7 +86,8 @@ inline void runAdvancedParsing() {
       "    workedAt"
       "  }"
       "}"
-    );
+    ); */
+    auto doc = parse("{ test }");
     auto r = test.executeWith(doc, root, typeOfMap);
     // printResultMap(*r);
   }

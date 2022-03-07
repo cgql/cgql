@@ -1,11 +1,13 @@
 #pragma once
 
 #include "cgql/base/cgqlPch.h"
-#include "cgql/schema/typeDefinitions.hpp"
 #include "cgql/utilities/cgqlDefs.h"
 #include "cgql/utilities/assert.h"
 
 namespace cgql {
+
+using Int = int32_t;
+using String = std::string_view;
 
 using GraphQLReturnTypes = std::variant<
   Int,
@@ -44,8 +46,7 @@ struct Args;
 using InputObject = cgqlSPtr<Args>;
 
 using Arg = std::variant<
-  Int,
-  String,
+  GraphQLReturnTypes,
   InputObject
 >;
 
@@ -54,19 +55,19 @@ using ArgsMap = std::unordered_map<
   Arg
 >;
 
-struct Args {
-  ArgsMap argsMap;
-  inline const Arg& operator[](const std::string& argKey) const {
-    return this->argsMap.at(argKey);
-  }
-};
-
 template<class T, class... Types>
 constexpr const T& fromVariant(
   const std::variant<Types...>& v
 ) {
   return std::get<T>(v);
 }
+
+struct Args {
+  ArgsMap argsMap;
+  inline const Arg& operator[](const std::string& argKey) const {
+    return this->argsMap.at(argKey);
+  }
+};
 
 using ResolverFunc = std::function<
   Data(const Args&)

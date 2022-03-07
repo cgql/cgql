@@ -23,7 +23,7 @@ inline void runBasicTest() {
     {
       "person",
       [](const Args& args) -> Data {
-        Int id = fromVariant<Int>(args["id"]); // argument
+        Int id = fromVariant<Int>(fromVariant<GraphQLReturnTypes>(args["id"])); // argument
         ResultMap p {
           {
             { "name", "cw3dv" },

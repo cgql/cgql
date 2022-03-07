@@ -368,8 +368,19 @@ Args buildArgumentMap(
         return arg.getName() == argName;
       }
     );
+    GraphQLReturnTypes defaultValue = argDef.getDefaultValue();
     bool hasValue = it != argumentValues.end();
-    if(hasValue) {
+    if(!hasValue) {
+      arg.argsMap.try_emplace(
+        argName,
+        defaultValue
+      );
+    } else if (
+      argDef.getType()->getType() == DefinitionType::NON_NULL_TYPE &&
+      !hasValue
+    ) {
+      cgqlAssert(true, "Value is null or not provided");
+    } else {
       arg.argsMap.try_emplace(
         argName,
         it->getValue()

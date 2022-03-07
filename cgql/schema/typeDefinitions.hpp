@@ -1,13 +1,11 @@
 #pragma once
 
+#include "cgql/schema/GraphQLTypes.h"
 #include "cgql/utilities/assert.h"
 #include "cgql/utilities/cgqlDefs.h"
 #include "cgql/base/cgqlPch.h"
 
 namespace cgql {
-
-using Int = int32_t;
-using String = std::string_view;
 
 namespace internal {
 
@@ -151,6 +149,12 @@ private:
 
 class ArgumentTypeDefinition : public AbstractSchemaTypeDefinition {
 public:
+  void setDefaultValue(GraphQLReturnTypes value) {
+    this->defaultValue = value;
+  }
+  GraphQLReturnTypes getDefaultValue() const {
+    return this->defaultValue;
+  }
   void setType(cgqlSPtr<TypeDefinition> type) {
     this->type = type;
   }
@@ -159,6 +163,7 @@ public:
   }
 private:
   mutable cgqlSPtr<TypeDefinition> type;
+  GraphQLReturnTypes defaultValue;
 };
 
 class FieldTypeDefinition : public AbstractSchemaTypeDefinition {
@@ -263,6 +268,12 @@ private:
 
 class InputValueDefinition : public AbstractSchemaTypeDefinition {
 public:
+  void setDefaultValue(GraphQLReturnTypes value) {
+    this->defaultValue = value;
+  }
+  GraphQLReturnTypes getDefaultValue() const {
+    return this->defaultValue;
+  }
   void setType(cgqlSPtr<TypeDefinition> type) {
     this->type = type;
   }
@@ -271,6 +282,7 @@ public:
   }
 private:
   mutable cgqlSPtr<TypeDefinition> type;
+  GraphQLReturnTypes defaultValue;
 };
 
 class InputObjectTypeDefinition : public TypeDefinition {

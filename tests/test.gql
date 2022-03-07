@@ -1,12 +1,8 @@
 # hello
 
-"""
-Hello boooo
-"""
-scalar X
-
 input PersonQueryInput {
-  id: Int
+  id: Int!
+  name: String = "Heyyy"
 }
 
 interface Y {
@@ -17,7 +13,7 @@ interface Y {
     """
     Description 2
     """
-    arg1: X
+    arg1: Int = 10
   ): Int!
 }
 
@@ -43,4 +39,5 @@ type Person {
 
 type Query {
   person(args: PersonQueryInput): Person
+  test(arg: Int = 15): Int
 }

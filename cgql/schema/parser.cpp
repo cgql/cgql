@@ -4,6 +4,22 @@
 namespace cgql {
 namespace internal {
 
+GraphQLReturnTypes SchemaParser::parseValueLiteral() {
+  TokenType currentTokenType = this->tokenizer.current.getType();
+  switch(currentTokenType) {
+    case TokenType::STRING:
+      return this->move(currentTokenType).getValue();
+    case TokenType::INT: {
+      std::string valueAsStr =
+        this->move(currentTokenType).getValue();
+      // potentially an integer
+      return strToInt<Int>(valueAsStr);
+    }
+    default:
+      return this->move(currentTokenType).getValue();
+  }
+}
+
 std::string SchemaParser::parseDescription() {
   if(
     this->tokenizer.current.getType() == TokenType::STRING ||
@@ -51,6 +67,10 @@ ArgumentTypeDefinition SchemaParser::parseArgumentDefinition(const TypeRegistry&
   this->move(TokenType::COLON);
   ArgumentTypeDefinition arg;
   cgqlSPtr<TypeDefinition> type = this->parseType(registry);
+  if(this->checkType(TokenType::EQUAL)) {
+    this->tokenizer.advance();
+    arg.setDefaultValue(this->parseValueLiteral());
+  }
   arg.setName(name);
   arg.setType(type);
   arg.setDescription(description);
@@ -149,6 +169,10 @@ InputValueDefinition SchemaParser::parseInputValueDefinition(const TypeRegistry&
   std::string name(this->parseName());
   this->move(TokenType::COLON);
   cgqlSPtr<TypeDefinition> type = this->parseType(registry);
+  if(this->checkType(TokenType::EQUAL)) {
+    this->tokenizer.advance();
+    field.setDefaultValue(this->parseValueLiteral());
+  }
   field.setName(name);
   field.setType(type);
   field.setDescription(description);

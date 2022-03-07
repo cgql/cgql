@@ -31,8 +31,8 @@ InputObject QueryParser::parseObject() {
 Arg QueryParser::parseValue() {
   TokenType curr = this->tokenizer.current.getType();
   switch(curr) {
-    case TokenType::NAME:
-      return this->parseName();
+    case TokenType::STRING:
+      return this->move(curr).getValue();
     case TokenType::INT: {
       std::string valueAsStr = this->move(curr).getValue();
       uint8_t start = charToInt<uint8_t>(valueAsStr[0]);
