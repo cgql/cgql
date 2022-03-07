@@ -1,9 +1,24 @@
 # hello
 
+"""
+Hello boooo
+"""
 scalar X
 
 input PersonQueryInput {
   id: Int
+}
+
+interface Y {
+  """
+  Description 1
+  """
+  args(
+    """
+    Description 2
+    """
+    arg1: X
+  ): Int!
 }
 
 enum Gender {
