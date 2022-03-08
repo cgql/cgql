@@ -68,7 +68,7 @@ void printScalarValue(
   const Data& value,
   const std::string& indentation
 ) {
-  auto rg = fromVariant<GraphQLReturnTypes>(value);
+  auto rg = fromVariant<GraphQLReturnTypes_>(value);
   if(rg.index() == 0) {
     std::string v = indentation +
       key.data() +
@@ -103,7 +103,7 @@ void printResultMap(const ResultMap& rm, uint8_t level) {
     } else if(internal::isList(value)) {
       switch(value.index()) {
         case 2:
-          printList(key, fromVariant<cgqlContainer<GraphQLReturnTypes>>(value), indentation);
+          printList(key, fromVariant<cgqlContainer<GraphQLReturnTypes_>>(value), indentation);
           break;
         case 3:
           printList(key, fromVariant<cgqlContainer<cgqlSPtr<ResultMap>>>(value), indentation);

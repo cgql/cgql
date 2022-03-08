@@ -11,6 +11,11 @@ using String = std::string_view;
 
 using GraphQLReturnTypes = std::variant<
   Int,
+  std::string
+>;
+
+using GraphQLReturnTypes_ = std::variant<
+  Int,
   String
 >;
 
@@ -21,9 +26,9 @@ struct Location {
 };
 
 using Data = std::variant<
-  GraphQLReturnTypes,
+  GraphQLReturnTypes_,
   cgqlSPtr<ResultMap>,
-  cgqlContainer<GraphQLReturnTypes>,
+  cgqlContainer<GraphQLReturnTypes_>,
   cgqlContainer<cgqlSPtr<ResultMap>>,
   std::monostate
 >;
@@ -64,6 +69,9 @@ constexpr const T& fromVariant(
 
 struct Args {
   ArgsMap argsMap;
+  void addArg(std::string argName, Arg arg) {
+    argsMap.try_emplace(argName, arg);
+  }
   inline const Arg& operator[](const std::string& argKey) const {
     return this->argsMap.at(argKey);
   }

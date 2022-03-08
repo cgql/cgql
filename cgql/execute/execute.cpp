@@ -159,7 +159,7 @@ Data completeList(
 ) {
   switch(rawResult.index()) {
     case 2:
-      return completeListItem<GraphQLReturnTypes>(
+      return completeListItem<GraphQLReturnTypes_>(
         ctx,
         fieldType,
         field,
