@@ -149,10 +149,10 @@ private:
 
 class ArgumentTypeDefinition : public AbstractSchemaTypeDefinition {
 public:
-  void setDefaultValue(GraphQLReturnTypes value) {
+  void setDefaultValue(GraphQLInputTypes value) {
     this->defaultValue = value;
   }
-  GraphQLReturnTypes getDefaultValue() const {
+  GraphQLInputTypes getDefaultValue() const {
     return this->defaultValue;
   }
   void setType(cgqlSPtr<TypeDefinition> type) {
@@ -163,7 +163,7 @@ public:
   }
 private:
   mutable cgqlSPtr<TypeDefinition> type;
-  GraphQLReturnTypes defaultValue;
+  GraphQLInputTypes defaultValue;
 };
 
 class FieldTypeDefinition : public AbstractSchemaTypeDefinition {
@@ -268,10 +268,10 @@ private:
 
 class InputValueDefinition : public AbstractSchemaTypeDefinition {
 public:
-  void setDefaultValue(GraphQLReturnTypes value) {
+  void setDefaultValue(GraphQLInputTypes value) {
     this->defaultValue = value;
   }
-  GraphQLReturnTypes getDefaultValue() const {
+  GraphQLInputTypes getDefaultValue() const {
     return this->defaultValue;
   }
   void setType(cgqlSPtr<TypeDefinition> type) {
@@ -282,7 +282,7 @@ public:
   }
 private:
   mutable cgqlSPtr<TypeDefinition> type;
-  GraphQLReturnTypes defaultValue;
+  GraphQLInputTypes defaultValue;
 };
 
 class InputObjectTypeDefinition : public TypeDefinition {

@@ -9,12 +9,12 @@ namespace cgql {
 using Int = int32_t;
 using String = std::string_view;
 
-using GraphQLReturnTypes = std::variant<
+using GraphQLInputTypes = std::variant<
   Int,
   std::string
 >;
 
-using GraphQLReturnTypes_ = std::variant<
+using GraphQLReturnTypes = std::variant<
   Int,
   String
 >;
@@ -26,9 +26,9 @@ struct Location {
 };
 
 using Data = std::variant<
-  GraphQLReturnTypes_,
+  GraphQLReturnTypes,
   cgqlSPtr<ResultMap>,
-  cgqlContainer<GraphQLReturnTypes_>,
+  cgqlContainer<GraphQLReturnTypes>,
   cgqlContainer<cgqlSPtr<ResultMap>>,
   std::monostate
 >;
@@ -51,7 +51,7 @@ struct Args;
 using InputObject = cgqlSPtr<Args>;
 
 using Arg = std::variant<
-  GraphQLReturnTypes,
+  GraphQLInputTypes,
   InputObject
 >;
 

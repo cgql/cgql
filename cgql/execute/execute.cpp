@@ -159,7 +159,7 @@ Data completeList(
 ) {
   switch(rawResult.index()) {
     case 2:
-      return completeListItem<GraphQLReturnTypes_>(
+      return completeListItem<GraphQLReturnTypes>(
         ctx,
         fieldType,
         field,
@@ -368,7 +368,7 @@ Args buildArgumentMap(
         return arg.getName() == argName;
       }
     );
-    GraphQLReturnTypes defaultValue = argDef.getDefaultValue();
+    GraphQLInputTypes defaultValue = argDef.getDefaultValue();
     bool hasValue = it != argumentValues.end();
     if(!hasValue) {
       arg.argsMap.try_emplace(

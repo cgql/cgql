@@ -26,7 +26,7 @@ private:
   InputValueDefinition parseInputValueDefinition(const TypeRegistry& registry);
   ArgumentTypeDefinition parseArgumentDefinition(const TypeRegistry& registry);
   cgqlContainer<std::string> parseImplementInterfaces();
-  GraphQLReturnTypes parseValueLiteral();
+  GraphQLInputTypes parseValueLiteral();
 
   void parseDefinition(const TypeRegistry& registry);
 

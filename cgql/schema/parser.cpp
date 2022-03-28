@@ -4,7 +4,7 @@
 namespace cgql {
 namespace internal {
 
-GraphQLReturnTypes SchemaParser::parseValueLiteral() {
+GraphQLInputTypes SchemaParser::parseValueLiteral() {
   TokenType currentTokenType = this->tokenizer.current.getType();
   switch(currentTokenType) {
     case TokenType::STRING:
