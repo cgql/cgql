@@ -10,7 +10,6 @@ namespace cgql {
 namespace internal {
 
 enum DefinitionType {
-  DEFAULT_WRAP,
   INTERFACE_TYPE,
   INPUT_OBJECT_TYPE,
   OBJECT_TYPE,
@@ -26,8 +25,6 @@ enum DefinitionType {
 
 inline std::ostream& operator<<(std::ostream& os, const DefinitionType& type) {
   switch(type) {
-    case DEFAULT_WRAP:
-      os << "DEFAULT_WRAP"; break;
     case INPUT_OBJECT_TYPE:
       os << "INPUT_OBJECT_TYPE"; break;
     case OBJECT_TYPE:
@@ -105,8 +102,8 @@ public:
   ListTypeDefinition(cgqlSPtr<T> innerType) {
     this->innerType = innerType;
   }
-  cgqlSPtr<T>& getInnerType() const {
-    return this->innerType;
+  cgqlSPtr<T> getInnerType() const {
+    return innerType;
   };
   DefinitionType getType() const override {
     return DefinitionType::LIST_TYPE;
@@ -121,30 +118,14 @@ public:
   NonNullTypeDefinition(cgqlSPtr<T> innerType) {
     this->innerType = innerType;
   }
-  cgqlSPtr<T>& getInnerType() const {
-    return this->innerType;
+  cgqlSPtr<T> getInnerType() const {
+    return innerType;
   };
   DefinitionType getType() const override {
     return DefinitionType::NON_NULL_TYPE;
   }
 private:
   mutable cgqlSPtr<T> innerType;
-};
-
-template<typename T>
-class DefaultWrapTypeDefinition : public TypeDefinition {
-public:
-  DefaultWrapTypeDefinition(cgqlSPtr<T> innerType) {
-    this->innerType = innerType;
-  }
-  cgqlSPtr<T> getInnerType() const {
-    return cgqlSMakePtr<T>(*innerType);
-  };
-  DefinitionType getType() const override {
-    return DefinitionType::DEFAULT_WRAP;
-  }
-private:
-  mutable cgqlWeakPtr<T> innerType;
 };
 
 class ArgumentTypeDefinition : public AbstractSchemaTypeDefinition {
@@ -171,8 +152,8 @@ public:
   void setType(cgqlSPtr<TypeDefinition> type) {
     this->type = type;
   }
-  cgqlSPtr<TypeDefinition>& getType() const {
-    return this->type;
+  cgqlSPtr<TypeDefinition> getType() const {
+    return cgqlSMakePtr<TypeDefinition>(*this->type);
   }
   void addArg(const ArgumentTypeDefinition& arg) {
     this->argDefs.emplace_back(arg);
@@ -181,7 +162,7 @@ public:
     return this->argDefs;
   }
 private:
-  mutable cgqlSPtr<TypeDefinition> type;
+  mutable cgqlWeakPtr<TypeDefinition> type;
   mutable cgqlContainer<ArgumentTypeDefinition> argDefs;
 };
 

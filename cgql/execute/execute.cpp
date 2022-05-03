@@ -331,18 +331,6 @@ Data completeValue(
         std::static_pointer_cast<EnumTypeDefinition>(fieldType);
       return coerceLeafValue(enumType, result);
     }
-    case DEFAULT_WRAP: {
-      cgqlSPtr<DefaultWrapTypeDefinition<TypeDefinition>> defaultWrap =
-        std::static_pointer_cast<DefaultWrapTypeDefinition<TypeDefinition>>(fieldType);
-      return completeValue(
-        ctx,
-        defaultWrap->getInnerType(),
-        field,
-        fields,
-        result,
-        source
-      );
-    }
     default:
       return coerceLeafValue(fieldType, result);
   }
