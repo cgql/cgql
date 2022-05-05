@@ -9,7 +9,7 @@ namespace cgql {
 
 namespace internal {
 
-enum DefinitionType {
+enum class DefinitionType {
   DEFAULT_WRAP,
   INTERFACE_TYPE,
   INPUT_OBJECT_TYPE,
@@ -26,25 +26,25 @@ enum DefinitionType {
 
 inline std::ostream& operator<<(std::ostream& os, const DefinitionType& type) {
   switch(type) {
-    case DEFAULT_WRAP:
+    case DefinitionType::DEFAULT_WRAP:
       os << "DEFAULT_WRAP"; break;
-    case INPUT_OBJECT_TYPE:
+    case DefinitionType::INPUT_OBJECT_TYPE:
       os << "INPUT_OBJECT_TYPE"; break;
-    case OBJECT_TYPE:
+    case DefinitionType::OBJECT_TYPE:
       os << "OBJECT_TYPE"; break;
-    case UNION_TYPE:
+    case DefinitionType::UNION_TYPE:
       os << "UNION_TYPE"; break;
-    case ENUM_TYPE:
+    case DefinitionType::ENUM_TYPE:
       os << "ENUM_TYPE"; break;
-    case TYPE_DEF:
+    case DefinitionType::TYPE_DEF:
       os << "TYPE_DEF"; break;
-    case SCALAR_TYPE:
+    case DefinitionType::SCALAR_TYPE:
       os << "SCALAR_TYPE"; break;
-    case LIST_TYPE:
+    case DefinitionType::LIST_TYPE:
       os << "LIST_TYPE"; break;
-    case NON_NULL_TYPE:
+    case DefinitionType::NON_NULL_TYPE:
       os << "NON_NULL_TYPE"; break;
-    case INTERFACE_TYPE:
+    case DefinitionType::INTERFACE_TYPE:
       os << "INTERFACE_TYPE"; break;
   }
   return os;
@@ -52,7 +52,6 @@ inline std::ostream& operator<<(std::ostream& os, const DefinitionType& type) {
 
 class AbstractSchemaTypeDefinition {
 public:
-  virtual ~AbstractSchemaTypeDefinition() {}
   void setName(std::string name) {
     this->name = name;
   }
@@ -70,20 +69,16 @@ private:
   std::string name;
 };
 
-class AbstractTypeDefinition {
-public:
-  virtual DefinitionType getType() const = 0;
-};
-
-class TypeDefinition : public AbstractTypeDefinition, public AbstractSchemaTypeDefinition {
+class TypeDefinition : public AbstractSchemaTypeDefinition {
 public:
   TypeDefinition() = default;
   TypeDefinition(const std::string& name) {
     this->setName(name);
   }
-  DefinitionType getType() const override {
+  virtual ~TypeDefinition() = default;
+  virtual DefinitionType getType() const {
     return DefinitionType::TYPE_DEF;
-  }
+  };
 private:
 };
 
@@ -105,14 +100,14 @@ public:
   ListTypeDefinition(cgqlSPtr<T> innerType) {
     this->innerType = innerType;
   }
-  cgqlSPtr<T>& getInnerType() const {
+  cgqlSPtr<T> getInnerType() const {
     return this->innerType;
   };
   DefinitionType getType() const override {
     return DefinitionType::LIST_TYPE;
   }
 private:
-  mutable cgqlSPtr<T> innerType;
+  cgqlSPtr<T> innerType;
 };
 
 template<typename T>
@@ -121,14 +116,14 @@ public:
   NonNullTypeDefinition(cgqlSPtr<T> innerType) {
     this->innerType = innerType;
   }
-  cgqlSPtr<T>& getInnerType() const {
+  cgqlSPtr<T> getInnerType() const {
     return this->innerType;
   };
   DefinitionType getType() const override {
     return DefinitionType::NON_NULL_TYPE;
   }
 private:
-  mutable cgqlSPtr<T> innerType;
+  cgqlSPtr<T> innerType;
 };
 
 template<typename T>
@@ -138,13 +133,13 @@ public:
     this->innerType = innerType;
   }
   cgqlSPtr<T> getInnerType() const {
-    return cgqlSMakePtr<T>(*innerType);
+    return innerType.lock();
   };
   DefinitionType getType() const override {
     return DefinitionType::DEFAULT_WRAP;
   }
 private:
-  mutable cgqlWeakPtr<T> innerType;
+  std::weak_ptr<T> innerType;
 };
 
 class ArgumentTypeDefinition : public AbstractSchemaTypeDefinition {
@@ -158,11 +153,11 @@ public:
   void setType(cgqlSPtr<TypeDefinition> type) {
     this->type = type;
   }
-  cgqlSPtr<TypeDefinition>& getType() const {
+  cgqlSPtr<TypeDefinition> getType() const {
     return this->type;
   }
 private:
-  mutable cgqlSPtr<TypeDefinition> type;
+  cgqlSPtr<TypeDefinition> type;
   GraphQLInputTypes defaultValue;
 };
 
@@ -171,18 +166,21 @@ public:
   void setType(cgqlSPtr<TypeDefinition> type) {
     this->type = type;
   }
-  cgqlSPtr<TypeDefinition>& getType() const {
+  cgqlSPtr<TypeDefinition> getType() const {
     return this->type;
+  }
+  DefinitionType getDefType() const {
+    return this->type->getType();
   }
   void addArg(const ArgumentTypeDefinition& arg) {
     this->argDefs.emplace_back(arg);
   }
-  cgqlContainer<ArgumentTypeDefinition>& getArgs() const {
+  cgqlContainer<ArgumentTypeDefinition> getArgs() const {
     return this->argDefs;
   }
 private:
-  mutable cgqlSPtr<TypeDefinition> type;
-  mutable cgqlContainer<ArgumentTypeDefinition> argDefs;
+  cgqlSPtr<TypeDefinition> type;
+  cgqlContainer<ArgumentTypeDefinition> argDefs;
 };
 
 class InterfaceTypeDefinition : public TypeDefinition {
@@ -190,7 +188,7 @@ public:
   void addField(const FieldTypeDefinition& field) {
     this->fields.emplace_back(field);
   }
-  cgqlContainer<FieldTypeDefinition>& getFields() const {
+  cgqlContainer<FieldTypeDefinition> getFields() const {
     return this->fields;
   }
   DefinitionType getType() const override {
@@ -199,12 +197,12 @@ public:
   void setImplementedInterfaces(cgqlContainer<std::string> interfaces) {
     this->implements = interfaces;
   }
-  cgqlContainer<std::string>& getImplementedInterfaces() const {
+  cgqlContainer<std::string> getImplementedInterfaces() const {
     return this->implements;
   }
 private:
-  mutable cgqlContainer<FieldTypeDefinition> fields;
-  mutable cgqlContainer<std::string> implements;
+  cgqlContainer<FieldTypeDefinition> fields;
+  cgqlContainer<std::string> implements;
 };
 
 class ObjectTypeDefinition : public TypeDefinition {
@@ -212,7 +210,7 @@ public:
   void addField(const FieldTypeDefinition& field) {
     this->fieldDefs.emplace_back(field);
   }
-  cgqlContainer<FieldTypeDefinition>& getFields() const {
+  cgqlContainer<FieldTypeDefinition> getFields() const {
     return this->fieldDefs;
   }
   DefinitionType getType() const override {
@@ -221,12 +219,12 @@ public:
   void setImplementedInterfaces(cgqlContainer<std::string> interfaces) {
     this->implements = interfaces;
   }
-  cgqlContainer<std::string>& getImplementedInterfaces() const {
+  cgqlContainer<std::string> getImplementedInterfaces() const {
     return this->implements;
   }
 private:
-  mutable cgqlContainer<FieldTypeDefinition> fieldDefs;
-  mutable cgqlContainer<std::string> implements;
+  cgqlContainer<FieldTypeDefinition> fieldDefs;
+  cgqlContainer<std::string> implements;
 };
 
 class UnionTypeDefinition : public TypeDefinition {
@@ -241,7 +239,7 @@ public:
     return members;
   }
 private:
-  mutable cgqlContainer<cgqlSPtr<TypeDefinition>> members;
+  cgqlContainer<cgqlSPtr<TypeDefinition>> members;
 };
 
 struct EnumValueDefinition : public AbstractSchemaTypeDefinition {
@@ -263,7 +261,7 @@ public:
     return this->values;
   }
 private:
-  mutable cgqlContainer<EnumValueDefinition> values;
+  cgqlContainer<EnumValueDefinition> values;
 };
 
 class InputValueDefinition : public AbstractSchemaTypeDefinition {
@@ -277,11 +275,11 @@ public:
   void setType(cgqlSPtr<TypeDefinition> type) {
     this->type = type;
   }
-  cgqlSPtr<TypeDefinition>& getType() const {
+  cgqlSPtr<TypeDefinition> getType() const {
     return this->type;
   }
 private:
-  mutable cgqlSPtr<TypeDefinition> type;
+  cgqlSPtr<TypeDefinition> type;
   GraphQLInputTypes defaultValue;
 };
 

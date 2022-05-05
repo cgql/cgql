@@ -1,6 +1,7 @@
 #pragma once
 
 #include "cgql/base/cgqlPch.h"
+#include "cgql/utilities/assert.h"
 
 namespace cgql {
 

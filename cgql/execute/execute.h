@@ -15,16 +15,14 @@ struct ExecutionContext {
   cgqlContainer<FragmentDefinition> fragments;
 };
 
-template<typename T>
-const FieldTypeDefinition& findGraphQLFieldByName(
-  const cgqlSPtr<T>& objectType,
+FieldTypeDefinition findGraphQLFieldByName(
+  const cgqlSPtr<ObjectTypeDefinition>& objectType,
   const std::string& fieldName
 );
 
-template<typename T>
 void collectFields(
   const ExecutionContext& ctx,
-  const cgqlSPtr<T>& objectType,
+  const cgqlSPtr<TypeDefinition>& objectType,
   const SelectionSet &selectionSet,
   GroupedField& groupedFields
 );
@@ -39,6 +37,7 @@ Data coerceLeafValue(
   const Data& data
 );
 
+template<typename T>
 Data completeValue(
   const ExecutionContext& ctx,
   const cgqlSPtr<TypeDefinition>& fieldType,
@@ -48,19 +47,19 @@ Data completeValue(
   const std::optional<cgqlSPtr<ResultMap>>& source
 );
 
+template<typename T>
 Data executeField(
   const ExecutionContext& ctx,
   const FieldTypeDefinition& field,
-  const cgqlSPtr<TypeDefinition>& fieldType,
+  const cgqlSPtr<T>& fieldType,
   const SelectionSet& fields,
   const std::optional<cgqlSPtr<ResultMap>>& source
 );
 
-template<typename T>
 cgqlUPtr<ResultMap> executeSelectionSet(
   const ExecutionContext& ctx,
   const SelectionSet &selectionSet,
-  const cgqlSPtr<T> &objectType,
+  const cgqlSPtr<ObjectTypeDefinition> &obj,
   const std::optional<cgqlSPtr<ResultMap>>& source
 );
 

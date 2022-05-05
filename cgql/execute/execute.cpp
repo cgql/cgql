@@ -6,9 +6,8 @@
 namespace cgql {
 namespace internal {
 
-template<typename T>
-const FieldTypeDefinition& findGraphQLFieldByName(
-  const cgqlSPtr<T>& objectType,
+FieldTypeDefinition findGraphQLFieldByName(
+  const cgqlSPtr<ObjectTypeDefinition>& objectType,
   const std::string& fieldName
 ) {
   for(auto const& field : objectType->getFields()) {
@@ -25,10 +24,9 @@ const FieldTypeDefinition& findGraphQLFieldByName(
   /* silence compiler warning */ return objectType->getFields()[0];
 }
 
-template<typename T>
 void collectFields(
   const ExecutionContext& ctx,
-  const cgqlSPtr<T>& objectType,
+  const cgqlSPtr<TypeDefinition>& objectType,
   const SelectionSet &selectionSet,
   GroupedField& groupedFields
 ) {
@@ -134,7 +132,7 @@ Data completeListItem(
     fromVariant<cgqlContainer<T>>(result);
   cgqlContainer<T> resultList;
   resultList.reserve(rawResultList.size());
-  for(T const& rawResult : rawResultList) {
+  for(T rawResult : rawResultList) {
     resultList.emplace_back(
       fromVariant<T>(completeValue(
         ctx,
@@ -184,10 +182,9 @@ Data completeList(
   return 0;
 }
 
-template<typename T>
 static cgqlUPtr<ResultMap> executeGroupedFieldSet(
   const ExecutionContext& ctx,
-  const cgqlSPtr<T>& objectType,
+  const cgqlSPtr<ObjectTypeDefinition>& objectType,
   const GroupedField& groupedFieldSet,
   const std::optional<cgqlSPtr<ResultMap>>& source
 ) {
@@ -199,13 +196,12 @@ static cgqlUPtr<ResultMap> executeGroupedFieldSet(
       objectType,
       std::static_pointer_cast<Field>(fields[0])->getName()
     );
-    const cgqlSPtr<TypeDefinition>& fieldType = field.getType();
     resultMap->data.try_emplace(
       responseKey,
       executeField(
         ctx,
         field,
-        fieldType,
+        field.getType(),
         fields,
         source
       )
@@ -265,16 +261,17 @@ static Data completeAbstractType(
   /* silence compiler warning */ return 0;
 }
 
+template<typename T>
 Data completeValue(
   const ExecutionContext& ctx,
-  const cgqlSPtr<TypeDefinition>& fieldType,
+  const cgqlSPtr<T>& fieldType,
   const FieldTypeDefinition& field,
   const SelectionSet& fields,
   const Data& result,
   const std::optional<cgqlSPtr<ResultMap>>& source
 ) {
   DefinitionType type = fieldType->getType();
-  if(type == NON_NULL_TYPE) {
+  if(type == DefinitionType::NON_NULL_TYPE) {
     cgqlSPtr<NonNullTypeDefinition<TypeDefinition>> nonNull =
       std::static_pointer_cast<NonNullTypeDefinition<TypeDefinition>>(fieldType);
     if(result.index() == 4) {
@@ -293,7 +290,7 @@ Data completeValue(
     return std::monostate{};
   }
   switch (type) {
-    case LIST_TYPE: {
+    case DefinitionType::LIST_TYPE: {
       cgqlSPtr<ListTypeDefinition<TypeDefinition>> list =
         std::static_pointer_cast<ListTypeDefinition<TypeDefinition>>(fieldType);
       return completeList(
@@ -305,7 +302,7 @@ Data completeValue(
         source
       );
     }
-    case OBJECT_TYPE: {
+    case DefinitionType::OBJECT_TYPE: {
       cgqlSPtr<ObjectTypeDefinition> schemaObj =
         std::static_pointer_cast<ObjectTypeDefinition>(fieldType);
 
@@ -316,22 +313,22 @@ Data completeValue(
         fields
       );
     }
-    case INTERFACE_TYPE: {
+    case DefinitionType::INTERFACE_TYPE: {
       cgqlSPtr<InterfaceTypeDefinition> schemaObj =
         std::static_pointer_cast<InterfaceTypeDefinition>(fieldType);
       return completeAbstractType(ctx, schemaObj, fields, result, source);
     }
-    case UNION_TYPE: {
+    case DefinitionType::UNION_TYPE: {
       cgqlSPtr<UnionTypeDefinition> schemaObj =
         std::static_pointer_cast<UnionTypeDefinition>(fieldType);
       return completeAbstractType(ctx, schemaObj, fields, result, source);
     }
-    case ENUM_TYPE: {
+    case DefinitionType::ENUM_TYPE: {
       cgqlSPtr<EnumTypeDefinition> enumType =
         std::static_pointer_cast<EnumTypeDefinition>(fieldType);
       return coerceLeafValue(enumType, result);
     }
-    case DEFAULT_WRAP: {
+    case DefinitionType::DEFAULT_WRAP: {
       cgqlSPtr<DefaultWrapTypeDefinition<TypeDefinition>> defaultWrap =
         std::static_pointer_cast<DefaultWrapTypeDefinition<TypeDefinition>>(fieldType);
       return completeValue(
@@ -343,9 +340,12 @@ Data completeValue(
         source
       );
     }
-    default:
+    case DefinitionType::SCALAR_TYPE:
       return coerceLeafValue(fieldType, result);
+    default:
+      cgqlAssert(true, "TypeDef cannot be base");
   }
+  /* silence compiler warning */ return 0;
 }
 
 Args buildArgumentMap(
@@ -390,10 +390,11 @@ Args buildArgumentMap(
   return arg;
 }
 
+template<typename T>
 Data executeField(
   const ExecutionContext& ctx,
   const FieldTypeDefinition& field,
-  const cgqlSPtr<TypeDefinition>& fieldType,
+  const cgqlSPtr<T>& fieldType,
   const SelectionSet& fields,
   const std::optional<cgqlSPtr<ResultMap>>& source
 ) {
@@ -424,15 +425,12 @@ Data executeField(
   );
 }
 
-template<typename T>
 cgqlUPtr<ResultMap> executeSelectionSet(
   const ExecutionContext& ctx,
   const SelectionSet &selectionSet,
-  const cgqlSPtr<T> &objectType,
+  const cgqlSPtr<ObjectTypeDefinition> &obj,
   const std::optional<cgqlSPtr<ResultMap>>& source
 ) {
-  cgqlSPtr<ObjectTypeDefinition> obj =
-    std::static_pointer_cast<ObjectTypeDefinition>(objectType);
   GroupedField groupedFieldSet;
   collectFields(
     ctx,

@@ -7,7 +7,7 @@
 
 namespace cgql {
 
-#ifdef NDEBUG
+#if defined(NDEBUG)
   #define cgqlAssert(expression, message) \
   internal::cgqlAssertImpl(               \
       #expression,                        \
