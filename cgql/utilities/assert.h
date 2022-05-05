@@ -7,18 +7,14 @@
 
 namespace cgql {
 
-#if defined(NDEBUG)
-  #define cgqlAssert(expression, message) \
-  internal::cgqlAssertImpl(               \
-      #expression,                        \
-      expression,                         \
-      __FILE__,                           \
-      __LINE__,                           \
-      message                             \
-    )
-#else
-  #define cgqlAssert(expression, message)
-#endif
+#define cgqlAssert(expression, message) \
+internal::cgqlAssertImpl(               \
+    #expression,                        \
+    expression,                         \
+    __FILE__,                           \
+    __LINE__,                           \
+    message                             \
+  )
 
 namespace internal {
 
@@ -44,7 +40,7 @@ inline void cgqlAssertImpl(
       filePath,
       line
     );
-    abort();
+    exit(1);
   }
 }
 
