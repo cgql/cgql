@@ -17,7 +17,7 @@ Token BaseParser::move(TokenType type) {
     errorMsg += ", but got ";
     errorMsg += tokenTypeToCharArray(this->tokenizer.current.getType());
 
-    cgqlAssert(!isValidType, errorMsg.c_str());
+    cgqlAssert(isValidType, errorMsg.c_str());
   }
   Token returnToken = this->tokenizer.current;
   this->tokenizer.advance();

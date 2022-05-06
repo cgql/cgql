@@ -20,7 +20,7 @@ FieldTypeDefinition findGraphQLFieldByName(
   msg += fieldName;
   msg += " cannot be found in object ";
   msg += objectType->getName();
-  cgqlAssert(true, msg.c_str());
+  cgqlAssert(false, msg.c_str());
   /* silence compiler warning */ return objectType->getFields()[0];
 }
 
@@ -56,13 +56,7 @@ void collectFields(
         std::static_pointer_cast<InlineFragment>(selection);
       const std::string& typeCondition = inlineFragment->getTypeCondition();
       
-      bool shouldNotSkip = [&objectType, &typeCondition]() {
-        if(typeCondition == objectType->getName()) {
-          return true;
-        }
-        return false;
-      }();
-      if(!shouldNotSkip) continue;
+      if(typeCondition != objectType->getName()) continue;
 
       const SelectionSet& selectionSet = inlineFragment->getSelectionSet();
       collectFields(ctx, objectType, selectionSet, groupedFields);
@@ -177,7 +171,7 @@ Data completeList(
       );
       break;
     default:
-      cgqlAssert(true, "Unknown variant type");
+      cgqlAssert(false, "Unknown variant type");
   }
   return 0;
 }
@@ -257,7 +251,7 @@ static Data completeAbstractType(
       );
     }
   }
-  cgqlAssert(true, "Unable to resolve value for implementation of interface");
+  cgqlAssert(false, "Unable to resolve value for implementation of interface");
   /* silence compiler warning */ return 0;
 }
 
@@ -343,7 +337,7 @@ Data completeValue(
     case DefinitionType::SCALAR_TYPE:
       return coerceLeafValue(fieldType, result);
     default:
-      cgqlAssert(true, "TypeDef cannot be base");
+      cgqlAssert(false, "TypeDef cannot be base");
   }
   /* silence compiler warning */ return 0;
 }
@@ -379,7 +373,7 @@ Args buildArgumentMap(
       argDef.getType()->getType() == DefinitionType::NON_NULL_TYPE &&
       !hasValue
     ) {
-      cgqlAssert(true, "Value is null or not provided");
+      cgqlAssert(false, "Value is null or not provided");
     } else {
       arg.argsMap.try_emplace(
         argName,

@@ -316,7 +316,7 @@ public:
   ) {
     for(auto const& [key, def] : typeDefMap) {
       cgqlAssert(
-        def->getType() == DefinitionType::TYPE_DEF,
+        def->getType() != DefinitionType::TYPE_DEF,
         "Type is empty"
       );
       const cgqlContainer<std::string>& implements = [this](const cgqlSPtr<TypeDefinition>& def) {

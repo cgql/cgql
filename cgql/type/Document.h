@@ -12,13 +12,13 @@ namespace cgql {
 
 namespace internal {
 
-enum OperationType {
+enum class OperationType {
   QUERY,
   MUTATION,
   SUBSCRIPTION
 };
 
-enum SelectionType {
+enum class SelectionType {
   BASE,
   FIELD,
   INLINE_FRAGMENT,
@@ -75,7 +75,7 @@ public:
   ~Field() {}
   void setAlias(std::string alias) {
     cgqlAssert(
-      this->getName() == alias,
+      this->getName() != alias,
       "field should contain an alias different from its name"
     );
     this->alias = alias;

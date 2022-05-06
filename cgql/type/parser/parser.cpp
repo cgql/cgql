@@ -85,7 +85,7 @@ cgqlUPtr<Field> QueryParser::parseField() {
     SelectionSet selections = this->parseSelectionSet();
     field->setSelectionSet(selections);
     cgqlAssert(
-      field->getSelectionSet().size() == 0,
+      field->getSelectionSet().size() != 0,
       "selectionSet should contain atleast one selection"
     );
   }

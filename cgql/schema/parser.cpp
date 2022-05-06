@@ -222,7 +222,7 @@ void SchemaParser::parseDefinition(const TypeRegistry& registry) {
     std::string msg;
     msg += "Failed to parse type definition which starts with ";
     msg += currentValue.length() ? currentValue : "NULL";
-    cgqlAssert(true, msg.c_str());
+    cgqlAssert(false, msg.c_str());
   }
 }
 
