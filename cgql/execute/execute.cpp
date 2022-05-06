@@ -192,7 +192,7 @@ static cgqlUPtr<ResultMap> executeGroupedFieldSet(
   resultMap->data.reserve(groupedFieldSet.size());
 
   for(auto const& [responseKey, fields] : groupedFieldSet) {
-    const FieldTypeDefinition& field = findGraphQLFieldByName(
+    FieldTypeDefinition field = findGraphQLFieldByName(
       objectType,
       std::static_pointer_cast<Field>(fields[0])->getName()
     );
@@ -217,7 +217,7 @@ static Data executeInnerSelectionSet(
   const Data& result,
   const SelectionSet& fields
 ) {
-  const cgqlSPtr<ResultMap>& v =
+  cgqlSPtr<ResultMap> v =
     fromVariant<cgqlSPtr<ResultMap>>(result);
   SelectionSet mergedSelectionSet;
   mergeSelectionSet(fields, mergedSelectionSet);
@@ -245,7 +245,7 @@ static Data completeAbstractType(
   for(cgqlSPtr<TypeDefinition> possibleType : possibleTypes) {
     String typeName = it->second(resultMap);
     if(possibleType->getName() == typeName) {
-      const cgqlSPtr<ObjectTypeDefinition>& object =
+      cgqlSPtr<ObjectTypeDefinition> object =
         std::static_pointer_cast<ObjectTypeDefinition>(possibleType);
       GroupedField groupedFields;
       collectSubFields(ctx, object, fields, groupedFields);
@@ -353,7 +353,7 @@ Args buildArgumentMap(
   const FieldTypeDefinition& fieldType
 ) {
   Args arg;
-  const cgqlSPtr<Field>& field =
+  cgqlSPtr<Field> field =
     std::static_pointer_cast<Field>(selection);
   const cgqlContainer<Argument>& argumentValues =
     field->getArgs();
@@ -450,7 +450,7 @@ cgqlUPtr<ResultMap> executeQuery(
   const ExecutionContext& ctx,
   const OperationDefinition& query
 ) {
-  const cgqlSPtr<ObjectTypeDefinition>& queryType = ctx.schema->getQuery();
+  cgqlSPtr<ObjectTypeDefinition> queryType = ctx.schema->getQuery();
   const SelectionSet& selection = query.getSelectionSet();
   return executeSelectionSet(
     ctx,
@@ -495,13 +495,14 @@ cgqlUPtr<ResultMap> execute(
   const TypeOfMap& typeOfMap
 ) {
   // get operation
-  const internal::OperationDefinition& operation = internal::getOperation(document);
-  internal::ExecutionContext ctx;
+  using namespace cgql::internal;
+  const OperationDefinition& operation = getOperation(document);
+  ExecutionContext ctx;
   ctx.schema = schema;
   ctx.resolverMap = resolverMap;
   ctx.typeOfMap = typeOfMap;
-  ctx.fragments = internal::getFragmentsFromQuery(document);
-  return internal::executeQuery(
+  ctx.fragments = getFragmentsFromQuery(document);
+  return executeQuery(
     ctx,
     operation
   );
