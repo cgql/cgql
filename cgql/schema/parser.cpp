@@ -32,17 +32,21 @@ std::string SchemaParser::parseDescription() {
   return "";
 }
 
-template<typename T>
-cgqlSPtr<T> SchemaParser::parseType(const TypeRegistry& registry) {
-  cgqlSPtr<T> type;
-  if(this->checkType(TokenType::SQUARE_BRACES_L)) {
+cgqlSPtr<TypeDefinition> SchemaParser::parseType(const TypeRegistry& registry) {
+  cgqlSPtr<TypeDefinition> type;
+  if(!this->checkType(TokenType::SQUARE_BRACES_L)) {
+    type =
+      cgqlSMakePtr<DefaultWrapTypeDefinition<TypeDefinition>>(
+        registry.getTypePtr<TypeDefinition>(
+          this->parseName()
+        )
+      );
+  } else {
     this->tokenizer.advance();
     type = cgqlSMakePtr<ListTypeDefinition<TypeDefinition>>(
-      this->parseType<TypeDefinition>(registry)
+      this->parseType(registry)
     );
     this->move(TokenType::SQUARE_BRACES_R);
-  } else {
-    type = cgqlSMakePtr<DefaultWrapTypeDefinition<TypeDefinition>>(registry.getType<TypeDefinition>(this->parseName()));
   }
   if(this->checkType(TokenType::BANG)) {
     this->tokenizer.advance();

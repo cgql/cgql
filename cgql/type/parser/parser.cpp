@@ -61,13 +61,13 @@ Argument QueryParser::parseArgument() {
 cgqlUPtr<Field> QueryParser::parseField() {
   cgqlUPtr<Field> field = cgqlUMakePtr<Field>();
   std::string aliasOrName(this->parseName());
-  if(this->checkType(TokenType::COLON)) {
+  if(!this->checkType(TokenType::COLON)) {
+    field->setName(aliasOrName);
+  } else {
     this->tokenizer.advance();
     std::string name(this->parseName());
     field->setAlias(aliasOrName); // alias
     field->setName(name);
-  } else {
-    field->setName(aliasOrName);
   }
 
   if(this->checkType(TokenType::BRACES_L)) {

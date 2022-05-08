@@ -8,6 +8,7 @@ namespace internal {
 void TypeRegistry::init() {
   this->addType(MAKE_SCALAR("Int"));
   this->addType(MAKE_SCALAR("String"));
+  this->addType(MAKE_SCALAR("ID"));
 }
 
 } // end of internal

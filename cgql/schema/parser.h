@@ -14,8 +14,7 @@ public:
 
   void parse(const TypeRegistry& registry);
 private:
-  template<typename T = TypeDefinition>
-  cgqlSPtr<T> parseType(const TypeRegistry& registry);
+  cgqlSPtr<TypeDefinition> parseType(const TypeRegistry& registry);
   void parseObjectTypeDefinition(const TypeRegistry& registry);
   void parseInterfaceTypeDefinition(const TypeRegistry& registry);
   void parseUnionTypeDefinition(const TypeRegistry& registry);

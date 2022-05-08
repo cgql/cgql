@@ -64,9 +64,9 @@ public:
   const std::string& getDescription() const {
     return this->description;
   }
-private:
-  std::string description;
+protected:
   std::string name;
+  std::string description;
 };
 
 class TypeDefinition : public AbstractSchemaTypeDefinition {
@@ -285,7 +285,7 @@ private:
 
 class InputObjectTypeDefinition : public TypeDefinition {
 public:
-  void addField(InputValueDefinition field) {
+  void addField(const InputValueDefinition& field) {
     fields.emplace_back(field);
   }
   cgqlContainer<InputValueDefinition> getFields() const {
