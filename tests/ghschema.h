@@ -1,3 +1,4 @@
+#include "cgql/logger/logger.h"
 #include <cgql/cgql.h>
 #include <cgql/type/parser/parser.h>
 #include <fstream>
@@ -5,6 +6,7 @@
 using namespace cgql;
 
 inline void parseGHSchema() {
+  logger::info("parsing started");
   CgqlInstance test;
   std::string schema;
   std::ifstream file;
@@ -18,4 +20,5 @@ inline void parseGHSchema() {
   file.close();
 
   test.parseSchema(schema.c_str());
+  logger::info("parsing successfull");
 }
