@@ -2,6 +2,7 @@
 #include <cgql/cgql.h>
 #include <cgql/type/parser/parser.h>
 #include <fstream>
+#include <limits>
 
 using namespace cgql;
 

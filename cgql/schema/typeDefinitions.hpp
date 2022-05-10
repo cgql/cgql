@@ -315,6 +315,7 @@ public:
     const std::unordered_map<std::string, cgqlSPtr<TypeDefinition>>& typeDefMap
   ) {
     for(auto const& [key, def] : typeDefMap) {
+      if(!def) continue; // Temporary!!!
       cgqlAssert(
         def->getType() != DefinitionType::TYPE_DEF,
         "Type is empty"

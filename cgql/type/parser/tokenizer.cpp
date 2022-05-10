@@ -93,7 +93,7 @@ std::string Tokenizer::lookAhead() {
     this->current.getType() != TokenType::STRING &&
     this->current.getType() != TokenType::BLOCK_STRING
   ) return this->current.getValue();
-  uint16_t oldCursor = this->cursor;
+  size_t oldCursor = this->cursor;
   Token next = this->nextToken();
   this->cursor = oldCursor;
   return next.getValue();
@@ -109,7 +109,7 @@ Token generateToken(TokenType type, const std::string& value) {
 }
 
 Token Tokenizer::tokenizeName() {
-  uint16_t* i = &this->cursor;
+  size_t* i = &this->cursor;
   std::string value; 
   for(; *i < this->source.length();) {
     if(
@@ -128,7 +128,7 @@ Token Tokenizer::tokenizeName() {
 }
 
 Token Tokenizer::tokenizeDigits() {
-  uint16_t* i = &this->cursor;
+  size_t* i = &this->cursor;
   std::string value;
   for(; *i < this->source.length();) {
     if(isDigit(this->source[*i])) {
@@ -145,7 +145,7 @@ Token Tokenizer::tokenizeDigits() {
 }
 
 void Tokenizer::skipComments() {
-  uint16_t* i = &this->cursor;
+  size_t* i = &this->cursor;
 
   for(; *i < this->source.length();) {
     if(
@@ -163,7 +163,7 @@ Token Tokenizer::tokenizeString() {
 
   std::string tokenizedString;
 
-  uint16_t* i = &this->cursor;
+  size_t* i = &this->cursor;
   for(; *i < this->source.length();) {
     if(this->source[*i] == 0x0022) break;
     tokenizedString += this->source[*i];
@@ -181,17 +181,19 @@ Token Tokenizer::tokenizeBlockString() {
 
   std::string blockString;
 
-  uint16_t* i = &this->cursor;
+  size_t* i = &this->cursor;
   for(; *i < this->source.length();) {
     if(
       this->source[*i]     == 0x0022 &&
       this->source[*i + 1] == 0x0022 &&
       this->source[*i + 2] == 0x0022
-    ) break;
+    ) {
+      this->advanceCursor(3);
+      break;
+    }
     blockString += this->source[*i];
     this->advanceCursor(1);
   }
-  this->advanceCursor(3);
   return generateToken(
     TokenType::BLOCK_STRING,
     blockString
@@ -201,7 +203,7 @@ Token Tokenizer::tokenizeBlockString() {
 Token Tokenizer::nextToken() {
   size_t len = this->source.length();
 
-  uint16_t* i = &this->cursor;
+  size_t* i = &this->cursor;
 
   for(; *i < len; *i = *i + 1) {
     switch ((uint32_t)this->source[*i]) {
@@ -275,9 +277,7 @@ Token Tokenizer::nextToken() {
 }
 
 void Tokenizer::advanceCursor(int8_t amount) {
-  if(this->cursor < this->source.length()) {
     this->cursor += amount;
-  }
 }
 
 } // internal

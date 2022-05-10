@@ -66,7 +66,7 @@ public:
   std::string lookAhead();
 private:
   std::string source;
-  uint16_t cursor;
+  size_t cursor;
   void advanceCursor(int8_t amount);
 
   Token tokenizeName();
