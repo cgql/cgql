@@ -5,6 +5,7 @@ add_executable(
   ./basicTest.h
   ./advancedParsing.h
   ./test.cpp
+  ./utils/timer.hpp
 )
 
 target_link_libraries(

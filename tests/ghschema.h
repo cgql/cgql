@@ -2,12 +2,11 @@
 #include <cgql/cgql.h>
 #include <cgql/type/parser/parser.h>
 #include <fstream>
-#include <limits>
+#include "utils/timer.hpp"
 
 using namespace cgql;
 
 inline void parseGHSchema() {
-  logger::info("parsing started");
   CgqlInstance test;
   std::string schema;
   std::ifstream file;
@@ -20,6 +19,8 @@ inline void parseGHSchema() {
   }
   file.close();
 
-  test.parseSchema(schema.c_str());
-  logger::info("parsing successfull");
+  {
+    Timer timer;
+    test.parseSchema(schema.c_str());
+  }
 }
