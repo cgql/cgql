@@ -22,5 +22,6 @@ inline void parseGHSchema() {
   {
     Timer timer;
     test.parseSchema(schema.c_str());
+    logger::info("parsing successfull");
   }
 }
