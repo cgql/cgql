@@ -8,6 +8,8 @@ input PersonQueryInput {
   name: String = "Heyyy"
 }
 
+directive @upper on FIELD
+
 interface Y {
   """
   Description 1
