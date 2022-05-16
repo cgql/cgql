@@ -28,7 +28,7 @@ enum class DirectiveLocation {
   INPUT_FIELD_DEFINITION
 };
 
-static std::unordered_map<const char*, DirectiveLocation> possibleDirectiveLocations = {
+static std::unordered_map<std::string_view, DirectiveLocation> possibleDirectiveLocations = {
   { "QUERY", DirectiveLocation::QUERY },
   { "MUTATION", DirectiveLocation::MUTATION },
   { "SUBSCRIPTION", DirectiveLocation::SUBSCRIPTION },
@@ -53,7 +53,7 @@ static std::unordered_map<const char*, DirectiveLocation> possibleDirectiveLocat
 
 inline DirectiveLocation getDirectiveLocation(const std::string& str) {
   // the given string must be in the possibleDirectiveLocations... hence no error checking here!
-  return possibleDirectiveLocations.at(str.c_str());
+  return possibleDirectiveLocations.at(str);
 }
 
 } // internal
