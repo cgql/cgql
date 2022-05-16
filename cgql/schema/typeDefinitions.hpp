@@ -1,6 +1,7 @@
 #pragma once
 
 #include "cgql/schema/GraphQLTypes.h"
+#include "cgql/schema/directiveLocations.h"
 #include "cgql/utilities/assert.h"
 #include "cgql/utilities/cgqlDefs.h"
 #include "cgql/base/cgqlPch.h"
@@ -15,18 +16,15 @@ enum class DefinitionType {
   DEFAULT_WRAP, // wraps field type including types in lists and non-nulls
   LIST,
   NON_NULL,
+  DIRECTIVE,
 
   // type system locations based on spec
   SCALAR,
   OBJECT,
-  FIELD_DEFINITION,
-  ARGUMENT_DEFINITION,
   INTERFACE,
   UNION,
   ENUM,
-  ENUM_VALUE,
-  INPUT_OBJECT,
-  INPUT_FIELD_DEFINITION
+  INPUT_OBJECT
 };
 
 inline std::ostream& operator<<(std::ostream& os, const DefinitionType& type) {
@@ -40,27 +38,21 @@ inline std::ostream& operator<<(std::ostream& os, const DefinitionType& type) {
       os << "LIST"; break;
     case DefinitionType::NON_NULL:
       os << "NON_NULL"; break;
+    case DefinitionType::DIRECTIVE:
+      os << "DIRECTIVE_DEFINITION"; break;
 
     case DefinitionType::SCALAR:
       os << "SCALAR"; break;
     case DefinitionType::OBJECT:
       os << "OBJECT"; break;
-    case DefinitionType::FIELD_DEFINITION:
-      os << "FIELD_DEFINITION"; break;
-    case DefinitionType::ARGUMENT_DEFINITION:
-      os << "ARGUMENT_DEFINITION"; break;
     case DefinitionType::INTERFACE:
       os << "INTERFACE"; break;
     case DefinitionType::UNION:
       os << "UNION"; break;
     case DefinitionType::ENUM:
       os << "ENUM"; break;
-    case DefinitionType::ENUM_VALUE:
-      os << "ENUM_VALUE"; break;
     case DefinitionType::INPUT_OBJECT:
       os << "INPUT_OBJECT"; break;
-    case DefinitionType::INPUT_FIELD_DEFINITION:
-      os << "INPUT_FIELD_DEFINITION"; break;
   }
   return os;
 }
@@ -157,7 +149,7 @@ private:
   std::weak_ptr<T> innerType;
 };
 
-class ArgumentTypeDefinition : public TypeDefinition {
+class ArgumentTypeDefinition : public AbstractSchemaTypeDefinition {
 public:
   void setDefaultValue(GraphQLInputTypes value) {
     this->defaultValue = value;
@@ -171,15 +163,12 @@ public:
   cgqlSPtr<TypeDefinition> getArgumentType() const {
     return this->type;
   }
-  DefinitionType getDefinitionType() const override {
-    return DefinitionType::ARGUMENT_DEFINITION;
-  }
 private:
   cgqlSPtr<TypeDefinition> type;
   GraphQLInputTypes defaultValue;
 };
 
-class FieldTypeDefinition : public TypeDefinition {
+class FieldTypeDefinition : public AbstractSchemaTypeDefinition {
 public:
   void setFieldType(cgqlSPtr<TypeDefinition> type) {
     this->type = type;
@@ -192,9 +181,6 @@ public:
   }
   cgqlContainer<ArgumentTypeDefinition> getArgs() const {
     return this->argDefs;
-  }
-  DefinitionType getDefinitionType() const override {
-    return DefinitionType::FIELD_DEFINITION;
   }
 private:
   cgqlSPtr<TypeDefinition> type;
@@ -260,13 +246,10 @@ private:
   cgqlContainer<cgqlSPtr<TypeDefinition>> members;
 };
 
-struct EnumValueDefinition : public TypeDefinition {
+struct EnumValueDefinition : public AbstractSchemaTypeDefinition {
   EnumValueDefinition(std::string description, std::string name) {
     this->setDescription(description);
     this->setName(name);
-  }
-  DefinitionType getDefinitionType() const override {
-    return DefinitionType::ENUM_VALUE;
   }
 };
 
@@ -285,7 +268,7 @@ private:
   cgqlContainer<EnumValueDefinition> values;
 };
 
-class InputValueDefinition : public TypeDefinition {
+class InputValueDefinition : public AbstractSchemaTypeDefinition {
 public:
   void setDefaultValue(GraphQLInputTypes value) {
     this->defaultValue = value;
@@ -298,9 +281,6 @@ public:
   }
   cgqlSPtr<TypeDefinition> getInputValueType() const {
     return this->type;
-  }
-  DefinitionType getDefinitionType() const override {
-    return DefinitionType::INPUT_FIELD_DEFINITION;
   }
 private:
   cgqlSPtr<TypeDefinition> type;
@@ -320,6 +300,29 @@ public:
   } 
 private:
   cgqlContainer<InputValueDefinition> fields;
+};
+
+class DirectiveTypeDefinition : public TypeDefinition {
+public:
+  void addArgument(const InputValueDefinition& argument) {
+    arguments.emplace_back(argument);
+  }
+  cgqlContainer<InputValueDefinition> getArguments() const {
+    return this->arguments;
+  }
+  void setDirectiveLocations(cgqlContainer<DirectiveLocation> locations) {
+    this->locations = locations;
+  }
+  cgqlContainer<DirectiveLocation> getDirectiveLocations() const {
+    return this->locations;
+  }
+  DefinitionType getDefinitionType() const override {
+    return DefinitionType::DIRECTIVE;
+  } 
+private:
+  cgqlContainer<InputValueDefinition> arguments;
+  cgqlContainer<DirectiveLocation> locations;
+  bool repeatable; // TODO
 };
 
 using ImplementedInterfaces = std::unordered_map<

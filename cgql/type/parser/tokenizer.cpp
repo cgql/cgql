@@ -66,6 +66,9 @@ const char* tokenTypeToCharArray(const TokenType& type) {
     case TokenType::DOUBLE_QUOTE:
       return "DOUBLE_QUOTE";
       break;
+    case TokenType::AT:
+      return "AT";
+      break;
   }
   return "";
 }
@@ -265,6 +268,9 @@ Token Tokenizer::nextToken() {
           return this->tokenizeBlockString();
         }
         return this->tokenizeString();
+      case 0x0040:
+        this->advanceCursor(1);
+        return generateToken(TokenType::AT);
     }
     if(isDigit(this->source[*i])) {
       return this->tokenizeDigits();

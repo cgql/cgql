@@ -4,6 +4,7 @@
 #include "cgql/base/typeRegistry.h"
 #include "cgql/schema/typeDefinitions.hpp"
 #include "cgql/utilities/cgqlDefs.h"
+#include "cgql/schema/directiveLocations.h"
 
 namespace cgql {
 namespace internal {
@@ -21,10 +22,12 @@ private:
   void parseEnumTypeDefinition(const TypeRegistry& registry);
   void parseInputObjectTypeDefinition(const TypeRegistry& registry);
   void parseScalarTypeDefinition(const TypeRegistry& registry);
+  void parseDirectiveTypeDefinition(const TypeRegistry& registry);
   FieldTypeDefinition parseFieldTypeDefinition(const TypeRegistry& registry);
   InputValueDefinition parseInputValueDefinition(const TypeRegistry& registry);
   ArgumentTypeDefinition parseArgumentDefinition(const TypeRegistry& registry);
   cgqlContainer<std::string> parseImplementInterfaces();
+  cgqlContainer<DirectiveLocation> parseDirectiveLocations();
   GraphQLInputTypes parseValueLiteral();
 
   void parseDefinition(const TypeRegistry& registry);

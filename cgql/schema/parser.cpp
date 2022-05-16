@@ -208,6 +208,36 @@ void SchemaParser::parseScalarTypeDefinition(const TypeRegistry& registry) {
   scalar->setDescription(description);
 }
 
+cgqlContainer<DirectiveLocation> SchemaParser::parseDirectiveLocations() {
+  cgqlContainer<DirectiveLocation> directiveLocations;
+  do {
+    this->tokenizer.advance();
+    directiveLocations.emplace_back(
+      getDirectiveLocation(this->parseName())
+    );
+  } while(this->checkType(TokenType::PIPE));
+  return directiveLocations;
+}
+
+void SchemaParser::parseDirectiveTypeDefinition(const TypeRegistry& registry) {
+  std::string description = this->parseDescription();
+  this->tokenizer.advance();
+  this->move(TokenType::AT);
+  cgqlSPtr<DirectiveTypeDefinition> directive =
+    registry.getType<DirectiveTypeDefinition>(this->parseName());
+  directive->setDescription(description);
+  if(this->checkType(TokenType::BRACES_L)) {
+    this->tokenizer.advance();
+    do {
+      directive->addArgument(this->parseInputValueDefinition(registry));
+    } while(!this->checkType(TokenType::BRACES_R));
+    this->tokenizer.advance();
+  }
+  // TODO: handle error
+  if(this->tokenizer.current.getValue() != "on") cgqlAssert(false, "Expected keyword \"on\"");
+  directive->setDirectiveLocations(this->parseDirectiveLocations());
+}
+
 void SchemaParser::parseDefinition(const TypeRegistry& registry) {
   std::string currentValue(this->tokenizer.lookAhead());
   if(currentValue == "type")
@@ -222,6 +252,8 @@ void SchemaParser::parseDefinition(const TypeRegistry& registry) {
     this->parseInputObjectTypeDefinition(registry);
   else if(currentValue == "scalar")
     this->parseScalarTypeDefinition(registry);
+  else if(currentValue == "directive")
+    this->parseDirectiveTypeDefinition(registry);
   else {
     std::string msg;
     msg += "Failed to parse type definition which starts with ";

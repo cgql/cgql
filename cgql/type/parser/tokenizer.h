@@ -7,7 +7,7 @@
 namespace cgql {
 namespace internal {
 
-enum TokenType {
+enum class TokenType {
   NAME,
 
   INT,
@@ -32,7 +32,8 @@ enum TokenType {
   EQUAL,
   PIPE,
   HASH,
-  DOUBLE_QUOTE
+  DOUBLE_QUOTE,
+  AT
 };
 
 const char* tokenTypeToCharArray(const TokenType& type);
