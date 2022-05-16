@@ -195,7 +195,7 @@ static cgqlUPtr<ResultMap> executeGroupedFieldSet(
       executeField(
         ctx,
         field,
-        field.getType(),
+        field.getFieldType(),
         fields,
         source
       )
@@ -264,8 +264,8 @@ Data completeValue(
   const Data& result,
   const std::optional<cgqlSPtr<ResultMap>>& source
 ) {
-  DefinitionType type = fieldType->getType();
-  if(type == DefinitionType::NON_NULL_TYPE) {
+  DefinitionType type = fieldType->getDefinitionType();
+  if(type == DefinitionType::NON_NULL) {
     cgqlSPtr<NonNullTypeDefinition<TypeDefinition>> nonNull =
       std::static_pointer_cast<NonNullTypeDefinition<TypeDefinition>>(fieldType);
     if(result.index() == 4) {
@@ -284,7 +284,7 @@ Data completeValue(
     return std::monostate{};
   }
   switch (type) {
-    case DefinitionType::LIST_TYPE: {
+    case DefinitionType::LIST: {
       cgqlSPtr<ListTypeDefinition<TypeDefinition>> list =
         std::static_pointer_cast<ListTypeDefinition<TypeDefinition>>(fieldType);
       return completeList(
@@ -296,7 +296,7 @@ Data completeValue(
         source
       );
     }
-    case DefinitionType::OBJECT_TYPE: {
+    case DefinitionType::OBJECT: {
       cgqlSPtr<ObjectTypeDefinition> schemaObj =
         std::static_pointer_cast<ObjectTypeDefinition>(fieldType);
 
@@ -307,17 +307,17 @@ Data completeValue(
         fields
       );
     }
-    case DefinitionType::INTERFACE_TYPE: {
+    case DefinitionType::INTERFACE: {
       cgqlSPtr<InterfaceTypeDefinition> schemaObj =
         std::static_pointer_cast<InterfaceTypeDefinition>(fieldType);
       return completeAbstractType(ctx, schemaObj, fields, result, source);
     }
-    case DefinitionType::UNION_TYPE: {
+    case DefinitionType::UNION: {
       cgqlSPtr<UnionTypeDefinition> schemaObj =
         std::static_pointer_cast<UnionTypeDefinition>(fieldType);
       return completeAbstractType(ctx, schemaObj, fields, result, source);
     }
-    case DefinitionType::ENUM_TYPE: {
+    case DefinitionType::ENUM: {
       cgqlSPtr<EnumTypeDefinition> enumType =
         std::static_pointer_cast<EnumTypeDefinition>(fieldType);
       return coerceLeafValue(enumType, result);
@@ -334,7 +334,7 @@ Data completeValue(
         source
       );
     }
-    case DefinitionType::SCALAR_TYPE:
+    case DefinitionType::SCALAR:
       return coerceLeafValue(fieldType, result);
     default:
       cgqlAssert(false, "TypeDef cannot be base");
@@ -370,7 +370,7 @@ Args buildArgumentMap(
         defaultValue
       );
     } else if (
-      argDef.getType()->getType() == DefinitionType::NON_NULL_TYPE &&
+      argDef.getArgumentType()->getDefinitionType() == DefinitionType::NON_NULL &&
       !hasValue
     ) {
       cgqlAssert(false, "Value is null or not provided");

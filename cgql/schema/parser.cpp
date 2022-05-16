@@ -76,7 +76,7 @@ ArgumentTypeDefinition SchemaParser::parseArgumentDefinition(const TypeRegistry&
     arg.setDefaultValue(this->parseValueLiteral());
   }
   arg.setName(name);
-  arg.setType(type);
+  arg.setArgumentType(type);
   arg.setDescription(description);
   return arg;
 }
@@ -96,7 +96,7 @@ FieldTypeDefinition SchemaParser::parseFieldTypeDefinition(const TypeRegistry& r
   cgqlSPtr<TypeDefinition> type = this->parseType(registry);
   field.setName(name);
   field.setDescription(description);
-  field.setType(type);
+  field.setFieldType(type);
   return field;
 }
 
@@ -178,7 +178,7 @@ InputValueDefinition SchemaParser::parseInputValueDefinition(const TypeRegistry&
     field.setDefaultValue(this->parseValueLiteral());
   }
   field.setName(name);
-  field.setType(type);
+  field.setInputValueType(type);
   field.setDescription(description);
   return field;
 }
