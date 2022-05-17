@@ -76,6 +76,35 @@ protected:
   std::string description;
 };
 
+class Directive : public AbstractSchemaTypeDefinition {
+public:
+  struct DirectiveArgument {
+    std::string name;
+    GraphQLInputTypes value;
+  };
+public:
+  void addArgument(DirectiveArgument argument) {
+    this->args.emplace_back(argument);
+  }
+  cgqlContainer<DirectiveArgument> getArguments() const {
+    return this->args;
+  }
+private:
+  cgqlContainer<DirectiveArgument> args;
+};
+
+class TypeDefinitionWithDirectives {
+public:
+  void setDirectives(cgqlContainer<Directive> directives) {
+    this->directives = directives;
+  }
+  cgqlContainer<Directive> getDirectives() const {
+    return this->directives;
+  }
+private:
+  cgqlContainer<Directive> directives;
+};
+
 class TypeDefinition : public AbstractSchemaTypeDefinition {
 public:
   TypeDefinition() = default;
@@ -89,7 +118,9 @@ public:
 private:
 };
 
-class ScalarTypeDefinition : public TypeDefinition {
+class ScalarTypeDefinition :
+  public TypeDefinition,
+  public TypeDefinitionWithDirectives {
 public:
   ScalarTypeDefinition() = default;
   ScalarTypeDefinition(const std::string& name) {
@@ -149,7 +180,9 @@ private:
   std::weak_ptr<T> innerType;
 };
 
-class ArgumentTypeDefinition : public AbstractSchemaTypeDefinition {
+class InputValueDefinition :
+  public AbstractSchemaTypeDefinition,
+  public TypeDefinitionWithDirectives {
 public:
   void setDefaultValue(GraphQLInputTypes value) {
     this->defaultValue = value;
@@ -157,10 +190,10 @@ public:
   GraphQLInputTypes getDefaultValue() const {
     return this->defaultValue;
   }
-  void setArgumentType(cgqlSPtr<TypeDefinition> type) {
+  void setInputValueType(cgqlSPtr<TypeDefinition> type) {
     this->type = type;
   }
-  cgqlSPtr<TypeDefinition> getArgumentType() const {
+  cgqlSPtr<TypeDefinition> getInputValueType() const {
     return this->type;
   }
 private:
@@ -168,7 +201,9 @@ private:
   GraphQLInputTypes defaultValue;
 };
 
-class FieldTypeDefinition : public AbstractSchemaTypeDefinition {
+class FieldTypeDefinition :
+  public AbstractSchemaTypeDefinition,
+  public TypeDefinitionWithDirectives {
 public:
   void setFieldType(cgqlSPtr<TypeDefinition> type) {
     this->type = type;
@@ -176,18 +211,20 @@ public:
   cgqlSPtr<TypeDefinition> getFieldType() const {
     return this->type;
   }
-  void addArg(const ArgumentTypeDefinition& arg) {
+  void addArg(const InputValueDefinition& arg) {
     this->argDefs.emplace_back(arg);
   }
-  cgqlContainer<ArgumentTypeDefinition> getArgs() const {
+  cgqlContainer<InputValueDefinition> getArgs() const {
     return this->argDefs;
   }
 private:
   cgqlSPtr<TypeDefinition> type;
-  cgqlContainer<ArgumentTypeDefinition> argDefs;
+  cgqlContainer<InputValueDefinition> argDefs;
 };
 
-class InterfaceTypeDefinition : public TypeDefinition {
+class InterfaceTypeDefinition :
+  public TypeDefinition,
+  public TypeDefinitionWithDirectives {
 public:
   void addField(const FieldTypeDefinition& field) {
     this->fields.emplace_back(field);
@@ -209,7 +246,9 @@ private:
   cgqlContainer<std::string> implements;
 };
 
-class ObjectTypeDefinition : public TypeDefinition {
+class ObjectTypeDefinition :
+  public TypeDefinition,
+  public TypeDefinitionWithDirectives {
 public:
   void addField(const FieldTypeDefinition& field) {
     this->fieldDefs.emplace_back(field);
@@ -231,7 +270,9 @@ private:
   cgqlContainer<std::string> implements;
 };
 
-class UnionTypeDefinition : public TypeDefinition {
+class UnionTypeDefinition :
+  public TypeDefinition,
+  public TypeDefinitionWithDirectives {
 public:
   void addMember(const cgqlSPtr<ObjectTypeDefinition>& member) {
     this->members.emplace_back(member);
@@ -246,14 +287,23 @@ private:
   cgqlContainer<cgqlSPtr<TypeDefinition>> members;
 };
 
-struct EnumValueDefinition : public AbstractSchemaTypeDefinition {
-  EnumValueDefinition(std::string description, std::string name) {
+struct EnumValueDefinition :
+  public AbstractSchemaTypeDefinition,
+  public TypeDefinitionWithDirectives {
+  EnumValueDefinition(
+    std::string description,
+    std::string name,
+    cgqlContainer<Directive> directives
+  ) {
     this->setDescription(description);
     this->setName(name);
+    this->setDirectives(directives);
   }
 };
 
-class EnumTypeDefinition : public TypeDefinition {
+class EnumTypeDefinition :
+  public TypeDefinition,
+  public TypeDefinitionWithDirectives {
 public:
   void addValue(EnumValueDefinition value) {
     values.emplace_back(value);
@@ -268,26 +318,9 @@ private:
   cgqlContainer<EnumValueDefinition> values;
 };
 
-class InputValueDefinition : public AbstractSchemaTypeDefinition {
-public:
-  void setDefaultValue(GraphQLInputTypes value) {
-    this->defaultValue = value;
-  }
-  GraphQLInputTypes getDefaultValue() const {
-    return this->defaultValue;
-  }
-  void setInputValueType(cgqlSPtr<TypeDefinition> type) {
-    this->type = type;
-  }
-  cgqlSPtr<TypeDefinition> getInputValueType() const {
-    return this->type;
-  }
-private:
-  cgqlSPtr<TypeDefinition> type;
-  GraphQLInputTypes defaultValue;
-};
-
-class InputObjectTypeDefinition : public TypeDefinition {
+class InputObjectTypeDefinition :
+  public TypeDefinition,
+  public TypeDefinitionWithDirectives {
 public:
   void addField(const InputValueDefinition& field) {
     fields.emplace_back(field);
@@ -344,7 +377,7 @@ public:
     for(auto const& [key, def] : typeDefMap) {
       if(!def) continue; // Temporary!!!
       cgqlAssert(
-        def->getType() != DefinitionType::TYPE_DEF,
+        def->getDefinitionType() != DefinitionType::TYPE_DEFINITION,
         "Type is empty"
       );
       const cgqlContainer<std::string>& implements = [this](const cgqlSPtr<TypeDefinition>& def) {
