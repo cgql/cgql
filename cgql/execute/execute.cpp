@@ -351,7 +351,7 @@ Args buildArgumentMap(
     std::static_pointer_cast<Field>(selection);
   const cgqlContainer<Argument>& argumentValues =
     field->getArgs();
-  const cgqlContainer<ArgumentTypeDefinition>& argumentDefinitions =
+  const cgqlContainer<InputValueDefinition>& argumentDefinitions =
     fieldType.getArgs();
   for(auto const& argDef : argumentDefinitions) {
     const std::string& argName = argDef.getName();
@@ -370,7 +370,7 @@ Args buildArgumentMap(
         defaultValue
       );
     } else if (
-      argDef.getArgumentType()->getDefinitionType() == DefinitionType::NON_NULL &&
+      argDef.getInputValueType()->getDefinitionType() == DefinitionType::NON_NULL &&
       !hasValue
     ) {
       cgqlAssert(false, "Value is null or not provided");
