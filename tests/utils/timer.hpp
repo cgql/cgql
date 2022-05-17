@@ -1,5 +1,5 @@
 #include <chrono>
-#include <iostream>
+#include <cgql/logger/logger.h>
 
 class Timer {
 public:
@@ -20,10 +20,6 @@ private:
   void printResult() {
     auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
 
-    std::cout
-      << name
-      << ": "
-      << duration.count()
-      << "ms\n";
+    cgql::logger::info(duration.count());
   }
 };
