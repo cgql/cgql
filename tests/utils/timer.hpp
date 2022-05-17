@@ -21,11 +21,11 @@ private:
     auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
 
     std::cout
-      << "\033[4;37m"
+      << "\u001b[37m"
       << name
-      << "\033[0m"
-      << ": \033[1;97m"
+      << "\u001b[0m"
+      << ": \u001b[37;1m\u001b[4m"
       << duration.count()
-      << "\033[0mms\n";
+      << "\u001b[0mms\n";
   }
 };
