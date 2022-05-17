@@ -1,22 +1,50 @@
 #include "cgql/schema/parser.h"
-#include "cgql/schema/typeDefinitions.hpp"
 
 namespace cgql {
 namespace internal {
 
+cgqlSPtr<ObjectType> SchemaParser::parseObject() {
+  this->tokenizer.advance();
+  cgqlSPtr<ObjectType> object = cgqlSMakePtr<ObjectType>();
+  while(!this->checkType(TokenType::CURLY_BRACES_R)) {
+    std::string key = this->parseName();
+    this->move(TokenType::COLON);
+    object->fields.try_emplace(key, this->parseValueLiteral());
+  }
+  this->tokenizer.advance();
+  return object;
+}
+
+cgqlSPtr<ListType> SchemaParser::parseList() {
+  this->tokenizer.advance();
+  cgqlSPtr<ListType> list = cgqlSMakePtr<ListType>();
+  while(!this->checkType(TokenType::SQUARE_BRACES_R)) {
+    list->elements.emplace_back(this->parseValueLiteral());
+  }
+  this->tokenizer.advance();
+  return list;
+}
+
 GraphQLInputTypes SchemaParser::parseValueLiteral() {
   TokenType currentTokenType = this->tokenizer.current.getType();
   switch(currentTokenType) {
+    case TokenType::SQUARE_BRACES_L:
+      return this->parseList();
+    case TokenType::CURLY_BRACES_L:
+      return this->parseObject();
+    case TokenType::NAME:
+      return this->parseName();
     case TokenType::STRING:
-      return this->move(currentTokenType).getValue();
+      return this->move(TokenType::STRING).getValue();
     case TokenType::INT: {
       std::string valueAsStr =
-        this->move(currentTokenType).getValue();
+        this->move(TokenType::INT).getValue();
       // potentially an integer
       return strToInt<Int>(valueAsStr);
     }
     default:
-      return this->move(currentTokenType).getValue();
+      cgqlAssert(false, "Unexpected tokentype");
+      return 0;
   }
 }
 
@@ -65,20 +93,30 @@ cgqlContainer<std::string> SchemaParser::parseImplementInterfaces() {
   return interfaces;
 }
 
-ArgumentTypeDefinition SchemaParser::parseArgumentDefinition(const TypeRegistry& registry) {
-  std::string description(this->parseDescription());
-  std::string name(this->parseName());
+Directive::DirectiveArgument SchemaParser::parseDirectiveArgument() {
+  Directive::DirectiveArgument argument;
+  argument.name = this->parseName();
   this->move(TokenType::COLON);
-  ArgumentTypeDefinition arg;
-  cgqlSPtr<TypeDefinition> type = this->parseType(registry);
-  if(this->checkType(TokenType::EQUAL)) {
+  argument.value = this->parseValueLiteral();
+  return argument;
+}
+
+cgqlContainer<Directive> SchemaParser::parseDirectives() {
+  cgqlContainer<Directive> directives;
+  while(this->checkType(TokenType::AT)) {
     this->tokenizer.advance();
-    arg.setDefaultValue(this->parseValueLiteral());
+    Directive directive;
+    directive.setName(this->parseName());
+    if(this->checkType(TokenType::BRACES_L)) {
+      this->tokenizer.advance();
+      do {
+        directive.addArgument(this->parseDirectiveArgument());
+      } while(!this->checkType(TokenType::BRACES_R));
+      this->tokenizer.advance();
+    }
+    directives.emplace_back(directive);
   }
-  arg.setName(name);
-  arg.setArgumentType(type);
-  arg.setDescription(description);
-  return arg;
+  return directives;
 }
 
 FieldTypeDefinition SchemaParser::parseFieldTypeDefinition(const TypeRegistry& registry) {
@@ -88,12 +126,13 @@ FieldTypeDefinition SchemaParser::parseFieldTypeDefinition(const TypeRegistry& r
   if(this->checkType(TokenType::BRACES_L)) {
     this->tokenizer.advance();
     do {
-      field.addArg(this->parseArgumentDefinition(registry));
+      field.addArg(this->parseInputValueDefinition(registry));
     } while(!this->checkType(TokenType::BRACES_R));
     this->tokenizer.advance();
   }
   this->move(TokenType::COLON);
   cgqlSPtr<TypeDefinition> type = this->parseType(registry);
+  field.setDirectives(this->parseDirectives());
   field.setName(name);
   field.setDescription(description);
   field.setFieldType(type);
@@ -106,6 +145,7 @@ void SchemaParser::parseObjectTypeDefinition(const TypeRegistry& registry) {
   cgqlSPtr<ObjectTypeDefinition> obj =
     registry.getType<ObjectTypeDefinition>(this->parseName());
   obj->setImplementedInterfaces(this->parseImplementInterfaces());
+  obj->setDirectives(this->parseDirectives());
   obj->setDescription(description);
   if(this->checkType(TokenType::CURLY_BRACES_L)) {
     this->tokenizer.advance();
@@ -124,6 +164,7 @@ void SchemaParser::parseInterfaceTypeDefinition(const TypeRegistry& registry) {
   cgqlSPtr<InterfaceTypeDefinition> interface =
     registry.getType<InterfaceTypeDefinition>(this->parseName());
   interface->setImplementedInterfaces(this->parseImplementInterfaces());
+  interface->setDirectives(this->parseDirectives());
   interface->setDescription(description);
   if(this->checkType(TokenType::CURLY_BRACES_L)) {
     this->tokenizer.advance();
@@ -141,6 +182,7 @@ void SchemaParser::parseUnionTypeDefinition(const TypeRegistry& registry) {
   this->tokenizer.advance();
   cgqlSPtr<UnionTypeDefinition> unionType =
     registry.getType<UnionTypeDefinition>(this->parseName());
+  unionType->setDirectives(this->parseDirectives());
   unionType->setDescription(description);
   if(this->checkType(TokenType::EQUAL)) {
     do {
@@ -157,11 +199,16 @@ void SchemaParser::parseEnumTypeDefinition(const TypeRegistry& registry) {
   this->tokenizer.advance();
   cgqlSPtr<EnumTypeDefinition> enumType =
     registry.getType<EnumTypeDefinition>(this->parseName());
+  enumType->setDirectives(this->parseDirectives());
   enumType->setDescription(description);
   if(this->checkType(TokenType::CURLY_BRACES_L)) {
     this->tokenizer.advance();
     do {
-      enumType->addValue({ this->parseDescription(), this->parseName() });
+      enumType->addValue({
+        this->parseDescription(),
+        this->parseName(),
+        this->parseDirectives()
+      });
     } while(!this->checkType(TokenType::CURLY_BRACES_R));
   }
   this->tokenizer.advance();
@@ -177,6 +224,7 @@ InputValueDefinition SchemaParser::parseInputValueDefinition(const TypeRegistry&
     this->tokenizer.advance();
     field.setDefaultValue(this->parseValueLiteral());
   }
+  field.setDirectives(this->parseDirectives());
   field.setName(name);
   field.setInputValueType(type);
   field.setDescription(description);
@@ -188,6 +236,7 @@ void SchemaParser::parseInputObjectTypeDefinition(const TypeRegistry& registry) 
   this->tokenizer.advance();
   cgqlSPtr<InputObjectTypeDefinition> inputType =
     registry.getType<InputObjectTypeDefinition>(this->parseName());
+  inputType->setDirectives(this->parseDirectives());
   inputType->setDescription(description);
   if(this->checkType(TokenType::CURLY_BRACES_L)) {
     this->tokenizer.advance();
@@ -205,6 +254,7 @@ void SchemaParser::parseScalarTypeDefinition(const TypeRegistry& registry) {
   this->tokenizer.advance();
   cgqlSPtr<ScalarTypeDefinition> scalar =
     registry.getType<ScalarTypeDefinition>(this->parseName());
+  scalar->setDirectives(this->parseDirectives());
   scalar->setDescription(description);
 }
 

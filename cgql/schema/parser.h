@@ -25,10 +25,13 @@ private:
   void parseDirectiveTypeDefinition(const TypeRegistry& registry);
   FieldTypeDefinition parseFieldTypeDefinition(const TypeRegistry& registry);
   InputValueDefinition parseInputValueDefinition(const TypeRegistry& registry);
-  ArgumentTypeDefinition parseArgumentDefinition(const TypeRegistry& registry);
   cgqlContainer<std::string> parseImplementInterfaces();
+  cgqlContainer<Directive> parseDirectives();
   cgqlContainer<DirectiveLocation> parseDirectiveLocations();
+  Directive::DirectiveArgument parseDirectiveArgument();
   GraphQLInputTypes parseValueLiteral();
+  cgqlSPtr<ObjectType> parseObject();
+  cgqlSPtr<ListType> parseList();
 
   void parseDefinition(const TypeRegistry& registry);
 
