@@ -9,10 +9,22 @@ namespace cgql {
 using Int = int32_t;
 using String = std::string_view;
 
+struct ObjectType;
+struct ListType;
 using GraphQLInputTypes = std::variant<
   Int,
-  std::string
+  std::string,
+  cgqlSPtr<ObjectType>,
+  cgqlSPtr<ListType>
 >;
+
+struct ObjectType {
+  std::unordered_map<std::string, GraphQLInputTypes> fields;
+};
+
+struct ListType {
+  cgqlContainer<GraphQLInputTypes> elements;
+};
 
 using GraphQLReturnTypes = std::variant<
   Int,
