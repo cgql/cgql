@@ -10,7 +10,7 @@ inline void parseGHSchema() {
   CgqlInstance test;
   std::string schema;
   std::ifstream file;
-  file.open("tests/github-schema.graphql");
+  file.open("tests/schema.docs.graphql");
   std::string line;
 
   while(std::getline(file, line)) {

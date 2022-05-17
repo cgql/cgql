@@ -34,7 +34,7 @@ type Address {
 }
 
 type Person {
-  name: String!
+  name: String! @upper
   age: Int
   address: Address
   partner: Person
