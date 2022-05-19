@@ -113,84 +113,48 @@ Data coerceLeafValue(
   return std::move(data);
 }
 
-template<typename T>
-Data completeListItem(
+Data completeList(
   const ExecutionContext& ctx,
   const cgqlSPtr<ListTypeDefinition<TypeDefinition>>& fieldType,
   const FieldTypeDefinition& field,
   const SelectionSet& fields,
   const Data& result,
-  const std::optional<cgqlSPtr<ResultMap>>& source
+  const std::optional<cgqlSPtr<Object>>& source
 ) {
-  const cgqlContainer<T>& rawResultList =
-    fromVariant<cgqlContainer<T>>(result);
-  cgqlContainer<T> resultList;
-  resultList.reserve(rawResultList.size());
-  for(T rawResult : rawResultList) {
-    resultList.emplace_back(
-      fromVariant<T>(completeValue(
+  cgqlSPtr<List> rawResultList =
+    fromVariant<cgqlSPtr<List>>(result);
+  cgqlSPtr<List> resultList = cgqlSMakePtr<List>();
+  resultList->elements.reserve(rawResultList->elements.size());
+  for(Data rawResult : rawResultList->elements) {
+    resultList->elements.emplace_back(
+      completeValue(
         ctx,
         fieldType->getInnerType(),
         field,
         fields,
         rawResult,
         source
-      ))
+      )
     );
   }
   return resultList;
 }
 
-Data completeList(
-  const ExecutionContext& ctx,
-  const cgqlSPtr<ListTypeDefinition<TypeDefinition>>& fieldType,
-  const FieldTypeDefinition& field,
-  const SelectionSet& fields,
-  const Data& rawResult,
-  const std::optional<cgqlSPtr<ResultMap>>& source
-) {
-  switch(rawResult.index()) {
-    case 2:
-      return completeListItem<GraphQLReturnTypes>(
-        ctx,
-        fieldType,
-        field,
-        fields,
-        rawResult,
-        source
-      );
-      break;
-    case 3:
-      return completeListItem<cgqlSPtr<ResultMap>>(
-        ctx,
-        fieldType,
-        field,
-        fields,
-        rawResult,
-        source
-      );
-      break;
-    default:
-      cgqlAssert(false, "Unknown variant type");
-  }
-  return 0;
-}
-
-static cgqlUPtr<ResultMap> executeGroupedFieldSet(
+static cgqlUPtr<Object> executeGroupedFieldSet(
   const ExecutionContext& ctx,
   const cgqlSPtr<ObjectTypeDefinition>& objectType,
   const GroupedField& groupedFieldSet,
-  const std::optional<cgqlSPtr<ResultMap>>& source
+  const std::optional<cgqlSPtr<Object>>& source
 ) {
-  cgqlUPtr<ResultMap> resultMap = cgqlUMakePtr<ResultMap>();
-  resultMap->data.reserve(groupedFieldSet.size());
+  cgqlUPtr<Object> resultMap = cgqlUMakePtr<Object>();
+  resultMap->fields.reserve(groupedFieldSet.size());
 
   for(auto const& [responseKey, fields] : groupedFieldSet) {
     FieldTypeDefinition field = findGraphQLFieldByName(
       objectType,
       std::static_pointer_cast<Field>(fields[0])->getName()
     );
-    resultMap->data.try_emplace(
+    resultMap->fields.try_emplace(
       responseKey,
       executeField(
         ctx,
@@ -211,8 +175,8 @@ static Data executeInnerSelectionSet(
   const Data& result,
   const SelectionSet& fields
 ) {
-  cgqlSPtr<ResultMap> v =
-    fromVariant<cgqlSPtr<ResultMap>>(result);
+  cgqlSPtr<Object> v =
+    fromVariant<cgqlSPtr<Object>>(result);
   SelectionSet mergedSelectionSet;
   mergeSelectionSet(fields, mergedSelectionSet);
   return executeSelectionSet(
@@ -229,10 +193,10 @@ static Data completeAbstractType(
   const T& fieldType,
   const SelectionSet& fields,
   const Data& result,
-  const std::optional<cgqlSPtr<ResultMap>>& source
+  const std::optional<cgqlSPtr<Object>>& source
 ) {
-  const cgqlSPtr<ResultMap>& resultMap =
-    fromVariant<cgqlSPtr<ResultMap>>(result);
+  const cgqlSPtr<Object>& resultMap =
+    fromVariant<cgqlSPtr<Object>>(result);
   const cgqlContainer<cgqlSPtr<TypeDefinition>>& possibleTypes =
     ctx.schema->getPossibleTypes(fieldType);
   TypeOfMap::const_iterator it = ctx.typeOfMap.find(fieldType->getName());
@@ -262,7 +226,7 @@ Data completeValue(
   const FieldTypeDefinition& field,
   const SelectionSet& fields,
   const Data& result,
-  const std::optional<cgqlSPtr<ResultMap>>& source
+  const std::optional<cgqlSPtr<Object>>& source
 ) {
   DefinitionType type = fieldType->getDefinitionType();
   if(type == DefinitionType::NON_NULL) {
@@ -390,7 +354,7 @@ Data executeField(
   const FieldTypeDefinition& field,
   const cgqlSPtr<T>& fieldType,
   const SelectionSet& fields,
-  const std::optional<cgqlSPtr<ResultMap>>& source
+  const std::optional<cgqlSPtr<Object>>& source
 ) {
   ResolverMap::const_iterator it = ctx.resolverMap.find(field.getName());
   Data result = [&]() {
@@ -419,11 +383,11 @@ Data executeField(
   );
 }
 
-cgqlUPtr<ResultMap> executeSelectionSet(
+cgqlUPtr<Object> executeSelectionSet(
   const ExecutionContext& ctx,
   const SelectionSet &selectionSet,
   const cgqlSPtr<ObjectTypeDefinition> &obj,
-  const std::optional<cgqlSPtr<ResultMap>>& source
+  const std::optional<cgqlSPtr<Object>>& source
 ) {
   GroupedField groupedFieldSet;
   collectFields(
@@ -440,7 +404,7 @@ cgqlUPtr<ResultMap> executeSelectionSet(
   );
 }
 
-cgqlUPtr<ResultMap> executeQuery(
+cgqlUPtr<Object> executeQuery(
   const ExecutionContext& ctx,
   const OperationDefinition& query
 ) {
@@ -482,7 +446,7 @@ cgqlContainer<FragmentDefinition> getFragmentsFromQuery(const internal::Document
 
 } // internal
 
-cgqlUPtr<ResultMap> execute(
+cgqlUPtr<Object> execute(
   const cgqlSPtr<internal::Schema> &schema,
   const internal::Document &document,
   const ResolverMap& resolverMap,

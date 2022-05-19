@@ -24,34 +24,35 @@ inline void runAdvancedParsing() {
       "person",
       [](const Args& arguments) -> Data {
         GraphQLInputTypes args = arguments["args"];
-        ResultMap a {
+        Object a {
           {
             { "city", "0xFF-Park" },
             { "houseName", "cw3dv's-homeeeee" }
           }
         };
-        ResultMap r {
+        Object r {
           {
             { "name", "cw3dv1" }
           }
         };
-        ResultMap p {
+        List l {
+          {
+            "Google",
+            "Microsoft",
+            "Github"
+          }
+        };
+        Object p {
           {
             { "name", fromVariant<std::string>(fromVariant<cgqlSPtr<ObjectType>>(args)->fields["name"]) },
             { "age", fromVariant<Int>(fromVariant<cgqlSPtr<ObjectType>>(args)->fields["age"]) },
-            { "address", cgqlSMakePtr<ResultMap>(a) },
-            { "partner", cgqlSMakePtr<ResultMap>(r) },
+            { "address", cgqlSMakePtr<Object>(a) },
+            { "partner", cgqlSMakePtr<Object>(r) },
             { "gender", "MALE" },
-            { "workedAt",
-              (cgqlContainer<GraphQLReturnTypes>){
-                "Google",
-                "Microsoft",
-                "Github"
-              }
-            }
+            { "workedAt", cgqlSMakePtr<List>(l) }
           }
         };
-        return cgqlSMakePtr<ResultMap>(p);
+        return cgqlSMakePtr<Object>(p);
       }
     },
     {
@@ -65,7 +66,7 @@ inline void runAdvancedParsing() {
   TypeOfMap typeOfMap {
     {
       "Entity",
-      [](const cgqlSPtr<ResultMap>& result) -> String {
+      [](const cgqlSPtr<Object>& result) -> String {
         return "Person";
       }
     }
@@ -88,6 +89,6 @@ inline void runAdvancedParsing() {
       "}"
     );
     auto r = test.executeWith(doc, root, typeOfMap);
-    // printResultMap(*r);
+    // printObject(*r);
   }
 }

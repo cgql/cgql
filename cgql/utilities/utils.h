@@ -36,7 +36,12 @@ constexpr inline bool isNameContinue(uint32_t value) {
 
 template<typename T>
 constexpr inline bool isList(const T& type) {
-  return type.index() >= 2 && type.index() <= 3;
+  return type.index() == 3;
+}
+
+template<typename T>
+constexpr inline bool isObject(const T& type) {
+  return type.index() == 4;
 }
 
 template<typename T>

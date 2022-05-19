@@ -40,11 +40,11 @@ Data coerceLeafValue(
 template<typename T>
 Data completeValue(
   const ExecutionContext& ctx,
-  const cgqlSPtr<TypeDefinition>& fieldType,
+  const cgqlSPtr<T>& fieldType,
   const FieldTypeDefinition& field,
   const SelectionSet& fields,
   const Data& result,
-  const std::optional<cgqlSPtr<ResultMap>>& source
+  const std::optional<cgqlSPtr<Object>>& source
 );
 
 template<typename T>
@@ -53,17 +53,17 @@ Data executeField(
   const FieldTypeDefinition& field,
   const cgqlSPtr<T>& fieldType,
   const SelectionSet& fields,
-  const std::optional<cgqlSPtr<ResultMap>>& source
+  const std::optional<cgqlSPtr<Object>>& source
 );
 
-cgqlUPtr<ResultMap> executeSelectionSet(
+cgqlUPtr<Object> executeSelectionSet(
   const ExecutionContext& ctx,
   const SelectionSet &selectionSet,
   const cgqlSPtr<ObjectTypeDefinition> &obj,
-  const std::optional<cgqlSPtr<ResultMap>>& source
+  const std::optional<cgqlSPtr<Object>>& source
 );
 
-cgqlUPtr<ResultMap> executeQuery(
+cgqlUPtr<Object> executeQuery(
   const ExecutionContext& ctx,
   const OperationDefinition& query,
   const cgqlSPtr<Schema>& schema
@@ -76,7 +76,7 @@ const OperationDefinition& getOperation(
 
 } // internal 
 
-cgqlUPtr<ResultMap> execute(
+cgqlUPtr<Object> execute(
   const cgqlSPtr<internal::Schema>& schema,
   const internal::Document& document,
   const ResolverMap& resolverMap,

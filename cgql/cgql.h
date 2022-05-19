@@ -12,7 +12,7 @@ class CgqlInstance {
 public:
   CgqlInstance();
   void useSchema(const cgqlSPtr<internal::Schema>& schema);
-  cgqlUPtr<ResultMap> executeWith(
+  cgqlUPtr<Object> executeWith(
     const internal::Document& document,
     const ResolverMap& resolverMap,
     const TypeOfMap& typeOfMap

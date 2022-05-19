@@ -68,51 +68,42 @@ void printScalarValue(
   const Data& value,
   const std::string& indentation
 ) {
-  auto rg = fromVariant<GraphQLReturnTypes>(value);
-  if(rg.index() == 0) {
+  if(value.index() == 0) {
     std::string v = indentation +
       key.data() +
-      " " + std::to_string(fromVariant<Int>(rg));
+      " " + std::to_string(fromVariant<Int>(value));
     logger::info(v);
-  } else if(rg.index() == 1) {
+  } else if(value.index() == 1) {
     std::string v = indentation +
       key.data() +
-      " " + fromVariant<String>(rg).data();
+      " " + fromVariant<String>(value).data();
     logger::info(v);
   }
 }
 
-template<typename T>
 void printList(
   const std::string& key,
-  const cgqlContainer<T>& value,
+  const cgqlSPtr<List>& value,
   const std::string& indentation
 ) {
   logger::info(indentation + key);
-  for(auto const& each : value) {
+  for(auto const& each : value->elements) {
     printScalarValue("", each, indentation);
   }
 }
 
-void printResultMap(const ResultMap& rm, uint8_t level) {
+void printResultMap(const Object& obj, uint8_t level) {
   std::string indentation;
   for(auto i = 0; i < level; i++) indentation += "  ";
-  for(auto const& [key, value] : rm.data) {
-    if(value.index() == 0) {
-      printScalarValue(key, value, indentation);
-    } else if(internal::isList(value)) {
-      switch(value.index()) {
-        case 2:
-          printList(key, fromVariant<cgqlContainer<GraphQLReturnTypes>>(value), indentation);
-          break;
-        case 3:
-          printList(key, fromVariant<cgqlContainer<cgqlSPtr<ResultMap>>>(value), indentation);
-          break;
-      }
-    } else {
+  for(auto const& [key, value] : obj.fields) {
+    if(internal::isList(value)) {
+      printList(key, fromVariant<cgqlSPtr<List>>(value), indentation);
+    } else if(internal::isObject(value)) {
       std::string v = indentation + key.data();
       logger::info(v);
-      printResultMap(*fromVariant<std::shared_ptr<ResultMap>>(value), level + 1);
+      printResultMap(*fromVariant<std::shared_ptr<Object>>(value), level + 1);
+    } else {
+      printScalarValue(key, value, indentation);
     }
   }
 }

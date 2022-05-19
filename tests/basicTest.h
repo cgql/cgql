@@ -24,13 +24,13 @@ inline void runBasicTest() {
       "person",
       [](const Args& args) -> Data {
         Int id = fromVariant<Int>(args["id"]); // argument
-        ResultMap p {
+        Object p {
           {
             { "name", "cw3dv" },
             { "age", id }
           }
         };
-        return cgqlSMakePtr<ResultMap>(p);
+        return cgqlSMakePtr<Object>(p);
       }
     }
   };

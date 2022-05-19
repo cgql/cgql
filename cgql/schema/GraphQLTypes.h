@@ -26,24 +26,28 @@ struct ListType {
   cgqlContainer<GraphQLInputTypes> elements;
 };
 
-using GraphQLReturnTypes = std::variant<
-  Int,
-  String
->;
-
-struct ResultMap;
 struct Location {
   uint16_t line;
   uint16_t column;
 };
 
+struct Object;
+struct List;
+
 using Data = std::variant<
-  GraphQLReturnTypes,
-  cgqlSPtr<ResultMap>,
-  cgqlContainer<GraphQLReturnTypes>,
-  cgqlContainer<cgqlSPtr<ResultMap>>,
+  Int,
+  String,
+  cgqlSPtr<Object>,
+  cgqlSPtr<List>,
   std::monostate
 >;
+
+struct Object {
+  std::unordered_map<std::string, Data> fields;
+};
+struct List {
+  std::vector<Data> elements;
+};
 
 class Error {
 public:
@@ -51,11 +55,6 @@ public:
 private:
   std::string msg;
   Location location;
-};
-
-struct ResultMap {
-  std::unordered_map<std::string, Data> data;
-  cgqlContainer<Error> errors;
 };
 
 using ArgsMap = std::unordered_map<
@@ -85,7 +84,7 @@ using ResolverFunc = std::function<
 >;
 
 using IsTypeOfFunc = std::function<
-  String(const cgqlSPtr<ResultMap>&)
+  String(const cgqlSPtr<Object>&)
 >;
 
 using ResolverMap = std::unordered_map<std::string, ResolverFunc>;
