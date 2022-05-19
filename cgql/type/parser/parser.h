@@ -26,10 +26,6 @@ private:
   cgqlUPtr<InlineFragment> parseInlineFragment();
   cgqlUPtr<Fragment> parseFragment();
   Argument parseArgument();
-  Arg parseValue();
-  InputObject parseObject();
-
-  std::string getKey();
 };
 
 } // internal

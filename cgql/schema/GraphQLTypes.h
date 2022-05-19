@@ -58,18 +58,9 @@ struct ResultMap {
   cgqlContainer<Error> errors;
 };
 
-struct Args;
-
-using InputObject = cgqlSPtr<Args>;
-
-using Arg = std::variant<
-  GraphQLInputTypes,
-  InputObject
->;
-
 using ArgsMap = std::unordered_map<
   std::string,
-  Arg
+  GraphQLInputTypes
 >;
 
 template<class T, class... Types>
@@ -81,10 +72,10 @@ constexpr const T& fromVariant(
 
 struct Args {
   ArgsMap argsMap;
-  void addArg(std::string argName, Arg arg) {
+  void addArg(std::string argName, GraphQLInputTypes arg) {
     argsMap.try_emplace(argName, arg);
   }
-  inline const Arg& operator[](const std::string& argKey) const {
+  inline const GraphQLInputTypes& operator[](const std::string& argKey) const {
     return this->argsMap.at(argKey);
   }
 };

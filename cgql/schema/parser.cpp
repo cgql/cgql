@@ -3,55 +3,10 @@
 namespace cgql {
 namespace internal {
 
-cgqlSPtr<ObjectType> SchemaParser::parseObject() {
-  this->tokenizer.advance();
-  cgqlSPtr<ObjectType> object = cgqlSMakePtr<ObjectType>();
-  while(!this->checkType(TokenType::CURLY_BRACES_R)) {
-    std::string key = this->parseName();
-    this->move(TokenType::COLON);
-    object->fields.try_emplace(key, this->parseValueLiteral());
-  }
-  this->tokenizer.advance();
-  return object;
-}
-
-cgqlSPtr<ListType> SchemaParser::parseList() {
-  this->tokenizer.advance();
-  cgqlSPtr<ListType> list = cgqlSMakePtr<ListType>();
-  while(!this->checkType(TokenType::SQUARE_BRACES_R)) {
-    list->elements.emplace_back(this->parseValueLiteral());
-  }
-  this->tokenizer.advance();
-  return list;
-}
-
-GraphQLInputTypes SchemaParser::parseValueLiteral() {
-  TokenType currentTokenType = this->tokenizer.current.getType();
-  switch(currentTokenType) {
-    case TokenType::SQUARE_BRACES_L:
-      return this->parseList();
-    case TokenType::CURLY_BRACES_L:
-      return this->parseObject();
-    case TokenType::NAME:
-      return this->parseName();
-    case TokenType::STRING:
-      return this->move(TokenType::STRING).getValue();
-    case TokenType::INT: {
-      std::string valueAsStr =
-        this->move(TokenType::INT).getValue();
-      // potentially an integer
-      return strToInt<Int>(valueAsStr);
-    }
-    default:
-      cgqlAssert(false, "Unexpected tokentype");
-      return 0;
-  }
-}
-
 std::string SchemaParser::parseDescription() {
   if(
-    this->tokenizer.current.getType() == TokenType::STRING ||
-    this->tokenizer.current.getType() == TokenType::BLOCK_STRING
+    this->tokenizer.current.getType() == TokenType::BLOCK_STRING ||
+    this->tokenizer.current.getType() == TokenType::STRING
   ) {
     std::string description = this->tokenizer.current.getValue();
     this->tokenizer.advance();

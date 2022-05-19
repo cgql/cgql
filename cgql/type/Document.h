@@ -27,14 +27,14 @@ enum class SelectionType {
 
 class Argument : public AbstractSchemaTypeDefinition {
 public:
-  void setValue(const Arg& value) {
+  void setValue(const GraphQLInputTypes& value) {
     this->value = value;
   }
-  const Arg& getValue() const {
+  const GraphQLInputTypes& getValue() const {
     return this->value;
   }
 private:
-  Arg value;
+  GraphQLInputTypes value;
   std::optional<Location> location;
 };
 

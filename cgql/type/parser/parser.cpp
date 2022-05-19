@@ -8,51 +8,11 @@
 namespace cgql {
 namespace internal {
 
-std::string QueryParser::getKey() {
-  std::string name = this->parseName();
-  this->move(TokenType::COLON);
-  return name;
-}
-
-InputObject QueryParser::parseObject() {
-  InputObject inputObject = cgqlSMakePtr<Args>();
-
-  this->tokenizer.advance();
-  do {
-    inputObject->argsMap.try_emplace(
-      this->getKey(), this->parseValue()
-    );
-  } while(!this->checkType(TokenType::CURLY_BRACES_R));
-  this->tokenizer.advance();
-
-  return inputObject;
-}
-
-Arg QueryParser::parseValue() {
-  TokenType curr = this->tokenizer.current.getType();
-  switch(curr) {
-    case TokenType::STRING:
-      return this->move(curr).getValue();
-    case TokenType::INT: {
-      std::string valueAsStr = this->move(curr).getValue();
-      uint8_t start = charToInt<uint8_t>(valueAsStr[0]);
-      if(isAsciiDigit(start)) {
-        // potentially an integer
-        return strToInt<Int>(valueAsStr);
-      }
-    }
-    case TokenType::CURLY_BRACES_L:
-      return this->parseObject();
-    default:
-      return this->move(curr).getValue();
-  }
-}
-
 Argument QueryParser::parseArgument() {
   Argument argument;
   std::string name(this->parseName());
   this->move(TokenType::COLON);
-  Arg value = this->parseValue();
+  GraphQLInputTypes value = this->parseValueLiteral();
   argument.setName(name);
   argument.setValue(value);
   return argument;

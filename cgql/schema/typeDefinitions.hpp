@@ -108,7 +108,7 @@ private:
 class TypeDefinition : public AbstractSchemaTypeDefinition {
 public:
   TypeDefinition() = default;
-  TypeDefinition(const std::string& name) {
+  TypeDefinition(std::string name) {
     this->setName(name);
   }
   virtual ~TypeDefinition() = default;
@@ -123,7 +123,7 @@ class ScalarTypeDefinition :
   public TypeDefinitionWithDirectives {
 public:
   ScalarTypeDefinition() = default;
-  ScalarTypeDefinition(const std::string& name) {
+  ScalarTypeDefinition(std::string name) {
     this->setName(name);
   }
   DefinitionType getDefinitionType() const override {
@@ -211,7 +211,7 @@ public:
   cgqlSPtr<TypeDefinition> getFieldType() const {
     return this->type;
   }
-  void addArg(const InputValueDefinition& arg) {
+  void addArg(InputValueDefinition arg) {
     this->argDefs.emplace_back(arg);
   }
   cgqlContainer<InputValueDefinition> getArgs() const {
@@ -226,7 +226,7 @@ class InterfaceTypeDefinition :
   public TypeDefinition,
   public TypeDefinitionWithDirectives {
 public:
-  void addField(const FieldTypeDefinition& field) {
+  void addField(FieldTypeDefinition field) {
     this->fields.emplace_back(field);
   }
   cgqlContainer<FieldTypeDefinition> getFields() const {
@@ -250,7 +250,7 @@ class ObjectTypeDefinition :
   public TypeDefinition,
   public TypeDefinitionWithDirectives {
 public:
-  void addField(const FieldTypeDefinition& field) {
+  void addField(FieldTypeDefinition field) {
     this->fieldDefs.emplace_back(field);
   }
   cgqlContainer<FieldTypeDefinition> getFields() const {
@@ -274,7 +274,7 @@ class UnionTypeDefinition :
   public TypeDefinition,
   public TypeDefinitionWithDirectives {
 public:
-  void addMember(const cgqlSPtr<ObjectTypeDefinition>& member) {
+  void addMember(cgqlSPtr<ObjectTypeDefinition> member) {
     this->members.emplace_back(member);
   }
   DefinitionType getDefinitionType() const override {
@@ -322,7 +322,7 @@ class InputObjectTypeDefinition :
   public TypeDefinition,
   public TypeDefinitionWithDirectives {
 public:
-  void addField(const InputValueDefinition& field) {
+  void addField(InputValueDefinition field) {
     fields.emplace_back(field);
   }
   cgqlContainer<InputValueDefinition> getFields() const {
@@ -337,7 +337,7 @@ private:
 
 class DirectiveTypeDefinition : public TypeDefinition {
 public:
-  void addArgument(const InputValueDefinition& argument) {
+  void addArgument(InputValueDefinition argument) {
     arguments.emplace_back(argument);
   }
   cgqlContainer<InputValueDefinition> getArguments() const {
@@ -365,7 +365,7 @@ using ImplementedInterfaces = std::unordered_map<
 
 class Schema {
 public:
-  void setQuery(const cgqlSPtr<ObjectTypeDefinition>& query) {
+  void setQuery(cgqlSPtr<ObjectTypeDefinition> query) {
     this->query = query;
   }
   const cgqlSPtr<ObjectTypeDefinition>& getQuery() const {

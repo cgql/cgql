@@ -29,9 +29,6 @@ private:
   cgqlContainer<Directive> parseDirectives();
   cgqlContainer<DirectiveLocation> parseDirectiveLocations();
   Directive::DirectiveArgument parseDirectiveArgument();
-  GraphQLInputTypes parseValueLiteral();
-  cgqlSPtr<ObjectType> parseObject();
-  cgqlSPtr<ListType> parseList();
 
   void parseDefinition(const TypeRegistry& registry);
 
