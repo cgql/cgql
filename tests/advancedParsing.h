@@ -23,7 +23,7 @@ inline void runAdvancedParsing() {
     {
       "person",
       [](const Args& arguments) -> Data {
-        auto args = fromVariant<InputObject>(arguments["args"]);
+        GraphQLInputTypes args = arguments["args"];
         ResultMap a {
           {
             { "city", "0xFF-Park" },
@@ -37,8 +37,8 @@ inline void runAdvancedParsing() {
         };
         ResultMap p {
           {
-            { "name", fromVariant<std::string>(fromVariant<GraphQLInputTypes>(args->argsMap["name"])) },
-            { "age", fromVariant<Int>(fromVariant<GraphQLInputTypes>(args->argsMap["id"])) },
+            { "name", fromVariant<std::string>(fromVariant<cgqlSPtr<ObjectType>>(args)->fields["name"]) },
+            { "age", fromVariant<Int>(fromVariant<cgqlSPtr<ObjectType>>(args)->fields["age"]) },
             { "address", cgqlSMakePtr<ResultMap>(a) },
             { "partner", cgqlSMakePtr<ResultMap>(r) },
             { "gender", "MALE" },
@@ -57,7 +57,7 @@ inline void runAdvancedParsing() {
     {
       "test",
       [](const Args& args) -> Data {
-        Int i = fromVariant<Int>(fromVariant<GraphQLInputTypes>(args["arg"]));
+        Int i = fromVariant<Int>(args["arg"]);
         return 0;
       }
     }
