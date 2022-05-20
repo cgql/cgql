@@ -15,8 +15,6 @@ enum class DefinitionType {
 
   DEFAULT_WRAP, // wraps field type including types in lists and non-nulls
   LIST,
-  NON_NULL,
-  DIRECTIVE,
 
   // type system locations based on spec
   SCALAR,
@@ -24,7 +22,10 @@ enum class DefinitionType {
   INTERFACE,
   UNION,
   ENUM,
-  INPUT_OBJECT
+  INPUT_OBJECT,
+
+  DIRECTIVE,
+  NON_NULL
 };
 
 inline std::ostream& operator<<(std::ostream& os, const DefinitionType& type) {
@@ -355,7 +356,7 @@ public:
 private:
   cgqlContainer<InputValueDefinition> arguments;
   cgqlContainer<DirectiveLocation> locations;
-  bool repeatable; // TODO
+  bool repeatable = false; // TODO
 };
 
 using ImplementedInterfaces = std::unordered_map<

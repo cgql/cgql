@@ -33,6 +33,8 @@ void collectFields(
   for(const cgqlSPtr<Selection>& selection : selectionSet) {
     const SelectionType type = selection->getSelectionType();
     switch(type) {
+      case SelectionType::BASE:
+        cgqlAssert(false, "Invalid selection type in execution: BASE");
       case SelectionType::FIELD: {
         cgqlSPtr<Field> field =
           std::static_pointer_cast<Field>(selection);
@@ -79,8 +81,6 @@ void collectFields(
           );
         collectFields(ctx, objectType, it->getSelectionSet(), groupedFields);
       }
-      case SelectionType::BASE:
-        cgqlAssert(false, "Invalid selection type in execution: BASE");
     }
   }
 }
@@ -257,6 +257,18 @@ Data completeValue(
     return std::monostate{};
   }
   switch (type) {
+    case DefinitionType::DEFAULT_WRAP: {
+      cgqlSPtr<DefaultWrapTypeDefinition<TypeDefinition>> defaultWrap =
+        std::static_pointer_cast<DefaultWrapTypeDefinition<TypeDefinition>>(fieldType);
+      return completeValue(
+        ctx,
+        defaultWrap->getInnerType(),
+        field,
+        fields,
+        result,
+        source
+      );
+    }
     case DefinitionType::LIST: {
       cgqlSPtr<ListTypeDefinition<TypeDefinition>> list =
         std::static_pointer_cast<ListTypeDefinition<TypeDefinition>>(fieldType);
@@ -269,6 +281,8 @@ Data completeValue(
         source
       );
     }
+    case DefinitionType::SCALAR:
+      return coerceLeafValue(fieldType, result);
     case DefinitionType::OBJECT: {
       cgqlSPtr<ObjectTypeDefinition> schemaObj =
         std::static_pointer_cast<ObjectTypeDefinition>(fieldType);
@@ -295,20 +309,6 @@ Data completeValue(
         std::static_pointer_cast<EnumTypeDefinition>(fieldType);
       return coerceLeafValue(enumType, result);
     }
-    case DefinitionType::DEFAULT_WRAP: {
-      cgqlSPtr<DefaultWrapTypeDefinition<TypeDefinition>> defaultWrap =
-        std::static_pointer_cast<DefaultWrapTypeDefinition<TypeDefinition>>(fieldType);
-      return completeValue(
-        ctx,
-        defaultWrap->getInnerType(),
-        field,
-        fields,
-        result,
-        source
-      );
-    }
-    case DefinitionType::SCALAR:
-      return coerceLeafValue(fieldType, result);
     default:
       cgqlAssert(false, "TypeDef cannot be base");
   }
