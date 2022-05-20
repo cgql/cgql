@@ -252,8 +252,7 @@ Data completeValue(
       result,
       source
     );
-  }
-  if(result.index() == 4) {
+  } else if(result.index() == 4) {
     return std::monostate{};
   }
   switch (type) {
@@ -335,7 +334,7 @@ Args buildArgumentMap(
         return arg.getName() == argName;
       }
     );
-    GraphQLInputTypes defaultValue = argDef.getDefaultValue();
+    const GraphQLInputTypes defaultValue = argDef.getDefaultValue();
     bool hasValue = it != argumentValues.end();
     if(!hasValue) {
       arg.argsMap.try_emplace(
@@ -417,7 +416,7 @@ cgqlUPtr<Object> executeQuery(
   const ExecutionContext& ctx,
   const OperationDefinition& query
 ) {
-  cgqlSPtr<ObjectTypeDefinition> queryType = ctx.schema->getQuery();
+  const cgqlSPtr<ObjectTypeDefinition>& queryType = ctx.schema->getQuery();
   const SelectionSet& selection = query.getSelectionSet();
   return executeSelectionSet(
     ctx,

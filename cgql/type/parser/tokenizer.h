@@ -46,13 +46,12 @@ class Token {
 public:
   Token(TokenType type);
   Token(TokenType type, const std::string& value);
-  ~Token();
 
   TokenType getType() const { return this->type; }
   const std::string& getValue() const { return this->value; }
 private:
-  TokenType type;
   std::string value;
+  TokenType type;
 };
 
 class Tokenizer {
@@ -68,16 +67,13 @@ public:
 private:
   std::string source;
   size_t cursor;
-  void advanceCursor(int8_t amount);
+  inline void advanceCursor(int amount);
 
   Token tokenizeName();
   Token tokenizeDigits();
   Token tokenizeString();
   Token tokenizeBlockString();
 };
-
-Token generateToken(TokenType type, const std::string& value);
-Token generateToken(TokenType type);
 
 } // internal
 } // cgql

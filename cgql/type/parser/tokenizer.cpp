@@ -79,7 +79,14 @@ Token::Token(TokenType type)
 Token::Token(TokenType type, const std::string& value)
   : type(type), value(value) {}
 
-Token::~Token() {}
+static inline Token generateToken(TokenType type) {
+  Token generatedToken(type);
+  return generatedToken;
+}
+static inline Token generateToken(TokenType type, const std::string& value) {
+  Token generatedToken(type, value);
+  return generatedToken;
+}
 
 // Tokenizer
 Tokenizer::Tokenizer(const char* source)
@@ -100,15 +107,6 @@ std::string Tokenizer::lookAhead() {
   Token next = this->nextToken();
   this->cursor = oldCursor;
   return next.getValue();
-}
-
-Token generateToken(TokenType type) {
-  Token generatedToken(type);
-  return generatedToken;
-}
-Token generateToken(TokenType type, const std::string& value) {
-  Token generatedToken(type, value);
-  return generatedToken;
 }
 
 Token Tokenizer::tokenizeName() {
@@ -274,15 +272,14 @@ Token Tokenizer::nextToken() {
     }
     if(isDigit(this->source[*i])) {
       return this->tokenizeDigits();
-    }
-    if(isNameStart(this->source[*i])) {
+    } else if(isNameStart(this->source[*i])) {
       return this->tokenizeName();
     }
   }
   return generateToken(TokenType::END_OF_QUERY);
 }
 
-void Tokenizer::advanceCursor(int8_t amount) {
+inline void Tokenizer::advanceCursor(int amount) {
   this->cursor += amount;
 }
 

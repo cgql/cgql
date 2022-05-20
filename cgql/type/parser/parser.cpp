@@ -18,8 +18,8 @@ Argument QueryParser::parseArgument() {
   return argument;
 }
 
-cgqlUPtr<Field> QueryParser::parseField() {
-  cgqlUPtr<Field> field = cgqlUMakePtr<Field>();
+cgqlSPtr<Field> QueryParser::parseField() {
+  cgqlSPtr<Field> field = cgqlSMakePtr<Field>();
   std::string aliasOrName(this->parseName());
   if(!this->checkType(TokenType::COLON)) {
     field->setName(aliasOrName);
@@ -44,17 +44,13 @@ cgqlUPtr<Field> QueryParser::parseField() {
   if(hasSelectionSet) {
     SelectionSet selections = this->parseSelectionSet();
     field->setSelectionSet(selections);
-    cgqlAssert(
-      field->getSelectionSet().size() != 0,
-      "selectionSet should contain atleast one selection"
-    );
   }
   return field;
 }
 
-cgqlUPtr<InlineFragment> QueryParser::parseInlineFragment() {
-  cgqlUPtr<InlineFragment> inlineFragment =
-    cgqlUMakePtr<InlineFragment>();
+cgqlSPtr<InlineFragment> QueryParser::parseInlineFragment() {
+  cgqlSPtr<InlineFragment> inlineFragment =
+    cgqlSMakePtr<InlineFragment>();
   // TODO: handle error
   if(this->tokenizer.current.getValue() != "on") {}
   this->tokenizer.advance();
@@ -64,9 +60,9 @@ cgqlUPtr<InlineFragment> QueryParser::parseInlineFragment() {
   return inlineFragment;
 }
 
-cgqlUPtr<Fragment> QueryParser::parseFragment() {
-  cgqlUPtr<Fragment> fragment =
-    cgqlUMakePtr<Fragment>();
+cgqlSPtr<Fragment> QueryParser::parseFragment() {
+  cgqlSPtr<Fragment> fragment =
+    cgqlSMakePtr<Fragment>();
   fragment->setName(this->parseName());
   return fragment;
 }
@@ -84,7 +80,7 @@ FragmentDefinition QueryParser::parseFragmentDefinition() {
   return fragment;
 }
 
-cgqlUPtr<Selection> QueryParser::parseSelection() {
+cgqlSPtr<Selection> QueryParser::parseSelection() {
   if(this->checkType(TokenType::SPREAD)) {
     this->tokenizer.advance();
     if(this->tokenizer.current.getValue() == "on")
