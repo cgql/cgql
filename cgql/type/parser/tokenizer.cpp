@@ -114,7 +114,7 @@ Token generateToken(TokenType type, const std::string& value) {
 Token Tokenizer::tokenizeName() {
   size_t* i = &this->cursor;
   std::string value; 
-  for(; *i < this->source.length();) {
+  while(*i < this->source.length()) {
     if(
       isNameContinue(this->source[*i])
     ) {
@@ -133,7 +133,7 @@ Token Tokenizer::tokenizeName() {
 Token Tokenizer::tokenizeDigits() {
   size_t* i = &this->cursor;
   std::string value;
-  for(; *i < this->source.length();) {
+  while(*i < this->source.length()) {
     if(isDigit(this->source[*i])) {
       value += this->source[*i];
       this->advanceCursor(1);
@@ -150,7 +150,7 @@ Token Tokenizer::tokenizeDigits() {
 void Tokenizer::skipComments() {
   size_t* i = &this->cursor;
 
-  for(; *i < this->source.length();) {
+  while(*i < this->source.length()) {
     if(
       this->source[*i] == 0x000A ||
       this->source[*i] == 0x000D
@@ -167,7 +167,7 @@ Token Tokenizer::tokenizeString() {
   std::string tokenizedString;
 
   size_t* i = &this->cursor;
-  for(; *i < this->source.length();) {
+  while(*i < this->source.length()) {
     if(this->source[*i] == 0x0022) break;
     tokenizedString += this->source[*i];
     this->advanceCursor(1);
@@ -185,7 +185,7 @@ Token Tokenizer::tokenizeBlockString() {
   std::string blockString;
 
   size_t* i = &this->cursor;
-  for(; *i < this->source.length();) {
+  while(*i < this->source.length()) {
     if(
       this->source[*i]     == 0x0022 &&
       this->source[*i + 1] == 0x0022 &&
@@ -208,7 +208,7 @@ Token Tokenizer::nextToken() {
 
   size_t* i = &this->cursor;
 
-  for(; *i < len; *i = *i + 1) {
+  for(;*i < len; ++*i) {
     switch ((uint32_t)this->source[*i]) {
       case 0xFEFF:
       case 0x0009:
@@ -283,7 +283,7 @@ Token Tokenizer::nextToken() {
 }
 
 void Tokenizer::advanceCursor(int8_t amount) {
-    this->cursor += amount;
+  this->cursor += amount;
 }
 
 } // internal

@@ -48,8 +48,8 @@ public:
   Token(TokenType type, const std::string& value);
   ~Token();
 
-  inline TokenType getType() const { return this->type; }
-  inline const std::string& getValue() const { return this->value; }
+  TokenType getType() const { return this->type; }
+  const std::string& getValue() const { return this->value; }
 private:
   TokenType type;
   std::string value;

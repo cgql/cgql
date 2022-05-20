@@ -10,7 +10,7 @@ FieldTypeDefinition findGraphQLFieldByName(
   const cgqlSPtr<ObjectTypeDefinition>& objectType,
   const std::string& fieldName
 ) {
-  for(auto const& field : objectType->getFields()) {
+  for(const FieldTypeDefinition& field : objectType->getFields()) {
     if(fieldName == field.getName()) {
       return field;
     }
@@ -30,48 +30,57 @@ void collectFields(
   const SelectionSet &selectionSet,
   GroupedField& groupedFields
 ) {
-  for(cgqlSPtr<Selection> selection : selectionSet) {
-    SelectionType type = selection->getSelectionType();
-    if(type == SelectionType::FIELD) {
-      // holds a Field*
-      cgqlSPtr<Field> field =
-        std::static_pointer_cast<Field>(selection);
+  for(const cgqlSPtr<Selection>& selection : selectionSet) {
+    const SelectionType type = selection->getSelectionType();
+    switch(type) {
+      case SelectionType::FIELD: {
+        cgqlSPtr<Field> field =
+          std::static_pointer_cast<Field>(selection);
 
-      const std::string& responseKey = field->getResponseKey();
+        const std::string& responseKey = field->getResponseKey();
 
-      GroupedField::iterator it =
-        groupedFields.find(responseKey);
-      if(it != groupedFields.end()) {
-        it->second.emplace_back(field);
-      } else {
-        SelectionSet fields;
-        fields.reserve(1);
-        fields.emplace_back(field);
-        groupedFields.try_emplace(
-          responseKey, std::move(fields)
+        GroupedField::iterator it =
+          groupedFields.find(responseKey);
+        if(it != groupedFields.end()) {
+          it->second.emplace_back(field);
+        } else {
+          SelectionSet fields;
+          fields.reserve(1);
+          fields.emplace_back(field);
+          groupedFields.try_emplace(
+            responseKey, std::move(fields)
+          );
+        }
+      }
+      case SelectionType::INLINE_FRAGMENT: {
+        cgqlSPtr<InlineFragment> inlineFragment =
+          std::static_pointer_cast<InlineFragment>(selection);
+        const std::string& typeCondition = inlineFragment->getTypeCondition();
+        
+        if(typeCondition != objectType->getName()) continue;
+
+        collectFields(
+          ctx,
+          objectType,
+          inlineFragment->getSelectionSet(),
+          groupedFields
         );
       }
-    } else if(type == SelectionType::INLINE_FRAGMENT) {
-      cgqlSPtr<InlineFragment> inlineFragment =
-        std::static_pointer_cast<InlineFragment>(selection);
-      const std::string& typeCondition = inlineFragment->getTypeCondition();
-      
-      if(typeCondition != objectType->getName()) continue;
-
-      const SelectionSet& selectionSet = inlineFragment->getSelectionSet();
-      collectFields(ctx, objectType, selectionSet, groupedFields);
-    } else if(type == SelectionType::FRAGMENT) {
-      cgqlSPtr<Fragment> fragment =
-        std::static_pointer_cast<Fragment>(selection);
-      cgqlContainer<FragmentDefinition>::const_iterator it =
-        std::find_if(
-          ctx.fragments.begin(),
-          ctx.fragments.end(),
-          [&fragment](const FragmentDefinition& fragmentDef) {
-            return fragment->getName() == fragmentDef.getName();
-          }
-        );
-      collectFields(ctx, objectType, it->getSelectionSet(), groupedFields);
+      case SelectionType::FRAGMENT: {
+        cgqlSPtr<Fragment> fragment =
+          std::static_pointer_cast<Fragment>(selection);
+        cgqlContainer<FragmentDefinition>::const_iterator it =
+          std::find_if(
+            ctx.fragments.begin(),
+            ctx.fragments.end(),
+            [&fragment](const FragmentDefinition& fragmentDef) {
+              return fragment->getName() == fragmentDef.getName();
+            }
+          );
+        collectFields(ctx, objectType, it->getSelectionSet(), groupedFields);
+      }
+      case SelectionType::BASE:
+        cgqlAssert(false, "Invalid selection type in execution: BASE");
     }
   }
 }
@@ -83,7 +92,7 @@ void collectSubFields(
   const SelectionSet& selectionSet,
   GroupedField& groupedFields
 ) {
-  for(cgqlSPtr<Selection> selection : selectionSet) {
+  for(const cgqlSPtr<Selection>& selection : selectionSet) {
     collectFields(
       ctx,
       objectType,
@@ -97,10 +106,10 @@ void mergeSelectionSet(
   const SelectionSet& fields,
   SelectionSet& mergedSelectionSet
 ) {
-  for(cgqlSPtr<Selection> field : fields) {
+  for(const cgqlSPtr<Selection>& field : fields) {
     const SelectionSet& fieldSelectionSet = field->getSelectionSet();
     if(fieldSelectionSet.empty()) continue;
-    for(cgqlSPtr<Selection> subField : fieldSelectionSet) {
+    for(const cgqlSPtr<Selection>& subField : fieldSelectionSet) {
       mergedSelectionSet.emplace_back(subField);
     }
   }
@@ -125,7 +134,7 @@ Data completeList(
     fromVariant<cgqlSPtr<List>>(result);
   cgqlSPtr<List> resultList = cgqlSMakePtr<List>();
   resultList->elements.reserve(rawResultList->elements.size());
-  for(Data rawResult : rawResultList->elements) {
+  for(const Data& rawResult : rawResultList->elements) {
     resultList->elements.emplace_back(
       completeValue(
         ctx,
@@ -195,12 +204,12 @@ static Data completeAbstractType(
   const Data& result,
   const std::optional<cgqlSPtr<Object>>& source
 ) {
-  const cgqlSPtr<Object>& resultMap =
+  cgqlSPtr<Object> resultMap =
     fromVariant<cgqlSPtr<Object>>(result);
   const cgqlContainer<cgqlSPtr<TypeDefinition>>& possibleTypes =
     ctx.schema->getPossibleTypes(fieldType);
   TypeOfMap::const_iterator it = ctx.typeOfMap.find(fieldType->getName());
-  for(cgqlSPtr<TypeDefinition> possibleType : possibleTypes) {
+  for(const cgqlSPtr<TypeDefinition>& possibleType : possibleTypes) {
     String typeName = it->second(resultMap);
     if(possibleType->getName() == typeName) {
       cgqlSPtr<ObjectTypeDefinition> object =
@@ -228,7 +237,7 @@ Data completeValue(
   const Data& result,
   const std::optional<cgqlSPtr<Object>>& source
 ) {
-  DefinitionType type = fieldType->getDefinitionType();
+  const DefinitionType type = fieldType->getDefinitionType();
   if(type == DefinitionType::NON_NULL) {
     cgqlSPtr<NonNullTypeDefinition<TypeDefinition>> nonNull =
       std::static_pointer_cast<NonNullTypeDefinition<TypeDefinition>>(fieldType);
@@ -317,7 +326,7 @@ Args buildArgumentMap(
     field->getArgs();
   const cgqlContainer<InputValueDefinition>& argumentDefinitions =
     fieldType.getArgs();
-  for(auto const& argDef : argumentDefinitions) {
+  for(const InputValueDefinition& argDef : argumentDefinitions) {
     const std::string& argName = argDef.getName();
     const auto& it = std::find_if(
       argumentValues.begin(),
@@ -422,7 +431,7 @@ const OperationDefinition& getOperation(
   const Document& document,
   OperationType operationName
 ) {
-  for(auto const& def : document.getDefinitions()) {
+  for(const Definition& def : document.getDefinitions()) {
     if(def.index() == 0) {
       const OperationDefinition& opDef =
         fromVariant<OperationDefinition>(def);
@@ -436,7 +445,7 @@ const OperationDefinition& getOperation(
 
 cgqlContainer<FragmentDefinition> getFragmentsFromQuery(const internal::Document& document) {
   cgqlContainer<FragmentDefinition> fragments;
-  for(auto const& def : document.getDefinitions()) {
+  for(const Definition& def : document.getDefinitions()) {
     if(def.index() == 1) {
       fragments.emplace_back(fromVariant<FragmentDefinition>(def));
     }

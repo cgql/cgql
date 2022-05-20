@@ -7,25 +7,21 @@ namespace cgql {
 class logger {
 public:
   template<typename T>
-  inline static void print(const char *ansiCode, T msg) {
-    std::cout << ansiCode << msg << RESET << std::endl;
+  static void print(const char *ansiCode, T msg) {
+    std::cout << ansiCode << msg << "\u001b[0m" << std::endl;
   }
   template<typename T>
-  inline static void info(T msg) {
-    print<T>(INFO, msg);
+  static void info(T msg) {
+    print<T>("\u001b[38;5;226m", msg);
   }
   template<typename T>
-  inline static void success(T msg) {
-    print<T>(SUCCESS, msg);
+  static void success(T msg) {
+    print<T>("\u001b[38;5;48m", msg);
   }
   template<typename T>
-  inline static void error(T msg) {
-    print<T>(ERROR, msg);
+  static void error(T msg) {
+    print<T>("\u001b[38;5;196m", msg);
   }
-  inline static const char* INFO = "\u001b[38;5;226m";
-  inline static const char* SUCCESS = "\u001b[38;5;48m";
-  inline static const char* ERROR = "\u001b[38;5;196m";
-  inline static const char* RESET = "\u001b[0m";
 }; // logger
 
 } // cgql

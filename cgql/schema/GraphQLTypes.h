@@ -74,7 +74,7 @@ struct Args {
   void addArg(std::string argName, GraphQLInputTypes arg) {
     argsMap.try_emplace(argName, arg);
   }
-  inline const GraphQLInputTypes& operator[](const std::string& argKey) const {
+  const GraphQLInputTypes& operator[](const std::string& argKey) const {
     return this->argsMap.at(argKey);
   }
 };
