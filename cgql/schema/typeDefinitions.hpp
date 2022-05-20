@@ -119,17 +119,25 @@ public:
 private:
 };
 
+using Serializer = std::function<
+  const Data&(const Data&)
+>;
+
 class ScalarTypeDefinition :
   public TypeDefinition,
   public TypeDefinitionWithDirectives {
 public:
   ScalarTypeDefinition() = default;
-  ScalarTypeDefinition(std::string name) {
+  ScalarTypeDefinition(
+    const std::string& name,
+    const Serializer& serializer
+  ) : serializer(serializer) {
     this->setName(name);
   }
   DefinitionType getDefinitionType() const override {
     return DefinitionType::SCALAR;
   }
+  Serializer serializer;
 private:
 };
 
@@ -314,6 +322,19 @@ public:
   }
   const cgqlContainer<EnumValueDefinition>& getValues() const {
     return this->values;
+  }
+  String serialize(String outputValue) {
+    cgqlContainer<EnumValueDefinition>::const_iterator it =
+      std::find_if(
+        values.begin(),
+        values.end(),
+        [&](const EnumValueDefinition& value) {
+          return outputValue == value.getName();
+        }
+      );
+    if(it != values.end())
+      return outputValue;
+    throw outputValue;
   }
 private:
   cgqlContainer<EnumValueDefinition> values;

@@ -32,11 +32,6 @@ void mergeSelectionSet(
   SelectionSet& mergedSelectionSet
 );
 
-Data coerceLeafValue(
-  const cgqlSPtr<TypeDefinition>& fieldType,
-  const Data& data
-);
-
 template<typename T>
 Data completeValue(
   const ExecutionContext& ctx,

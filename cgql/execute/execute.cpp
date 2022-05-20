@@ -116,7 +116,7 @@ void mergeSelectionSet(
 }
 
 Data coerceLeafValue(
-  const cgqlSPtr<TypeDefinition>& fieldType,
+  const cgqlSPtr<ScalarTypeDefinition>& fieldType,
   const Data& data
 ) {
   return std::move(data);
@@ -280,8 +280,11 @@ Data completeValue(
         source
       );
     }
-    case DefinitionType::SCALAR:
-      return coerceLeafValue(fieldType, result);
+    case DefinitionType::SCALAR: {
+      cgqlSPtr<ScalarTypeDefinition> scalar =
+        std::static_pointer_cast<ScalarTypeDefinition>(fieldType);
+      return scalar->serializer(result);
+    }
     case DefinitionType::OBJECT: {
       cgqlSPtr<ObjectTypeDefinition> schemaObj =
         std::static_pointer_cast<ObjectTypeDefinition>(fieldType);
@@ -306,7 +309,7 @@ Data completeValue(
     case DefinitionType::ENUM: {
       cgqlSPtr<EnumTypeDefinition> enumType =
         std::static_pointer_cast<EnumTypeDefinition>(fieldType);
-      return coerceLeafValue(enumType, result);
+      return enumType->serialize(fromVariant<String>(result));
     }
     default:
       cgqlAssert(false, "TypeDef cannot be base");
