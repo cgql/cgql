@@ -10,7 +10,7 @@ static inline bool isInteger(const Data& value) {
 }
 
 static inline bool isString(const Data& value) {
-  return value.index() == 0;
+  return value.index() == 1;
 }
 
 void TypeRegistry::init() {
