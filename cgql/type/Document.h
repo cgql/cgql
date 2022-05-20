@@ -61,8 +61,8 @@ public:
     return this->type;
   }
 private:
-  SelectionType type = SelectionType::BASE;
   SelectionSet selectionSet;
+  SelectionType type = SelectionType::BASE;
 };
 
 class Field
@@ -131,11 +131,11 @@ public:
   );
   OperationDefinition() = default;
   ~OperationDefinition();
-  const OperationType& getOperationType() const { return this->operationType; }
+  OperationType getOperationType() const { return this->operationType; }
   const SelectionSet& getSelectionSet() const { return this->selectionSet; }
 private:
-  OperationType operationType;
   SelectionSet selectionSet;
+  OperationType operationType;
 };
 
 class FragmentDefinition : public AbstractSchemaTypeDefinition  {
@@ -169,9 +169,9 @@ public:
   );
   Document() = default;
   ~Document();
-  cgqlContainer<Definition>& getDefinitions() const { return this->definitions; }
+  const cgqlContainer<Definition>& getDefinitions() const { return this->definitions; }
 private:
-  mutable cgqlContainer<Definition> definitions;
+  cgqlContainer<Definition> definitions;
 };
 } // internal
 

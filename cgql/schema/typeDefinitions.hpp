@@ -87,7 +87,7 @@ public:
   void addArgument(DirectiveArgument argument) {
     this->args.emplace_back(argument);
   }
-  cgqlContainer<DirectiveArgument> getArguments() const {
+  const cgqlContainer<DirectiveArgument>& getArguments() const {
     return this->args;
   }
 private:
@@ -99,7 +99,7 @@ public:
   void setDirectives(cgqlContainer<Directive> directives) {
     this->directives = directives;
   }
-  cgqlContainer<Directive> getDirectives() const {
+  const cgqlContainer<Directive>& getDirectives() const {
     return this->directives;
   }
 private:
@@ -139,7 +139,7 @@ public:
   ListTypeDefinition(cgqlSPtr<T> innerType) {
     this->innerType = innerType;
   }
-  cgqlSPtr<T> getInnerType() const {
+  const cgqlSPtr<T>& getInnerType() const {
     return this->innerType;
   };
   DefinitionType getDefinitionType() const override {
@@ -155,7 +155,7 @@ public:
   NonNullTypeDefinition(cgqlSPtr<T> innerType) {
     this->innerType = innerType;
   }
-  cgqlSPtr<T> getInnerType() const {
+  const cgqlSPtr<T>& getInnerType() const {
     return this->innerType;
   };
   DefinitionType getDefinitionType() const override {
@@ -188,13 +188,13 @@ public:
   void setDefaultValue(GraphQLInputTypes value) {
     this->defaultValue = value;
   }
-  GraphQLInputTypes getDefaultValue() const {
+  const GraphQLInputTypes& getDefaultValue() const {
     return this->defaultValue;
   }
   void setInputValueType(cgqlSPtr<TypeDefinition> type) {
     this->type = type;
   }
-  cgqlSPtr<TypeDefinition> getInputValueType() const {
+  const cgqlSPtr<TypeDefinition>& getInputValueType() const {
     return this->type;
   }
 private:
@@ -209,13 +209,13 @@ public:
   void setFieldType(cgqlSPtr<TypeDefinition> type) {
     this->type = type;
   }
-  cgqlSPtr<TypeDefinition> getFieldType() const {
+  const cgqlSPtr<TypeDefinition>& getFieldType() const {
     return this->type;
   }
   void addArg(InputValueDefinition arg) {
     this->argDefs.emplace_back(arg);
   }
-  cgqlContainer<InputValueDefinition> getArgs() const {
+  const cgqlContainer<InputValueDefinition>& getArgs() const {
     return this->argDefs;
   }
 private:
@@ -230,7 +230,7 @@ public:
   void addField(FieldTypeDefinition field) {
     this->fields.emplace_back(field);
   }
-  cgqlContainer<FieldTypeDefinition> getFields() const {
+  const cgqlContainer<FieldTypeDefinition>& getFields() const {
     return this->fields;
   }
   DefinitionType getDefinitionType() const override {
@@ -239,7 +239,7 @@ public:
   void setImplementedInterfaces(cgqlContainer<std::string> interfaces) {
     this->implements = interfaces;
   }
-  cgqlContainer<std::string> getImplementedInterfaces() const {
+  const cgqlContainer<std::string>& getImplementedInterfaces() const {
     return this->implements;
   }
 private:
@@ -254,7 +254,7 @@ public:
   void addField(FieldTypeDefinition field) {
     this->fieldDefs.emplace_back(field);
   }
-  cgqlContainer<FieldTypeDefinition> getFields() const {
+  const cgqlContainer<FieldTypeDefinition>& getFields() const {
     return this->fieldDefs;
   }
   DefinitionType getDefinitionType() const override {
@@ -263,7 +263,7 @@ public:
   void setImplementedInterfaces(cgqlContainer<std::string> interfaces) {
     this->implements = interfaces;
   }
-  cgqlContainer<std::string> getImplementedInterfaces() const {
+  const cgqlContainer<std::string>& getImplementedInterfaces() const {
     return this->implements;
   }
 private:
@@ -281,7 +281,7 @@ public:
   DefinitionType getDefinitionType() const override {
     return DefinitionType::UNION;
   }
-  cgqlContainer<cgqlSPtr<TypeDefinition>> getMembers() const {
+  const cgqlContainer<cgqlSPtr<TypeDefinition>>& getMembers() const {
     return members;
   }
 private:
@@ -312,7 +312,7 @@ public:
   DefinitionType getDefinitionType() const override {
     return DefinitionType::ENUM;
   }
-  cgqlContainer<EnumValueDefinition> getValues() const {
+  const cgqlContainer<EnumValueDefinition>& getValues() const {
     return this->values;
   }
 private:
@@ -326,7 +326,7 @@ public:
   void addField(InputValueDefinition field) {
     fields.emplace_back(field);
   }
-  cgqlContainer<InputValueDefinition> getFields() const {
+  const cgqlContainer<InputValueDefinition>& getFields() const {
     return this->fields;
   }
   DefinitionType getDefinitionType() const override {
@@ -341,13 +341,13 @@ public:
   void addArgument(InputValueDefinition argument) {
     arguments.emplace_back(argument);
   }
-  cgqlContainer<InputValueDefinition> getArguments() const {
+  const cgqlContainer<InputValueDefinition>& getArguments() const {
     return this->arguments;
   }
   void setDirectiveLocations(cgqlContainer<DirectiveLocation> locations) {
     this->locations = locations;
   }
-  cgqlContainer<DirectiveLocation> getDirectiveLocations() const {
+  const cgqlContainer<DirectiveLocation>& getDirectiveLocations() const {
     return this->locations;
   }
   DefinitionType getDefinitionType() const override {
@@ -415,7 +415,7 @@ public:
     }
   }
   template<typename T>
-  cgqlContainer<cgqlSPtr<TypeDefinition>> getPossibleTypes(
+  const cgqlContainer<cgqlSPtr<TypeDefinition>>& getPossibleTypes(
     const T& abstractType
   ) const {
     if(abstractType->getDefinitionType() == DefinitionType::UNION) {

@@ -463,7 +463,6 @@ cgqlUPtr<Object> execute(
 ) {
   // get operation
   using namespace cgql::internal;
-  const OperationDefinition& operation = getOperation(document);
   ExecutionContext ctx;
   ctx.schema = schema;
   ctx.resolverMap = resolverMap;
@@ -471,7 +470,7 @@ cgqlUPtr<Object> execute(
   ctx.fragments = getFragmentsFromQuery(document);
   return executeQuery(
     ctx,
-    operation
+    getOperation(document)
   );
 }
 
