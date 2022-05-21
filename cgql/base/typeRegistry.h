@@ -29,7 +29,7 @@ public:
     return std::static_pointer_cast<T>(this->types[typeName]);
   }
   void init();
-  auto getAllTypes() const {
+  const std::unordered_map<std::string, cgqlSPtr<TypeDefinition>>& getAllTypes() const {
     return this->types;
   }
 private:
