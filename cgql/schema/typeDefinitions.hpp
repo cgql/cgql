@@ -60,13 +60,13 @@ inline std::ostream& operator<<(std::ostream& os, const DefinitionType& type) {
 
 class AbstractSchemaTypeDefinition {
 public:
-  void setName(std::string name) {
+  void setName(const std::string& name) {
     this->name = name;
   }
   const std::string& getName() const {
     return this->name;
   }
-  void setDescription(std::string description) {
+  void setDescription(const std::string& description) {
     this->description = description;
   }
   const std::string& getDescription() const {
@@ -109,7 +109,7 @@ private:
 class TypeDefinition : public AbstractSchemaTypeDefinition {
 public:
   TypeDefinition() = default;
-  TypeDefinition(std::string name) {
+  TypeDefinition(const std::string& name) {
     this->setName(name);
   }
   virtual ~TypeDefinition() = default;
@@ -242,8 +242,8 @@ public:
   DefinitionType getDefinitionType() const override {
     return DefinitionType::INTERFACE;
   }
-  void setImplementedInterfaces(cgqlContainer<std::string> interfaces) {
-    this->implements = interfaces;
+  void addImplementedInterface(std::string interface) {
+    this->implements.emplace_back(interface);
   }
   const cgqlContainer<std::string>& getImplementedInterfaces() const {
     return this->implements;
@@ -266,8 +266,8 @@ public:
   DefinitionType getDefinitionType() const override {
     return DefinitionType::OBJECT;
   }
-  void setImplementedInterfaces(cgqlContainer<std::string> interfaces) {
-    this->implements = interfaces;
+  void addImplementedInterface(std::string interface) {
+    this->implements.emplace_back(interface);
   }
   const cgqlContainer<std::string>& getImplementedInterfaces() const {
     return this->implements;
@@ -298,13 +298,11 @@ struct EnumValueDefinition :
   public AbstractSchemaTypeDefinition,
   public TypeDefinitionWithDirectives {
   EnumValueDefinition(
-    std::string description,
-    std::string name,
-    cgqlContainer<Directive> directives
+    const std::string& description,
+    const std::string& name
   ) {
     this->setDescription(description);
     this->setName(name);
-    this->setDirectives(directives);
   }
 };
 
@@ -395,29 +393,28 @@ public:
     const std::unordered_map<std::string, cgqlSPtr<TypeDefinition>>& typeDefMap
   ) {
     for(auto const& [key, def] : typeDefMap) {
-      if(!def) continue; // Temporary!!!
-      cgqlAssert(
-        def->getDefinitionType() != DefinitionType::TYPE_DEFINITION,
-        "Type is empty"
-      );
-      const cgqlContainer<std::string>& implements = [this](const cgqlSPtr<TypeDefinition>& def) {
-        switch(def->getDefinitionType()) {
-          case DefinitionType::OBJECT: {
-            const cgqlSPtr<ObjectTypeDefinition>& object =
-              std::static_pointer_cast<ObjectTypeDefinition>(def);
-            if(object->getName() == "Query") {
-              this->setQuery(object);
-            }
-            return object->getImplementedInterfaces();
+      cgqlContainer<std::string> implements;
+      switch(def->getDefinitionType()) {
+        case DefinitionType::TYPE_DEFINITION:
+          cgqlAssert(false, "Type is empty");
+          break;
+        case DefinitionType::OBJECT: {
+          cgqlSPtr<ObjectTypeDefinition> object =
+            std::static_pointer_cast<ObjectTypeDefinition>(def);
+          if(object->getName() == "Query") {
+            this->setQuery(object);
           }
-          case DefinitionType::INTERFACE: {
-            const cgqlSPtr<InterfaceTypeDefinition>& interface =
-              std::static_pointer_cast<InterfaceTypeDefinition>(def);
-            return interface->getImplementedInterfaces();
-          }
-          default: return cgqlContainer<std::string>{};
+          implements = object->getImplementedInterfaces();
+          break;
         }
-      }(def);
+        case DefinitionType::INTERFACE: {
+          cgqlSPtr<InterfaceTypeDefinition> interface =
+            std::static_pointer_cast<InterfaceTypeDefinition>(def);
+          implements = interface->getImplementedInterfaces();
+          break;
+        }
+        default: continue;
+      }
       for(auto const& interface : implements) {
         const auto& it = this->implementedInterfaces.find(interface);
         if(it != this->implementedInterfaces.end()) {
@@ -440,7 +437,7 @@ public:
     if(abstractType->getDefinitionType() == DefinitionType::UNION) {
       return std::dynamic_pointer_cast<UnionTypeDefinition>(abstractType)->getMembers();
     }
-    const ImplementedInterfaces::const_iterator& it = this->implementedInterfaces.find(abstractType->getName());
+    ImplementedInterfaces::const_iterator it = this->implementedInterfaces.find(abstractType->getName());
     return it->second;
   }
 private:

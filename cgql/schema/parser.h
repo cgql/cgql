@@ -25,7 +25,8 @@ private:
   void parseDirectiveTypeDefinition(const TypeRegistry& registry);
   FieldTypeDefinition parseFieldTypeDefinition(const TypeRegistry& registry);
   InputValueDefinition parseInputValueDefinition(const TypeRegistry& registry);
-  cgqlContainer<std::string> parseImplementInterfaces();
+  template<typename T>
+  void parseImplementInterfaces(T objectOrInterface);
   cgqlContainer<Directive> parseDirectives();
   cgqlContainer<DirectiveLocation> parseDirectiveLocations();
   Directive::DirectiveArgument parseDirectiveArgument();

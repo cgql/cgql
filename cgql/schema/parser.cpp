@@ -38,14 +38,13 @@ cgqlSPtr<TypeDefinition> SchemaParser::parseType(const TypeRegistry& registry) {
   return type;
 }
 
-cgqlContainer<std::string> SchemaParser::parseImplementInterfaces() {
-  if(this->tokenizer.current.getValue() != "implements") return {};
-  cgqlContainer<std::string> interfaces;
+template<typename T>
+void SchemaParser::parseImplementInterfaces(T objectOrInterface) {
+  if(this->tokenizer.current.getValue() != "implements") return;
   do {
     this->tokenizer.advance();
-    interfaces.emplace_back(this->parseName());
+    objectOrInterface->addImplementedInterface(this->parseName());
   } while(this->checkType(TokenType::AMPERSAND));
-  return interfaces;
 }
 
 Directive::DirectiveArgument SchemaParser::parseDirectiveArgument() {
@@ -99,7 +98,7 @@ void SchemaParser::parseObjectTypeDefinition(const TypeRegistry& registry) {
   this->tokenizer.advance();
   cgqlSPtr<ObjectTypeDefinition> obj =
     registry.getType<ObjectTypeDefinition>(this->parseName());
-  obj->setImplementedInterfaces(this->parseImplementInterfaces());
+  parseImplementInterfaces(obj);
   obj->setDirectives(this->parseDirectives());
   obj->setDescription(description);
   if(this->checkType(TokenType::CURLY_BRACES_L)) {
@@ -118,7 +117,7 @@ void SchemaParser::parseInterfaceTypeDefinition(const TypeRegistry& registry) {
   this->tokenizer.advance();
   cgqlSPtr<InterfaceTypeDefinition> interface =
     registry.getType<InterfaceTypeDefinition>(this->parseName());
-  interface->setImplementedInterfaces(this->parseImplementInterfaces());
+  parseImplementInterfaces(interface);
   interface->setDirectives(this->parseDirectives());
   interface->setDescription(description);
   if(this->checkType(TokenType::CURLY_BRACES_L)) {
@@ -159,11 +158,12 @@ void SchemaParser::parseEnumTypeDefinition(const TypeRegistry& registry) {
   if(this->checkType(TokenType::CURLY_BRACES_L)) {
     this->tokenizer.advance();
     do {
-      enumType->addValue({
+      EnumValueDefinition enumValue(
         this->parseDescription(),
-        this->parseName(),
-        this->parseDirectives()
-      });
+        this->parseName()
+      );
+      enumValue.setDirectives(this->parseDirectives());
+      enumType->addValue(enumValue);
     } while(!this->checkType(TokenType::CURLY_BRACES_R));
   }
   this->tokenizer.advance();
