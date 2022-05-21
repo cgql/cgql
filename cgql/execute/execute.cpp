@@ -41,18 +41,7 @@ void collectFields(
 
         const std::string& responseKey = field->getResponseKey();
 
-        GroupedField::iterator it =
-          groupedFields.find(responseKey);
-        if(it != groupedFields.end()) {
-          it->second.emplace_back(field);
-        } else {
-          SelectionSet fields;
-          fields.reserve(1);
-          fields.emplace_back(field);
-          groupedFields.try_emplace(
-            responseKey, std::move(fields)
-          );
-        }
+        groupedFields[responseKey].emplace_back(field);
       }
       case SelectionType::INLINE_FRAGMENT: {
         cgqlSPtr<InlineFragment> inlineFragment =
@@ -113,13 +102,6 @@ void mergeSelectionSet(
       mergedSelectionSet.emplace_back(subField);
     }
   }
-}
-
-Data coerceLeafValue(
-  const cgqlSPtr<ScalarTypeDefinition>& fieldType,
-  const Data& data
-) {
-  return std::move(data);
 }
 
 Data completeList(
