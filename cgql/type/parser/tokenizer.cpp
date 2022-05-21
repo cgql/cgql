@@ -279,7 +279,7 @@ Token Tokenizer::nextToken() {
   return generateToken(TokenType::END_OF_QUERY);
 }
 
-inline void Tokenizer::advanceCursor(int amount) {
+void Tokenizer::advanceCursor(int amount) {
   this->cursor += amount;
 }
 

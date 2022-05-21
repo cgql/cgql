@@ -67,7 +67,7 @@ public:
 private:
   std::string source;
   size_t cursor;
-  inline void advanceCursor(int amount);
+  void advanceCursor(int amount);
 
   Token tokenizeName();
   Token tokenizeDigits();
