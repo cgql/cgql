@@ -416,17 +416,8 @@ public:
         default: continue;
       }
       for(auto const& interface : implements) {
-        const auto& it = this->implementedInterfaces.find(interface);
-        if(it != this->implementedInterfaces.end()) {
-          it->second.emplace_back(def);
-        } else {
-          cgqlContainer<cgqlSPtr<TypeDefinition>> typeDefVec;
-          typeDefVec.reserve(1);
-          typeDefVec.emplace_back(def);
-          this->implementedInterfaces.try_emplace(
-            interface, std::move(typeDefVec)
-          );
-        }
+        this->implementedInterfaces[interface]
+          .emplace_back(def);
       }
     }
   }
@@ -441,8 +432,8 @@ public:
     return it->second;
   }
 private:
-  cgqlSPtr<ObjectTypeDefinition> query;
   ImplementedInterfaces implementedInterfaces;
+  cgqlSPtr<ObjectTypeDefinition> query;
 };
 
 } // end of internal

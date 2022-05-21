@@ -1,4 +1,5 @@
 #include "cgql/schema/parser.h"
+#include "cgql/schema/traits.h"
 
 namespace cgql {
 namespace internal {
@@ -39,7 +40,8 @@ cgqlSPtr<TypeDefinition> SchemaParser::parseType(const TypeRegistry& registry) {
 }
 
 template<typename T>
-void SchemaParser::parseImplementInterfaces(T objectOrInterface) {
+void SchemaParser::parseImplementInterfaces(cgqlSPtr<T>& objectOrInterface) {
+  static_assert(hasSetImplInterfaces<T>::value, "Type must be either an object or an interface");
   if(this->tokenizer.current.getValue() != "implements") return;
   do {
     this->tokenizer.advance();
