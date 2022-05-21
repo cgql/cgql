@@ -119,9 +119,7 @@ public:
 private:
 };
 
-using Serializer = std::function<
-  const Data&(const Data&)
->;
+using Serializer = const Data&(*)(const Data&);
 
 class ScalarTypeDefinition :
   public TypeDefinition,

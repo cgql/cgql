@@ -33,20 +33,20 @@ cgqlSPtr<ListType> BaseParser::parseList() {
 GraphQLInputTypes BaseParser::parseValueLiteral() {
   TokenType currentTokenType = this->tokenizer.current.getType();
   switch(currentTokenType) {
-    case TokenType::SQUARE_BRACES_L:
-      return this->parseList();
-    case TokenType::CURLY_BRACES_L:
-      return this->parseObject();
     case TokenType::NAME:
       return this->parseName();
+    case TokenType::INT: {
+      // potentially an integer
+      return strToInt<Int>(
+        this->move(TokenType::INT).getValue()
+      );
+    }
     case TokenType::STRING:
       return this->move(TokenType::STRING).getValue();
-    case TokenType::INT: {
-      std::string valueAsStr =
-        this->move(TokenType::INT).getValue();
-      // potentially an integer
-      return strToInt<Int>(valueAsStr);
-    }
+    case TokenType::CURLY_BRACES_L:
+      return this->parseObject();
+    case TokenType::SQUARE_BRACES_L:
+      return this->parseList();
     default:
       cgqlAssert(false, "Unexpected tokentype");
       return 0;
@@ -55,15 +55,7 @@ GraphQLInputTypes BaseParser::parseValueLiteral() {
 
 Token BaseParser::move(TokenType type) {
   bool isValidType = this->checkType(type);
-  if(!isValidType) {
-    std::string errorMsg;
-    errorMsg += "Required token ";
-    errorMsg += tokenTypeToCharArray(type);
-    errorMsg += ", but got ";
-    errorMsg += tokenTypeToCharArray(this->tokenizer.current.getType());
-
-    cgqlAssert(isValidType, errorMsg.c_str());
-  }
+  cgqlAssert(isValidType, "Invalid tokentype");
   Token returnToken = this->tokenizer.current;
   this->tokenizer.advance();
   return returnToken;

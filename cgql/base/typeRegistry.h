@@ -11,8 +11,8 @@ class TypeRegistry {
 public:
   TypeRegistry() = default;
   template<typename T>
-  void addType(cgqlSPtr<T> type) const {
-    this->types.insert_or_assign(type->getName(), type);
+  void addScalar(cgqlSPtr<T> type) const {
+    this->types.try_emplace(type->getName(), type);
   };
   template<typename T>
   cgqlSPtr<T> getType(std::string typeName) const {
