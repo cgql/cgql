@@ -51,14 +51,14 @@ Data executeField(
   const std::optional<cgqlSPtr<Object>>& source
 );
 
-cgqlUPtr<Object> executeSelectionSet(
+cgqlSPtr<Object> executeSelectionSet(
   const ExecutionContext& ctx,
   const SelectionSet &selectionSet,
   const cgqlSPtr<ObjectTypeDefinition> &obj,
   const std::optional<cgqlSPtr<Object>>& source
 );
 
-cgqlUPtr<Object> executeQuery(
+cgqlSPtr<Object> executeQuery(
   const ExecutionContext& ctx,
   const OperationDefinition& query,
   const cgqlSPtr<Schema>& schema
@@ -71,7 +71,7 @@ const OperationDefinition& getOperation(
 
 } // internal 
 
-cgqlUPtr<Object> execute(
+cgqlSPtr<Object> execute(
   const cgqlSPtr<internal::Schema>& schema,
   const internal::Document& document,
   const ResolverMap& resolverMap,

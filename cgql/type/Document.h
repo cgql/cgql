@@ -27,7 +27,7 @@ enum class SelectionType {
 
 class Argument : public AbstractSchemaTypeDefinition {
 public:
-  void setValue(const GraphQLInputTypes& value) {
+  void setValue(GraphQLInputTypes value) {
     this->value = value;
   }
   const GraphQLInputTypes& getValue() const {
@@ -126,7 +126,7 @@ public:
 class OperationDefinition {
 public:
   OperationDefinition(
-    const OperationType& operationType,
+    OperationType operationType,
     const SelectionSet& selectionSet
   );
   OperationDefinition() = default;

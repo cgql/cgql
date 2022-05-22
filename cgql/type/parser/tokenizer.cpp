@@ -206,7 +206,7 @@ Token Tokenizer::nextToken() {
 
   size_t* i = &this->cursor;
 
-  for(;*i < len; ++*i) {
+  for(;*i < this->source.length(); ++*i) {
     switch ((uint32_t)this->source[*i]) {
       case 0xFEFF:
       case 0x0009:

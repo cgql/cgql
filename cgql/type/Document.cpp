@@ -7,7 +7,7 @@ namespace internal {
 
 // OperationDefinition
 OperationDefinition::OperationDefinition(
-  const OperationType& operationType,
+  OperationType operationType,
   const SelectionSet& selectionSet
 ): operationType(operationType), selectionSet(selectionSet) {}
 

@@ -35,6 +35,7 @@ void collectFields(
     switch(type) {
       case SelectionType::BASE:
         cgqlAssert(false, "Invalid selection type in execution: BASE");
+        break;
       case SelectionType::FIELD: {
         cgqlSPtr<Field> field =
           std::static_pointer_cast<Field>(selection);
@@ -42,6 +43,7 @@ void collectFields(
         const std::string& responseKey = field->getResponseKey();
 
         groupedFields[responseKey].emplace_back(field);
+        break;
       }
       case SelectionType::INLINE_FRAGMENT: {
         cgqlSPtr<InlineFragment> inlineFragment =
@@ -56,6 +58,7 @@ void collectFields(
           inlineFragment->getSelectionSet(),
           groupedFields
         );
+        break;
       }
       case SelectionType::FRAGMENT: {
         cgqlSPtr<Fragment> fragment =
@@ -69,6 +72,7 @@ void collectFields(
             }
           );
         collectFields(ctx, objectType, it->getSelectionSet(), groupedFields);
+        break;
       }
     }
   }
@@ -131,13 +135,13 @@ Data completeList(
   return resultList;
 }
 
-static cgqlUPtr<Object> executeGroupedFieldSet(
+static cgqlSPtr<Object> executeGroupedFieldSet(
   const ExecutionContext& ctx,
   const cgqlSPtr<ObjectTypeDefinition>& objectType,
   const GroupedField& groupedFieldSet,
   const std::optional<cgqlSPtr<Object>>& source
 ) {
-  cgqlUPtr<Object> resultMap = cgqlUMakePtr<Object>();
+  cgqlSPtr<Object> resultMap = cgqlSMakePtr<Object>();
   resultMap->fields.reserve(groupedFieldSet.size());
 
   for(auto const& [responseKey, fields] : groupedFieldSet) {
@@ -376,7 +380,7 @@ Data executeField(
   );
 }
 
-cgqlUPtr<Object> executeSelectionSet(
+cgqlSPtr<Object> executeSelectionSet(
   const ExecutionContext& ctx,
   const SelectionSet &selectionSet,
   const cgqlSPtr<ObjectTypeDefinition> &obj,
@@ -397,7 +401,7 @@ cgqlUPtr<Object> executeSelectionSet(
   );
 }
 
-cgqlUPtr<Object> executeQuery(
+cgqlSPtr<Object> executeQuery(
   const ExecutionContext& ctx,
   const OperationDefinition& query
 ) {
@@ -439,7 +443,7 @@ cgqlContainer<FragmentDefinition> getFragmentsFromQuery(const internal::Document
 
 } // internal
 
-cgqlUPtr<Object> execute(
+cgqlSPtr<Object> execute(
   const cgqlSPtr<internal::Schema> &schema,
   const internal::Document &document,
   const ResolverMap& resolverMap,
