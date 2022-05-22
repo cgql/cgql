@@ -4,6 +4,8 @@
 
 #include "cgql/utilities/utils.h"
 
+#include <iostream>
+
 namespace cgql {
 namespace internal {
 

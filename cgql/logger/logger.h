@@ -1,6 +1,6 @@
 #pragma once
 
-#include "cgql/base/cgqlPch.h"
+#include <iostream>
 
 namespace cgql {
 
