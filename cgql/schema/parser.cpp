@@ -21,9 +21,7 @@ cgqlSPtr<TypeDefinition> SchemaParser::parseType(const TypeRegistry& registry) {
   if(!this->checkType(TokenType::SQUARE_BRACES_L)) {
     type =
       cgqlSMakePtr<DefaultWrapTypeDefinition<TypeDefinition>>(
-        registry.getTypePtr<TypeDefinition>(
-          this->parseName()
-        )
+        registry.getTypeRef(this->parseName())
       );
   } else {
     this->tokenizer.advance();

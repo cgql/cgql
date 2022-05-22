@@ -376,7 +376,7 @@ private:
   bool repeatable = false; // TODO
 };
 
-using ImplementedInterfaces = std::unordered_map<
+using ImplementedInterfaces = std::map<
   std::string,
   cgqlContainer<cgqlSPtr<TypeDefinition>>
 >;
@@ -390,7 +390,7 @@ public:
     return this->query;
   }
   void setTypeDefMap(
-    const std::unordered_map<std::string, cgqlSPtr<TypeDefinition>>& typeDefMap
+    const std::map<std::string, cgqlSPtr<TypeDefinition>>& typeDefMap
   ) {
     for(auto const& [key, def] : typeDefMap) {
       cgqlContainer<std::string> implements;

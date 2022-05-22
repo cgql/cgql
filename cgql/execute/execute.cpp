@@ -142,7 +142,6 @@ static cgqlSPtr<Object> executeGroupedFieldSet(
   const std::optional<cgqlSPtr<Object>>& source
 ) {
   cgqlSPtr<Object> resultMap = cgqlSMakePtr<Object>();
-  resultMap->fields.reserve(groupedFieldSet.size());
 
   for(auto const& [responseKey, fields] : groupedFieldSet) {
     FieldTypeDefinition field = findGraphQLFieldByName(

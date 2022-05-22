@@ -41,7 +41,7 @@ private:
 class Selection;
 using SelectionSet = cgqlContainer<cgqlSPtr<Selection>>;
 
-using GroupedField = std::unordered_map<
+using GroupedField = std::map<
   std::string,
   SelectionSet
 >;

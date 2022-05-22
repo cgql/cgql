@@ -19,7 +19,7 @@ using GraphQLInputTypes = std::variant<
 >;
 
 struct ObjectType {
-  std::unordered_map<std::string, GraphQLInputTypes> fields;
+  std::map<std::string, GraphQLInputTypes> fields;
 };
 
 struct ListType {
@@ -43,7 +43,7 @@ using Data = std::variant<
 >;
 
 struct Object {
-  std::unordered_map<std::string, Data> fields;
+  std::map<std::string, Data> fields;
 };
 struct List {
   std::vector<Data> elements;
@@ -57,7 +57,7 @@ private:
   Location location;
 };
 
-using ArgsMap = std::unordered_map<
+using ArgsMap = std::map<
   std::string,
   GraphQLInputTypes
 >;
