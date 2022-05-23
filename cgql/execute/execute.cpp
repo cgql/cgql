@@ -33,9 +33,6 @@ void collectFields(
   for(const cgqlSPtr<Selection>& selection : selectionSet) {
     const SelectionType type = selection->getSelectionType();
     switch(type) {
-      case SelectionType::BASE:
-        cgqlAssert(false, "Invalid selection type in execution: BASE");
-        break;
       case SelectionType::FIELD: {
         cgqlSPtr<Field> field =
           std::static_pointer_cast<Field>(selection);
@@ -74,6 +71,9 @@ void collectFields(
         collectFields(ctx, objectType, it->getSelectionSet(), groupedFields);
         break;
       }
+      case SelectionType::BASE:
+        cgqlAssert(false, "Invalid selection type in execution: BASE");
+        break;
     }
   }
 }

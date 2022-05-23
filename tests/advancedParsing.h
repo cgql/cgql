@@ -3,9 +3,12 @@
 #include <cgql/logger/logger.h>
 #include <fstream>
 
+#include "utils/timer.hpp"
+
 using namespace cgql;
 
-inline void runAdvancedParsing() {
+inline void runAdvancedParsing() {{
+
   CgqlInstance test;
   std::string schema;
   std::ifstream file;
@@ -17,6 +20,8 @@ inline void runAdvancedParsing() {
     schema += line;
   }
   file.close();
+
+  Timer timer("full execution");
 
   test.parseSchema(schema.c_str());
   ResolverMap root {
@@ -91,4 +96,4 @@ inline void runAdvancedParsing() {
     auto r = test.executeWith(doc, root, typeOfMap);
     // printObject(*r);
   }
-}
+}}

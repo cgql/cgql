@@ -4,7 +4,7 @@
 
 int main() {
   // runBasicExecution();
-  // parseGHSchema();
+  parseGHSchema();
   runAdvancedParsing();
   // runBasicTest();
   return 0;

@@ -20,7 +20,7 @@ inline void parseGHSchema() {
   file.close();
 
   {
-    Timer timer;
+    Timer timer("github schema");
     test.parseSchema(schema.c_str());
     logger::info("parsing successfull");
   }

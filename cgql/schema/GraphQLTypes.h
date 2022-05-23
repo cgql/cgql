@@ -87,7 +87,7 @@ using IsTypeOfFunc = std::function<
   String(const cgqlSPtr<Object>&)
 >;
 
-using ResolverMap = std::unordered_map<std::string, ResolverFunc>;
-using TypeOfMap = std::unordered_map<std::string, IsTypeOfFunc>;
+using ResolverMap = std::map<std::string, ResolverFunc>;
+using TypeOfMap = std::map<std::string, IsTypeOfFunc>;
 
 }

@@ -23,11 +23,11 @@ public:
     return std::static_pointer_cast<T>(this->types[typeName]);
   }
   void init();
-  const std::map<std::string, cgqlSPtr<TypeDefinition>>& getAllTypes() const {
+  const std::unordered_map<std::string, cgqlSPtr<TypeDefinition>>& getAllTypes() const {
     return this->types;
   }
 private:
-  mutable std::map<std::string, cgqlSPtr<TypeDefinition>> types;
+  mutable std::unordered_map<std::string, cgqlSPtr<TypeDefinition>> types;
 };
 
 } // end of internal

@@ -8,15 +8,15 @@ namespace internal {
 // OperationDefinition
 OperationDefinition::OperationDefinition(
   OperationType operationType,
-  const SelectionSet& selectionSet
+   SelectionSet selectionSet
 ): operationType(operationType), selectionSet(selectionSet) {}
 
 OperationDefinition::~OperationDefinition() {}
 
 // Document
 Document::Document(
-  const cgqlContainer<Definition>& definitions
-): definitions(definitions) {}
+  cgqlContainer<Definition> definitions
+): definitions(std::move(definitions)) {}
 
 Document::~Document() {}
 

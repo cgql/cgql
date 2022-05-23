@@ -142,8 +142,8 @@ private:
 template<typename T>
 class ListTypeDefinition : public TypeDefinition {
 public:
-  ListTypeDefinition(cgqlSPtr<T> innerType) {
-    this->innerType = innerType;
+  ListTypeDefinition(cgqlSPtr<T> innerType)
+    : innerType(innerType) {
   }
   const cgqlSPtr<T>& getInnerType() const {
     return this->innerType;
@@ -158,8 +158,8 @@ private:
 template<typename T>
 class NonNullTypeDefinition : public TypeDefinition {
 public:
-  NonNullTypeDefinition(cgqlSPtr<T> innerType) {
-    this->innerType = innerType;
+  NonNullTypeDefinition(cgqlSPtr<T> innerType)
+    : innerType(innerType) {
   }
   const cgqlSPtr<T>& getInnerType() const {
     return this->innerType;
@@ -174,8 +174,8 @@ private:
 template<typename T>
 class DefaultWrapTypeDefinition : public TypeDefinition {
 public:
-  DefaultWrapTypeDefinition(cgqlSPtr<T> innerType) {
-    this->innerType = innerType;
+  DefaultWrapTypeDefinition(cgqlSPtr<T> innerType) 
+    : innerType(innerType) {
   }
   cgqlSPtr<T> getInnerType() const {
     return innerType.lock();
@@ -390,14 +390,11 @@ public:
     return this->query;
   }
   void setTypeDefMap(
-    const std::map<std::string, cgqlSPtr<TypeDefinition>>& typeDefMap
+    const std::unordered_map<std::string, cgqlSPtr<TypeDefinition>>& typeDefMap
   ) {
     for(auto const& [key, def] : typeDefMap) {
       cgqlContainer<std::string> implements;
       switch(def->getDefinitionType()) {
-        case DefinitionType::TYPE_DEFINITION:
-          cgqlAssert(false, "Type is empty");
-          break;
         case DefinitionType::OBJECT: {
           cgqlSPtr<ObjectTypeDefinition> object =
             std::static_pointer_cast<ObjectTypeDefinition>(def);
@@ -413,6 +410,9 @@ public:
           implements = interface->getImplementedInterfaces();
           break;
         }
+        case DefinitionType::TYPE_DEFINITION:
+          cgqlAssert(false, "Type is empty");
+          break;
         default: continue;
       }
       for(auto const& interface : implements) {

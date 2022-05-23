@@ -57,7 +57,7 @@ public:
   void setSelectionType(SelectionType type) {
     this->type = type;
   }
-  const SelectionType& getSelectionType() const {
+  SelectionType getSelectionType() const {
     return this->type;
   }
 private:
@@ -72,7 +72,6 @@ public:
   Field() {
     this->setSelectionType(SelectionType::FIELD);
   };
-  ~Field() {}
   void setAlias(std::string alias) {
     cgqlAssert(
       this->getName() != alias,
@@ -103,7 +102,6 @@ public:
   InlineFragment() {
     this->setSelectionType(SelectionType::INLINE_FRAGMENT);
   };
-  ~InlineFragment() {}
   void setTypeCondition(std::string typeCondition) {
     this->typeCondition = typeCondition;
   }
@@ -127,15 +125,15 @@ class OperationDefinition {
 public:
   OperationDefinition(
     OperationType operationType,
-    const SelectionSet& selectionSet
+    SelectionSet selectionSet
   );
   OperationDefinition() = default;
   ~OperationDefinition();
   OperationType getOperationType() const { return this->operationType; }
   const SelectionSet& getSelectionSet() const { return this->selectionSet; }
 private:
-  SelectionSet selectionSet;
   OperationType operationType;
+  SelectionSet selectionSet;
 };
 
 class FragmentDefinition : public AbstractSchemaTypeDefinition  {
@@ -165,7 +163,7 @@ using Definition = std::variant<
 class Document {
 public:
   Document(
-    const cgqlContainer<Definition>& definitions
+    cgqlContainer<Definition> definitions
   );
   Document() = default;
   ~Document();

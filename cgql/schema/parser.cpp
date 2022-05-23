@@ -238,10 +238,11 @@ void SchemaParser::parseDirectiveTypeDefinition(const TypeRegistry& registry) {
     } while(!this->checkType(TokenType::BRACES_R));
     this->tokenizer.advance();
   }
-  // TODO: handle error
-  if(this->tokenizer.current.getValue() != "on") {
-    cgqlAssert(false, "Expected keyword \"on\"");
-  }
+
+  assert(
+    this->tokenizer.current.getValue() != "on" &&
+    "Expected keyword \"on\""
+  );
   directive->setDirectiveLocations(this->parseDirectiveLocations());
 }
 

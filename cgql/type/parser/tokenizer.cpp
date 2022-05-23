@@ -202,11 +202,14 @@ Token Tokenizer::tokenizeBlockString() {
 }
 
 Token Tokenizer::nextToken() {
-  size_t len = this->source.length();
-
   size_t* i = &this->cursor;
 
   for(;*i < this->source.length(); ++*i) {
+    if(isDigit(this->source[*i])) {
+      return this->tokenizeDigits();
+    } else if(isNameStart(this->source[*i])) {
+      return this->tokenizeName();
+    }
     switch ((uint32_t)this->source[*i]) {
       case 0xFEFF:
       case 0x0009:
@@ -269,11 +272,6 @@ Token Tokenizer::nextToken() {
       case 0x0040:
         this->advanceCursor(1);
         return generateToken(TokenType::AT);
-    }
-    if(isDigit(this->source[*i])) {
-      return this->tokenizeDigits();
-    } else if(isNameStart(this->source[*i])) {
-      return this->tokenizeName();
     }
   }
   return generateToken(TokenType::END_OF_QUERY);
