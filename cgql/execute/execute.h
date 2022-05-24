@@ -15,6 +15,62 @@ struct ExecutionContext {
   cgqlContainer<FragmentDefinition> fragments;
 };
 
+class SelectionSetExecutor {
+public:
+  SelectionSetExecutor(cgqlSPtr<ObjectTypeDefinition> obj)
+    : obj(obj) {
+  }
+  SelectionSetExecutor(
+    cgqlSPtr<ObjectTypeDefinition> obj,
+    cgqlSPtr<Object> objectValue
+  )
+    : obj(obj), source(objectValue) {
+  }
+  cgqlSPtr<Object> execute(
+    const ExecutionContext& ctx,
+    const SelectionSet& selectionSet
+  );
+private:
+  template<typename T>
+  struct FieldInfo {
+    const FieldTypeDefinition& field;
+    const cgqlSPtr<T>& fieldType;
+    const SelectionSet& fields;
+  };
+
+  template<typename T>
+  Data executeField(
+    const ExecutionContext& ctx,
+    const FieldTypeDefinition& field,
+    const cgqlSPtr<T>& fieldType,
+    const SelectionSet& fields
+  );
+  template<typename T>
+  Data completeValue(
+    const ExecutionContext& ctx,
+    const FieldTypeDefinition& field,
+    const cgqlSPtr<T>& fieldType,
+    const SelectionSet& fields,
+    const Data& result
+  );
+  Data completeList(
+    const ExecutionContext& ctx,
+    const FieldTypeDefinition& field,
+    const cgqlSPtr<ListTypeDefinition<TypeDefinition>>& fieldType,
+    const SelectionSet& fields,
+    const Data& result
+  );
+  template<typename T>
+  Data completeAbstractType(
+    const ExecutionContext& ctx,
+    const T& fieldType,
+    const SelectionSet& fields,
+    const Data& result
+  );
+  cgqlSPtr<ObjectTypeDefinition> obj;
+  std::optional<cgqlSPtr<Object>> source = {};
+};
+
 FieldTypeDefinition findGraphQLFieldByName(
   const cgqlSPtr<ObjectTypeDefinition>& objectType,
   const std::string& fieldName
@@ -30,32 +86,6 @@ void collectFields(
 void mergeSelectionSet(
   const cgqlContainer<cgqlSPtr<Field>>& fields,
   SelectionSet& mergedSelectionSet
-);
-
-template<typename T>
-Data completeValue(
-  const ExecutionContext& ctx,
-  const cgqlSPtr<T>& fieldType,
-  const FieldTypeDefinition& field,
-  const SelectionSet& fields,
-  const Data& result,
-  const std::optional<cgqlSPtr<Object>>& source
-);
-
-template<typename T>
-Data executeField(
-  const ExecutionContext& ctx,
-  const FieldTypeDefinition& field,
-  const cgqlSPtr<T>& fieldType,
-  const SelectionSet& fields,
-  const std::optional<cgqlSPtr<Object>>& source
-);
-
-cgqlSPtr<Object> executeSelectionSet(
-  const ExecutionContext& ctx,
-  const SelectionSet &selectionSet,
-  const cgqlSPtr<ObjectTypeDefinition> &obj,
-  const std::optional<cgqlSPtr<Object>>& source
 );
 
 cgqlSPtr<Object> executeQuery(
