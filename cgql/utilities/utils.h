@@ -41,7 +41,7 @@ constexpr inline bool isList(const T& type) {
 
 template<typename T>
 constexpr inline bool isObject(const T& type) {
-  return type.index() == 4;
+  return type.index() == 2;
 }
 
 template<typename T>
