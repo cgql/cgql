@@ -240,7 +240,7 @@ void SchemaParser::parseDirectiveTypeDefinition(const TypeRegistry& registry) {
   }
 
   assert(
-    this->tokenizer.current.getValue() != "on" &&
+    this->tokenizer.current.getValue() == "on" &&
     "Expected keyword \"on\""
   );
   directive->setDirectiveLocations(this->parseDirectiveLocations());
