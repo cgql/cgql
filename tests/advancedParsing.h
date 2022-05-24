@@ -50,7 +50,7 @@ inline void runAdvancedParsing() {{
         Object p {
           {
             { "name", fromVariant<std::string>(fromVariant<cgqlSPtr<ObjectType>>(args)->fields["name"]) },
-            { "age", fromVariant<Int>(fromVariant<cgqlSPtr<ObjectType>>(args)->fields["age"]) },
+            { "age", fromVariant<Int>(fromVariant<cgqlSPtr<ObjectType>>(args)->fields["id"]) },
             { "address", cgqlSMakePtr<Object>(a) },
             { "partner", cgqlSMakePtr<Object>(r) },
             { "gender", "MALE" },
@@ -94,6 +94,6 @@ inline void runAdvancedParsing() {{
       "}"
     );
     auto r = test.executeWith(doc, root, typeOfMap);
-    // printObject(*r);
+    // printResultMap(*r);
   }
 }}
