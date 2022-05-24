@@ -5,7 +5,7 @@
 namespace cgql {
 namespace internal {
 
-inline const std::optional<Data> defaultFieldResolver(
+inline Data defaultFieldResolver(
   const cgqlSPtr<Object>& source,
   const std::string& name
 ) {
@@ -13,7 +13,7 @@ inline const std::optional<Data> defaultFieldResolver(
   if(it != source->fields.end()) {
     return it->second;
   }
-  return {};
+  return std::monostate{};
 }
 
 } // internal
