@@ -8,15 +8,15 @@ fi
 
 if [[ $1 != "" ]] && [[ $1 = "-c" ]]; then
   cmake -B build/ \
-    -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
-    -DCMAKE_EXPORT_COMPILE_COMMANDS=1 \
-    -DCMAKE_C_COMPILER=gcc \
-    -DCMAKE_CXX_COMPILER=g++
+    -DCMAKE_BUILD_TYPE=$BUILD_TYPE
 fi
 
 function build() {
   cd build && make -j3 && cd ..
   chmod +x build/tests/cgqlTests
+
+  du -h build/tests/cgqlTests build/cgql/libcgqlSource.a
+
   time build/tests/cgqlTests
 }
 
