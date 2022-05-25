@@ -110,18 +110,19 @@ std::string Tokenizer::lookAhead() {
 }
 
 Token Tokenizer::tokenizeName() {
-  size_t* i = &this->cursor;
-  std::string value; 
-  while(*i < this->source.length()) {
+  size_t end = this->cursor;
+  while(end < this->source.length()) {
     if(
-      isNameContinue(this->source[*i])
+      isNameContinue(this->source[end])
     ) {
-      value += this->source[*i];
-      this->advanceCursor(1);
+      ++end;
       continue;
     }
     break;
   }
+  std::string value =
+    this->source.substr(this->cursor, end - this->cursor);
+  cursor = end;
   return generateToken(
     TokenType::NAME,
     value
@@ -129,16 +130,17 @@ Token Tokenizer::tokenizeName() {
 }
 
 Token Tokenizer::tokenizeDigits() {
-  size_t* i = &this->cursor;
-  std::string value;
-  while(*i < this->source.length()) {
-    if(isDigit(this->source[*i])) {
-      value += this->source[*i];
-      this->advanceCursor(1);
+  size_t end = this->cursor;
+  while(end < this->source.length()) {
+    if(isDigit(this->source[end])) {
+      ++end;
       continue;
     }
     break;
   }
+  std::string value =
+    this->source.substr(this->cursor, end - this->cursor);
+  cursor = end;
   return generateToken(
     TokenType::INT,
     value
@@ -162,42 +164,40 @@ void Tokenizer::skipComments() {
 Token Tokenizer::tokenizeString() {
   this->advanceCursor(1);
 
-  std::string tokenizedString;
-
-  size_t* i = &this->cursor;
-  while(*i < this->source.length()) {
-    if(this->source[*i] == 0x0022) break;
-    tokenizedString += this->source[*i];
-    this->advanceCursor(1);
+  size_t end = this->cursor;
+  while(end < this->source.length()) {
+    if(this->source[end] == 0x0022) break;
+    ++end;
   }
-  this->advanceCursor(1);
+  std::string value =
+    this->source.substr(this->cursor, end - this->cursor);
+  cursor = end + 1;
   return generateToken(
     TokenType::STRING,
-    tokenizedString
+    value
   );
 }
 
 Token Tokenizer::tokenizeBlockString() {
   this->advanceCursor(3);
 
-  std::string blockString;
-
-  size_t* i = &this->cursor;
-  while(*i < this->source.length()) {
+  size_t end = this->cursor;
+  while(end < this->source.length()) {
     if(
-      this->source[*i]     == 0x0022 &&
-      this->source[*i + 1] == 0x0022 &&
-      this->source[*i + 2] == 0x0022
+      this->source[end]     == 0x0022 &&
+      this->source[end + 1] == 0x0022 &&
+      this->source[end + 2] == 0x0022
     ) {
-      this->advanceCursor(3);
       break;
     }
-    blockString += this->source[*i];
-    this->advanceCursor(1);
+    ++end;
   }
+  std::string value =
+    this->source.substr(this->cursor, end - this->cursor);
+  cursor = end + 3;
   return generateToken(
     TokenType::BLOCK_STRING,
-    blockString
+    value
   );
 }
 
