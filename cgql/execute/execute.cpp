@@ -10,19 +10,19 @@ FieldTypeDefinition findGraphQLFieldByName(
   const cgqlSPtr<ObjectTypeDefinition>& objectType,
   const std::string& fieldName
 ) {
-  for(const FieldTypeDefinition& field : objectType->getFields()) {
-    if(fieldName == field.getName()) {
-      return field;
-    }
+  cgqlContainer<FieldTypeDefinition>::const_iterator it =
+    std::find_if(
+      objectType->getFields().begin(),
+      objectType->getFields().end(),
+      [&fieldName](const FieldTypeDefinition& field) {
+        return fieldName == field.getName();
+      }
+    );
+  if(it != objectType->getFields().end()) {
+    return *it;
   }
-  std::string msg;
-  msg += "Field with name ";
-  msg += fieldName;
-  msg += " cannot be found in object ";
-  msg += objectType->getName();
-  logger::info(msg);
-  cgqlAssert(false, msg.c_str());
-  /* silence compiler warning */ return objectType->getFields()[0];
+  // TODO:
+  return {};
 }
 
 void collectFields(
@@ -86,9 +86,11 @@ void mergeSelectionSet(
   for(const cgqlSPtr<Selection>& field : fields) {
     const SelectionSet& fieldSelectionSet = field->getSelectionSet();
     if(fieldSelectionSet.empty()) continue;
-    for(const cgqlSPtr<Selection>& subField : fieldSelectionSet) {
-      mergedSelectionSet.emplace_back(subField);
-    }
+    mergedSelectionSet.insert(
+      mergedSelectionSet.end(),
+      fieldSelectionSet.begin(),
+      fieldSelectionSet.end()
+    );
   }
 }
 
@@ -159,7 +161,7 @@ Args buildArgumentMap(
     fieldType.getArgs();
   for(const InputValueDefinition& argDef : argumentDefinitions) {
     const std::string& argName = argDef.getName();
-    const auto& it = std::find_if(
+    cgqlContainer<Argument>::const_iterator it = std::find_if(
       argumentValues.begin(),
       argumentValues.end(),
       [&argName](const Argument& arg) {
@@ -231,7 +233,7 @@ Data SelectionSetExecutor::executeField(
       ));
     } else {
       return defaultFieldResolver(
-        source.value(),
+        source,
         field.getName()
       );
     }
@@ -335,10 +337,9 @@ cgqlSPtr<Object> executeQuery(
   const ExecutionContext& ctx,
   const OperationDefinition& query
 ) {
-  const cgqlSPtr<ObjectTypeDefinition>& queryType = ctx.schema->getQuery();
   const SelectionSet& selection = query.getSelectionSet();
 
-  SelectionSetExecutor executor(queryType);
+  SelectionSetExecutor executor(ctx.schema->getQuery());
   return executor.execute(ctx, selection);
 }
 

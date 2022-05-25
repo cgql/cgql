@@ -32,13 +32,6 @@ public:
   );
 private:
   template<typename T>
-  struct FieldInfo {
-    const FieldTypeDefinition& field;
-    const cgqlSPtr<T>& fieldType;
-    const SelectionSet& fields;
-  };
-
-  template<typename T>
   Data executeField(
     const ExecutionContext& ctx,
     const FieldTypeDefinition& field,
@@ -67,8 +60,10 @@ private:
     const SelectionSet& fields,
     const Data& result
   );
+
+private:
   cgqlSPtr<ObjectTypeDefinition> obj;
-  std::optional<cgqlSPtr<Object>> source = {};
+  cgqlSPtr<Object> source;
 };
 
 FieldTypeDefinition findGraphQLFieldByName(
@@ -80,7 +75,7 @@ void collectFields(
   const ExecutionContext& ctx,
   const cgqlSPtr<TypeDefinition>& objectType,
   const SelectionSet &selectionSet,
-  GroupedField& groupedFields
+  GroupedField& groupedField
 );
 
 void mergeSelectionSet(
