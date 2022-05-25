@@ -201,7 +201,7 @@ cgqlSPtr<Object> SelectionSetExecutor::execute(
   for(auto const& [responseKey, fields] : groupedFieldSet) {
     FieldTypeDefinition field = findGraphQLFieldByName(
       obj,
-      std::static_pointer_cast<Field>(fields[0])->getName()
+      std::static_pointer_cast<Field>(fields.front())->getName()
     );
     resultObj->fields.try_emplace(
       responseKey,
@@ -228,7 +228,7 @@ Data SelectionSetExecutor::executeField(
   Data result = [&]() {
     if(it != ctx.resolverMap.end()) {
       return it->second(buildArgumentMap(
-        fields[0],
+        fields.front(),
         field
       ));
     } else {
