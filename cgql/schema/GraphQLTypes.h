@@ -26,11 +26,6 @@ struct ListType {
   cgqlContainer<GraphQLInputTypes> elements;
 };
 
-struct Location {
-  uint16_t line;
-  uint16_t column;
-};
-
 struct Object;
 struct List;
 
@@ -47,14 +42,6 @@ struct Object {
 };
 struct List {
   std::vector<Data> elements;
-};
-
-class Error {
-public:
-  Error() = default;
-private:
-  std::string msg;
-  Location location;
 };
 
 using ArgsMap = std::map<
