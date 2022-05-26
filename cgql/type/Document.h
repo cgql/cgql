@@ -35,7 +35,6 @@ public:
   }
 private:
   GraphQLInputTypes value;
-  std::optional<Location> location;
 };
 
 class Selection;
@@ -48,8 +47,8 @@ using GroupedField = std::map<
 class Selection {
 public:
   virtual ~Selection() {}
-  void setSelectionSet(SelectionSet& selectionSet) {
-    this->selectionSet.swap(selectionSet);
+  void setSelectionSet(SelectionSet selectionSet) {
+    this->selectionSet = std::move(selectionSet);
   }
   const SelectionSet& getSelectionSet() const {
     return this->selectionSet;
@@ -73,16 +72,12 @@ public:
     this->setSelectionType(SelectionType::FIELD);
   };
   void setAlias(std::string alias) {
-    cgqlAssert(
-      this->getName() != alias,
-      "field should contain an alias different from its name"
-    );
     this->alias = alias;
   }
   const std::string& getAlias() const {
     return this->alias;
   }
-  void addArgs(const Argument& arg) {
+  void addArgs(Argument arg) {
     this->args.emplace_back(arg);
   }
   const cgqlContainer<Argument>& getArgs() const {
@@ -94,7 +89,6 @@ public:
 private:
   std::string alias;
   cgqlContainer<Argument> args;
-  std::optional<Location> location;
 };
 
 class InlineFragment : public Selection {
@@ -144,8 +138,8 @@ public:
   const std::string& getTypeCondition() const {
     return this->typeCondition;
   }
-  void setSelectionSet(SelectionSet& selectionSet) {
-    this->selectionSet.swap(selectionSet);
+  void setSelectionSet(SelectionSet selectionSet) {
+    this->selectionSet = std::move(selectionSet);
   }
   const SelectionSet& getSelectionSet() const {
     return this->selectionSet;
