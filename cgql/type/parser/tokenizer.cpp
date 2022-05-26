@@ -112,13 +112,9 @@ std::string Tokenizer::lookAhead() {
 Token Tokenizer::tokenizeName() {
   size_t end = this->cursor;
   while(end < this->source.length()) {
-    if(
-      isNameContinue(this->source[end])
-    ) {
-      ++end;
-      continue;
-    }
-    break;
+    if(!isNameContinue(this->source[end]))
+      break;
+    ++end;
   }
   std::string value =
     this->source.substr(this->cursor, end - this->cursor);
@@ -132,11 +128,9 @@ Token Tokenizer::tokenizeName() {
 Token Tokenizer::tokenizeDigits() {
   size_t end = this->cursor;
   while(end < this->source.length()) {
-    if(isDigit(this->source[end])) {
-      ++end;
-      continue;
-    }
-    break;
+    if(!isDigit(this->source[end]))
+      break;
+    ++end;
   }
   std::string value =
     this->source.substr(this->cursor, end - this->cursor);
