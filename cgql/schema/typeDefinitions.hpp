@@ -85,7 +85,7 @@ public:
   };
 public:
   void addArgument(DirectiveArgument argument) {
-    this->args.emplace_back(argument);
+    this->args.push_back(argument);
   }
   const cgqlContainer<DirectiveArgument>& getArguments() const {
     return this->args;
@@ -219,7 +219,7 @@ public:
     return this->type;
   }
   void addArg(InputValueDefinition arg) {
-    this->argDefs.emplace_back(arg);
+    this->argDefs.push_back(arg);
   }
   const cgqlContainer<InputValueDefinition>& getArgs() const {
     return this->argDefs;
@@ -234,7 +234,7 @@ class InterfaceTypeDefinition :
   public TypeDefinitionWithDirectives {
 public:
   void addField(FieldTypeDefinition field) {
-    this->fields.emplace_back(field);
+    this->fields.push_back(field);
   }
   const cgqlContainer<FieldTypeDefinition>& getFields() const {
     return this->fields;
@@ -243,7 +243,7 @@ public:
     return DefinitionType::INTERFACE;
   }
   void addImplementedInterface(std::string interface) {
-    this->implements.emplace_back(interface);
+    this->implements.push_back(interface);
   }
   const cgqlContainer<std::string>& getImplementedInterfaces() const {
     return this->implements;
@@ -258,7 +258,7 @@ class ObjectTypeDefinition :
   public TypeDefinitionWithDirectives {
 public:
   void addField(FieldTypeDefinition field) {
-    this->fieldDefs.emplace_back(field);
+    this->fieldDefs.push_back(field);
   }
   const cgqlContainer<FieldTypeDefinition>& getFields() const {
     return this->fieldDefs;
@@ -267,7 +267,7 @@ public:
     return DefinitionType::OBJECT;
   }
   void addImplementedInterface(std::string interface) {
-    this->implements.emplace_back(interface);
+    this->implements.push_back(interface);
   }
   const cgqlContainer<std::string>& getImplementedInterfaces() const {
     return this->implements;
@@ -282,7 +282,7 @@ class UnionTypeDefinition :
   public TypeDefinitionWithDirectives {
 public:
   void addMember(cgqlSPtr<ObjectTypeDefinition> member) {
-    this->members.emplace_back(member);
+    this->members.push_back(member);
   }
   DefinitionType getDefinitionType() const override {
     return DefinitionType::UNION;
@@ -311,7 +311,7 @@ class EnumTypeDefinition :
   public TypeDefinitionWithDirectives {
 public:
   void addValue(EnumValueDefinition value) {
-    values.emplace_back(value);
+    values.push_back(value);
   }
   DefinitionType getDefinitionType() const override {
     return DefinitionType::ENUM;
@@ -341,7 +341,7 @@ class InputObjectTypeDefinition :
   public TypeDefinitionWithDirectives {
 public:
   void addField(InputValueDefinition field) {
-    fields.emplace_back(field);
+    fields.push_back(field);
   }
   const cgqlContainer<InputValueDefinition>& getFields() const {
     return this->fields;
@@ -356,7 +356,7 @@ private:
 class DirectiveTypeDefinition : public TypeDefinition {
 public:
   void addArgument(InputValueDefinition argument) {
-    arguments.emplace_back(argument);
+    arguments.push_back(argument);
   }
   const cgqlContainer<InputValueDefinition>& getArguments() const {
     return this->arguments;
@@ -417,7 +417,7 @@ public:
       }
       for(auto const& interface : implements) {
         this->implementedInterfaces[interface]
-          .emplace_back(def);
+          .push_back(def);
       }
     }
   }
@@ -426,7 +426,9 @@ public:
     const T& abstractType
   ) const {
     if(abstractType->getDefinitionType() == DefinitionType::UNION) {
-      return std::dynamic_pointer_cast<UnionTypeDefinition>(abstractType)->getMembers();
+      cgqlSPtr<UnionTypeDefinition> unionType =
+        std::static_pointer_cast<UnionTypeDefinition>(abstractType);
+      return unionType->getMembers();
     }
     ImplementedInterfaces::const_iterator it = this->implementedInterfaces.find(abstractType->getName());
     return it->second;
