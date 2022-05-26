@@ -40,7 +40,7 @@ void collectFields(
 
         const std::string& responseKey = field->getResponseKey();
 
-        groupedFields[responseKey].emplace_back(field);
+        groupedFields[responseKey].push_back(field);
         break;
       }
       case SelectionType::INLINE_FRAGMENT: {
@@ -106,7 +106,7 @@ Data SelectionSetExecutor::completeList(
   cgqlSPtr<List> resultList = cgqlSMakePtr<List>();
   resultList->elements.reserve(rawResultList->elements.size());
   for(const Data& rawResult : rawResultList->elements) {
-    resultList->elements.emplace_back(
+    resultList->elements.push_back(
       completeValue(
         ctx,
         field,
@@ -360,7 +360,7 @@ cgqlContainer<FragmentDefinition> getFragmentsFromQuery(const internal::Document
   cgqlContainer<FragmentDefinition> fragments;
   for(const Definition& def : document.getDefinitions()) {
     if(def.index() == 1) {
-      fragments.emplace_back(fromVariant<FragmentDefinition>(def));
+      fragments.push_back(fromVariant<FragmentDefinition>(def));
     }
   }
   return fragments;

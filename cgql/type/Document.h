@@ -78,7 +78,7 @@ public:
     return this->alias;
   }
   void addArgs(Argument arg) {
-    this->args.emplace_back(arg);
+    this->args.push_back(arg);
   }
   const cgqlContainer<Argument>& getArgs() const {
     return this->args;

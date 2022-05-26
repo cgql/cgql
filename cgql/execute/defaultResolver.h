@@ -10,10 +10,10 @@ inline Data defaultFieldResolver(
   const std::string& name
 ) {
   auto const& it = source->fields.find(name);
-  if(it != source->fields.end()) {
-    return it->second;
+  if(it == source->fields.end()) {
+    return std::monostate{};
   }
-  return std::monostate{};
+  return it->second;
 }
 
 } // internal
