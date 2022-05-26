@@ -42,8 +42,7 @@ cgqlSPtr<Field> QueryParser::parseField() {
 
   bool hasSelectionSet = this->checkType(TokenType::CURLY_BRACES_L);
   if(hasSelectionSet) {
-    SelectionSet selections = this->parseSelectionSet();
-    field->setSelectionSet(selections);
+    field->setSelectionSet(this->parseSelectionSet());
   }
   return field;
 }
@@ -55,8 +54,7 @@ cgqlSPtr<InlineFragment> QueryParser::parseInlineFragment() {
   if(this->tokenizer.current.getValue() != "on") {}
   this->tokenizer.advance();
   inlineFragment->setTypeCondition(this->parseName());
-  SelectionSet selectionSet = this->parseSelectionSet();
-  inlineFragment->setSelectionSet(selectionSet);
+  inlineFragment->setSelectionSet(this->parseSelectionSet());
   return inlineFragment;
 }
 
@@ -75,8 +73,7 @@ FragmentDefinition QueryParser::parseFragmentDefinition() {
   if(this->tokenizer.current.getValue() != "on") {}
   this->tokenizer.advance();
   fragment.setTypeCondition(this->parseName());
-  SelectionSet selectionSet = this->parseSelectionSet();
-  fragment.setSelectionSet(selectionSet);
+  fragment.setSelectionSet(this->parseSelectionSet());
   return fragment;
 }
 
