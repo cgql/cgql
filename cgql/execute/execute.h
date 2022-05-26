@@ -31,18 +31,16 @@ public:
     const SelectionSet& selectionSet
   );
 private:
-  template<typename T>
   Data executeField(
     const ExecutionContext& ctx,
     const FieldTypeDefinition& field,
-    const cgqlSPtr<T>& fieldType,
+    const cgqlSPtr<TypeDefinition>& fieldType,
     const SelectionSet& fields
   );
-  template<typename T>
   Data completeValue(
     const ExecutionContext& ctx,
     const FieldTypeDefinition& field,
-    const cgqlSPtr<T>& fieldType,
+    const cgqlSPtr<TypeDefinition>& fieldType,
     const SelectionSet& fields,
     const Data& result
   );
@@ -53,14 +51,16 @@ private:
     const SelectionSet& fields,
     const Data& result
   );
-  template<typename T>
   Data completeAbstractType(
     const ExecutionContext& ctx,
-    const T& fieldType,
+    const cgqlSPtr<TypeDefinition>& fieldType,
     const SelectionSet& fields,
     const Data& result
   );
-
+  Args buildArgumentMap(
+    const cgqlSPtr<Selection>& selection,
+    const FieldTypeDefinition& fieldType
+  );
 private:
   cgqlSPtr<ObjectTypeDefinition> obj;
   cgqlSPtr<Object> source;

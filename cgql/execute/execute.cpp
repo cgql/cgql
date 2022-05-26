@@ -119,10 +119,9 @@ Data SelectionSetExecutor::completeList(
   return resultList;
 }
 
-template<typename T>
 Data SelectionSetExecutor::completeAbstractType(
   const ExecutionContext& ctx,
-  const T& fieldType,
+  const cgqlSPtr<TypeDefinition>& fieldType,
   const SelectionSet& fields,
   const Data& result
 ) {
@@ -148,7 +147,7 @@ Data SelectionSetExecutor::completeAbstractType(
   /* silence compiler warning */ return 0;
 }
 
-Args buildArgumentMap(
+Args SelectionSetExecutor::buildArgumentMap(
   const cgqlSPtr<Selection>& selection,
   const FieldTypeDefinition& fieldType
 ) {
@@ -217,11 +216,10 @@ cgqlSPtr<Object> SelectionSetExecutor::execute(
   return resultObj;
 }
 
-template<typename T>
 Data SelectionSetExecutor::executeField(
   const ExecutionContext& ctx,
   const FieldTypeDefinition& field,
-  const cgqlSPtr<T>& fieldType,
+  const cgqlSPtr<TypeDefinition>& fieldType,
   const SelectionSet& fields
 ) {
   ResolverMap::const_iterator it = ctx.resolverMap.find(field.getName());
@@ -247,11 +245,10 @@ Data SelectionSetExecutor::executeField(
   );
 }
 
-template<typename T>
 Data SelectionSetExecutor::completeValue(
   const ExecutionContext& ctx,
   const FieldTypeDefinition& field,
-  const cgqlSPtr<T>& fieldType,
+  const cgqlSPtr<TypeDefinition>& fieldType,
   const SelectionSet& fields,
   const Data& result
 ) {
