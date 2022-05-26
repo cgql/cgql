@@ -60,13 +60,13 @@ inline std::ostream& operator<<(std::ostream& os, const DefinitionType& type) {
 
 class AbstractSchemaTypeDefinition {
 public:
-  void setName(const std::string& name) {
+  void setName(std::string name) {
     this->name = name;
   }
   const std::string& getName() const {
     return this->name;
   }
-  void setDescription(const std::string& description) {
+  void setDescription(std::string description) {
     this->description = description;
   }
   const std::string& getDescription() const {
@@ -128,7 +128,7 @@ public:
   ScalarTypeDefinition() = default;
   ScalarTypeDefinition(
     const std::string& name,
-    const Serializer& serializer
+    Serializer serializer
   ) : serializer(serializer) {
     this->setName(name);
   }
