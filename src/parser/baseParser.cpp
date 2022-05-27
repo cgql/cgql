@@ -31,18 +31,18 @@ cgqlSPtr<ListType> BaseParser::parseList() {
 }
 
 GraphQLInputTypes BaseParser::parseValueLiteral() {
-  TokenType currentTokenType = this->tokenizer.current.getType();
+  TokenType currentTokenType = this->tokenizer.current.type;
   switch(currentTokenType) {
     case TokenType::NAME:
       return this->parseName();
     case TokenType::INT: {
       // potentially an integer
       return strToInt<Int>(
-        this->move(TokenType::INT).getValue()
+        this->move(TokenType::INT).value
       );
     }
     case TokenType::STRING:
-      return this->move(TokenType::STRING).getValue();
+      return this->move(TokenType::STRING).value;
     case TokenType::CURLY_BRACES_L:
       return this->parseObject();
     case TokenType::SQUARE_BRACES_L:
@@ -61,13 +61,13 @@ Token BaseParser::move(TokenType type) {
 }
 
 bool BaseParser::checkType(TokenType type) {
-  if(this->tokenizer.current.getType() == type)
+  if(this->tokenizer.current.type == type)
     return true;
   return false;
 }
 
 std::string BaseParser::parseName() {
-  return this->move(TokenType::NAME).getValue();
+  return this->move(TokenType::NAME).value;
 }
 
 } /* cgql */ 

@@ -5,10 +5,10 @@ namespace cgql {
 
 std::string SchemaParser::parseDescription() {
   if(
-    this->tokenizer.current.getType() == TokenType::BLOCK_STRING ||
-    this->tokenizer.current.getType() == TokenType::STRING
+    this->tokenizer.current.type == TokenType::BLOCK_STRING ||
+    this->tokenizer.current.type == TokenType::STRING
   ) {
-    std::string description = this->tokenizer.current.getValue();
+    std::string description = this->tokenizer.current.value;
     this->tokenizer.advance();
     return description;
   }
@@ -39,7 +39,7 @@ cgqlSPtr<TypeDefinition> SchemaParser::parseType(const TypeRegistry& registry) {
 template<typename T>
 void SchemaParser::parseImplementInterfaces(cgqlSPtr<T>& objectOrInterface) {
   static_assert(hasSetImplInterfaces<T>::value, "Type must be either an object or an interface");
-  if(this->tokenizer.current.getValue() != "implements") return;
+  if(this->tokenizer.current.value != "implements") return;
   do {
     this->tokenizer.advance();
     objectOrInterface->addImplementedInterface(this->parseName());
@@ -239,7 +239,7 @@ void SchemaParser::parseDirectiveTypeDefinition(const TypeRegistry& registry) {
   }
 
   assert(
-    this->tokenizer.current.getValue() == "on" &&
+    this->tokenizer.current.value == "on" &&
     "Expected keyword \"on\""
   );
   directive->setDirectiveLocations(this->parseDirectiveLocations());

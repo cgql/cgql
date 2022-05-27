@@ -72,18 +72,17 @@ const char* tokenTypeToCharArray(const TokenType& type) {
   return "";
 }
 
-// Token
-Token::Token(TokenType type)
-  : type(type) {}
-Token::Token(TokenType type, const std::string& value)
-  : type(type), value(value) {}
-
 static inline Token generateToken(TokenType type) {
-  Token generatedToken(type);
+  Token generatedToken {
+    .type = type 
+  };
   return generatedToken;
 }
 static inline Token generateToken(TokenType type, const std::string& value) {
-  Token generatedToken(type, value);
+  Token generatedToken {
+    .value = value,
+    .type = type
+  };
   return generatedToken;
 }
 
@@ -99,13 +98,13 @@ void Tokenizer::advance() {
 
 std::string Tokenizer::lookAhead() {
   if(
-    this->current.getType() != TokenType::STRING &&
-    this->current.getType() != TokenType::BLOCK_STRING
-  ) return this->current.getValue();
+    this->current.type != TokenType::STRING &&
+    this->current.type != TokenType::BLOCK_STRING
+  ) return this->current.value;
   size_t oldCursor = this->cursor;
   Token next = this->nextToken();
   this->cursor = oldCursor;
-  return next.getValue();
+  return next.value;
 }
 
 Token Tokenizer::tokenizeName() {

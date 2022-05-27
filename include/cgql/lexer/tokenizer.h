@@ -41,14 +41,7 @@ inline std::ostream& operator<<(std::ostream& os, TokenType type) {
   return os;
 }
 
-class Token {
-public:
-  Token(TokenType type);
-  Token(TokenType type, const std::string& value);
-
-  TokenType getType() const { return this->type; }
-  const std::string& getValue() const { return this->value; }
-private:
+struct Token {
   std::string value;
   TokenType type;
 };

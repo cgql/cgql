@@ -48,7 +48,7 @@ cgqlSPtr<InlineFragment> QueryParser::parseInlineFragment() {
   cgqlSPtr<InlineFragment> inlineFragment =
     cgqlSMakePtr<InlineFragment>();
   // TODO: handle error
-  if(this->tokenizer.current.getValue() != "on") {}
+  if(this->tokenizer.current.value != "on") {}
   this->tokenizer.advance();
   inlineFragment->setTypeCondition(this->parseName());
   inlineFragment->setSelectionSet(this->parseSelectionSet());
@@ -67,7 +67,7 @@ FragmentDefinition QueryParser::parseFragmentDefinition() {
   this->tokenizer.advance();
   fragment.setName(this->parseName());
   // TODO: handle error
-  if(this->tokenizer.current.getValue() != "on") {}
+  if(this->tokenizer.current.value != "on") {}
   this->tokenizer.advance();
   fragment.setTypeCondition(this->parseName());
   fragment.setSelectionSet(this->parseSelectionSet());
@@ -77,7 +77,7 @@ FragmentDefinition QueryParser::parseFragmentDefinition() {
 cgqlSPtr<Selection> QueryParser::parseSelection() {
   if(this->checkType(TokenType::SPREAD)) {
     this->tokenizer.advance();
-    if(this->tokenizer.current.getValue() == "on")
+    if(this->tokenizer.current.value == "on")
       return this->parseInlineFragment();
     return this->parseFragment();
   }
@@ -105,7 +105,7 @@ Definition QueryParser::parseDefinition() {
   if(this->checkType(TokenType::CURLY_BRACES_L)) {
     return this->parseOperationDefinition();
   }
-  String lookAhead(this->tokenizer.current.getValue());
+  String lookAhead(this->tokenizer.current.value);
   if(lookAhead == "fragment") return this->parseFragmentDefinition();
   assert(false && "Unexpected token");
   /* silence compiler warning */ return {};
