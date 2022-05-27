@@ -4,7 +4,6 @@
 #include <cassert>
 
 namespace cgql {
-namespace internal {
 
 Argument QueryParser::parseArgument() {
   Argument argument;
@@ -123,10 +122,9 @@ Document QueryParser::parse() {
   };
 };
 
-} // internal
 
-internal::Document parse(const char *document) {
-  internal::QueryParser parser(document);
+Document parse(const char *document) {
+  QueryParser parser(document);
   return parser.parse();
 };
 

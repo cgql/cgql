@@ -10,8 +10,6 @@
 
 namespace cgql {
 
-namespace internal {
-
 enum class OperationType {
   QUERY,
   MUTATION,
@@ -165,8 +163,7 @@ public:
 private:
   cgqlContainer<Definition> definitions;
 };
-} // internal
 
-void printDocumentNode(const internal::Document& doc);
+void printDocumentNode(const Document& doc);
 void printResultMap(const Object& obj, uint8_t level = 0);
 } // cgql

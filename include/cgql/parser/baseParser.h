@@ -5,7 +5,6 @@
 #include "cgql/lexer/tokenizer.h"
 
 namespace cgql {
-namespace internal {
   
 class BaseParser {
 public:
@@ -23,5 +22,4 @@ protected:
   std::string parseName();
 };
 
-} /* internal */ 
 } /* cgql */

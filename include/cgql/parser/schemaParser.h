@@ -7,7 +7,6 @@
 #include "cgql/cgqlDefs.h"
 
 namespace cgql {
-namespace internal {
   
 class SchemaParser : public BaseParser {
 public:
@@ -36,7 +35,6 @@ private:
   std::string parseDescription();
 };
 
-cgqlSPtr<internal::Schema> parseSchema(const char *source, const TypeRegistry& registry);
+cgqlSPtr<Schema> parseSDLSchema(const char *source, const TypeRegistry& registry);
 
-} /* internal */ 
 } /* cgql */ 

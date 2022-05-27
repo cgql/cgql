@@ -10,16 +10,16 @@ namespace cgql {
 class CgqlInstance {
 public:
   CgqlInstance();
-  void useSchema(const cgqlSPtr<internal::Schema>& schema);
+  void useSchema(const cgqlSPtr<Schema>& schema);
   cgqlSPtr<Object> executeWith(
-    const internal::Document& document,
+    const Document& document,
     const ResolverMap& resolverMap,
     const TypeOfMap& typeOfMap
   );
-  cgqlSPtr<internal::Schema> parseSchema(const char* schema);
+  cgqlSPtr<Schema> parseSchema(const char* schema);
 private:
-  cgqlSPtr<internal::Schema> schema;
-  internal::TypeRegistry typeRegistry;
+  cgqlSPtr<Schema> schema;
+  TypeRegistry typeRegistry;
 };
 
 } // end of cgql

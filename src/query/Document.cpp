@@ -3,7 +3,6 @@
 #include "cgql/cgqlDefs.h"
 
 namespace cgql {
-namespace internal {
 
 // OperationDefinition
 OperationDefinition::OperationDefinition(
@@ -36,15 +35,14 @@ std::ostream& operator<<(std::ostream& out, OperationType type) {
   out << outStr;
   return out;
 }
-} // internal
 
-void printSelectionSet(const internal::SelectionSet selectionSet, int level) {
+void printSelectionSet(const SelectionSet selectionSet, int level) {
   for(auto const& s : selectionSet) {
     std::string v;
     for(int i = 0; i < level; i++) v += "  ";
-    if(s->getSelectionType() == internal::SelectionType::FIELD) {
-      const cgqlSPtr<internal::Field>& field =
-        std::static_pointer_cast<internal::Field>(s);
+    if(s->getSelectionType() == SelectionType::FIELD) {
+      const cgqlSPtr<Field>& field =
+        std::static_pointer_cast<Field>(s);
       v += field->getName();
     }
     logger::info(v);
@@ -52,11 +50,11 @@ void printSelectionSet(const internal::SelectionSet selectionSet, int level) {
   }
 }
 
-void printDocumentNode(const internal::Document &doc) {
-  for(const internal::Definition& def : doc.getDefinitions()) {
+void printDocumentNode(const Document &doc) {
+  for(const Definition& def : doc.getDefinitions()) {
     if(def.index() == 0)  {
-      const internal::OperationDefinition& opDef =
-        fromVariant<internal::OperationDefinition>(def);
+      const OperationDefinition& opDef =
+        fromVariant<OperationDefinition>(def);
       logger::info(opDef.getOperationType());
       printSelectionSet(opDef.getSelectionSet(), 0);
     }
@@ -96,9 +94,9 @@ void printResultMap(const Object& obj, uint8_t level) {
   std::string indentation;
   for(auto i = 0; i < level; i++) indentation += "  ";
   for(auto const& [key, value] : obj.fields) {
-    if(internal::isList(value)) {
+    if(isList(value)) {
       printList(key, fromVariant<cgqlSPtr<List>>(value), indentation);
-    } else if(internal::isObject(value)) {
+    } else if(isObject(value)) {
       std::string v = indentation + key.data();
       logger::info(v);
       printResultMap(*fromVariant<std::shared_ptr<Object>>(value), level + 1);

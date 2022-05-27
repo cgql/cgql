@@ -8,7 +8,6 @@
 #include "cgql/lexer/tokenizer.h"
 
 namespace cgql {
-namespace internal {
 
 class QueryParser : BaseParser {
 public:
@@ -27,7 +26,5 @@ private:
   Argument parseArgument();
 };
 
-} // internal
-
-internal::Document parse(const char* source);
+Document parse(const char* source);
 } // cgql

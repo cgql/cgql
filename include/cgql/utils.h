@@ -4,7 +4,6 @@
 #include <cstdint>
 
 namespace cgql {
-namespace internal {
 
 constexpr inline bool isLetter(uint32_t value) {
   if(
@@ -59,5 +58,4 @@ constexpr inline T strToInt(const std::string& str) {
   return tempQuotient;
 }
 
-} // internal
 } // cgql

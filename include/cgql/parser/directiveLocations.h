@@ -5,7 +5,6 @@
 #include <map>
 
 namespace cgql {
-namespace internal {
 
 enum class DirectiveLocation {
   QUERY,
@@ -57,5 +56,4 @@ static DirectiveLocation getDirectiveLocation(const std::string& str) {
   return possibleDirectiveLocations.at(str);
 }
 
-} // internal
 } // cgql

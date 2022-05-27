@@ -9,8 +9,6 @@
 
 namespace cgql {
 
-namespace internal {
-
 enum class DefinitionType {
   TYPE_DEFINITION, // default base type
 
@@ -439,5 +437,4 @@ private:
   cgqlSPtr<ObjectTypeDefinition> query;
 };
 
-} // end of internal
 } // end of cgql

@@ -8,6 +8,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CPP_SOURCES
   src/cgql.cpp
   src/execute/execute.cpp
+  src/execute/selectionSetExecutor.cpp
   src/lexer/tokenizer.cpp
   src/parser/baseParser.cpp
   src/parser/parser.cpp

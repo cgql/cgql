@@ -4,7 +4,6 @@
 #include "cgql/cgqlDefs.h"
 
 namespace cgql {
-namespace internal {
 
 class TypeRegistry {
 public:
@@ -29,5 +28,4 @@ private:
   mutable std::unordered_map<std::string, cgqlSPtr<TypeDefinition>> types;
 };
 
-} // end of internal
 } // end of cgql

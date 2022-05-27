@@ -2,7 +2,6 @@
 #include "cgql/parser/traits.h"
 
 namespace cgql {
-namespace internal {
 
 std::string SchemaParser::parseDescription() {
   if(
@@ -274,8 +273,7 @@ void SchemaParser::parse(const TypeRegistry& registry) {
   } while (!this->checkType(TokenType::END_OF_QUERY));
 }
 
-cgqlSPtr<internal::Schema> parseSchema(const char *source, const TypeRegistry& registry) {
-  using namespace cgql::internal;
+cgqlSPtr<Schema> parseSDLSchema(const char *source, const TypeRegistry& registry) {
   SchemaParser parser(source);
   parser.parse(registry);
   cgqlSPtr<Schema> schema = cgqlSMakePtr<Schema>();
@@ -283,7 +281,6 @@ cgqlSPtr<internal::Schema> parseSchema(const char *source, const TypeRegistry& r
   return schema;
 }
 
-} /* internal */ 
 } /* cgql */ 
 
 

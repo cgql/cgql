@@ -3,7 +3,6 @@
 #include <cassert>
 
 namespace cgql {
-namespace internal {
 
 BaseParser::BaseParser(const char* document) 
   : tokenizer(document) {
@@ -71,5 +70,4 @@ std::string BaseParser::parseName() {
   return this->move(TokenType::NAME).getValue();
 }
 
-} /* internal */ 
 } /* cgql */ 

@@ -3,7 +3,6 @@
 #include <cassert>
 
 namespace cgql {
-namespace internal {
 
 #define MAKE_SCALAR(name, serializer) cgqlSMakePtr<ScalarTypeDefinition>(name, serializer)
 
@@ -57,5 +56,4 @@ void TypeRegistry::init() {
   ));
 }
 
-} // end of internal
 } // end of cgql

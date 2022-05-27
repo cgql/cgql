@@ -5,7 +5,6 @@
 #include <iostream>
 
 namespace cgql {
-namespace internal {
 
 enum class TokenType {
   NAME,
@@ -75,5 +74,4 @@ private:
   Token tokenizeBlockString();
 };
 
-} // internal
 } // cgql

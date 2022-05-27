@@ -10,18 +10,18 @@ CgqlInstance::CgqlInstance() {
   this->typeRegistry.init();
 }
 
-void CgqlInstance::useSchema(const cgqlSPtr<internal::Schema>& schema) {
+void CgqlInstance::useSchema(const cgqlSPtr<Schema>& schema) {
   this->schema = schema;
 }
 
-cgqlSPtr<internal::Schema> CgqlInstance::parseSchema(const char *schema) {
-  auto parsedSchema = internal::parseSchema(schema, this->typeRegistry);
+cgqlSPtr<Schema> CgqlInstance::parseSchema(const char *schema) {
+  auto parsedSchema = parseSDLSchema(schema, this->typeRegistry);
   this->useSchema(parsedSchema);
   return parsedSchema;
 }
 
 cgqlSPtr<Object> CgqlInstance::executeWith(
-  const internal::Document& document,
+  const Document& document,
   const ResolverMap& resolverMap,
   const TypeOfMap& typeOfMap
 ) {

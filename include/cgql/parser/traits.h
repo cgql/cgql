@@ -2,7 +2,7 @@
 
 #include "cgql/schema/typeDefinitions.hpp"
 
-namespace cgql::internal {
+namespace cgql {
 
 template<typename T>
 struct hasSetImplInterfaces : std::false_type {};

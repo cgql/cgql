@@ -2,7 +2,6 @@
 #include "cgql/logger/logger.h"
 
 namespace cgql {
-namespace internal {
 
 const char* tokenTypeToCharArray(const TokenType& type) {
   switch (type) {
@@ -275,5 +274,4 @@ void Tokenizer::advanceCursor(int amount) {
   this->cursor += amount;
 }
 
-} // internal
 } // cgql
