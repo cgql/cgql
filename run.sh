@@ -15,7 +15,7 @@ function build() {
   cd build && make -j3 && cd ..
   chmod +x build/tests/cgqlTests
 
-  du -h build/tests/cgqlTests build/cgql/libcgqlSource.a
+  du -h build/tests/cgqlTests build/libcgqlSource.a
 
   time build/tests/cgqlTests
 }

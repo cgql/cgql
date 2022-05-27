@@ -1,5 +1,5 @@
 #include <cgql/cgql.h>
-#include <cgql/type/parser/parser.h>
+#include <cgql/parser/parser.h>
 
 using namespace cgql;
 

@@ -1,6 +1,6 @@
 #include "cgql/logger/logger.h"
 #include <cgql/cgql.h>
-#include <cgql/type/parser/parser.h>
+#include <cgql/parser/parser.h>
 #include <fstream>
 #include "utils/timer.hpp"
 
