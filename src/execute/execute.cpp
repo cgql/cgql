@@ -2,8 +2,6 @@
 #include "selectionSetExecutor.h"
 #include "cgql/logger/logger.h"
 
-#include "cgql/utils.h"
-
 #include <cassert>
 
 namespace cgql {
@@ -18,13 +16,13 @@ static cgqlSPtr<Object> executeQuery(
   return executor.execute(ctx, selection);
 }
 
-static const OperationDefinition& getOperation(
+static OperationDefinition getOperation(
   const Document& document,
   OperationType operationName
 ) {
   for(const Definition& def : document.getDefinitions()) {
     if(def.index() == 0) {
-      const OperationDefinition& opDef =
+      OperationDefinition opDef =
         fromVariant<OperationDefinition>(def);
       if(opDef.getOperationType() == operationName) {
         return opDef;

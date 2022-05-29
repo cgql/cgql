@@ -1,6 +1,7 @@
 #include "cgql/query/Document.h"
 #include "cgql/logger/logger.h"
 #include "cgql/cgqlDefs.h"
+#include "../utils.h"
 
 namespace cgql {
 

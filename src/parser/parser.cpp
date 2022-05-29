@@ -88,7 +88,7 @@ SelectionSet QueryParser::parseSelectionSet() {
   this->move(TokenType::CURLY_BRACES_L);
   SelectionSet selections;
   do {
-    selections.push_back((this->parseSelection()));
+    selections.emplace_back(this->parseSelection());
   } while(!this->checkType(TokenType::CURLY_BRACES_R));
   this->tokenizer.advance();
   return selections;
@@ -115,7 +115,7 @@ Document QueryParser::parse() {
   cgqlContainer<Definition> definitions;
   this->move(TokenType::START_OF_QUERY);
   do {
-    definitions.push_back(this->parseDefinition());
+    definitions.emplace_back(this->parseDefinition());
   } while (!this->checkType(TokenType::END_OF_QUERY));
   Document document(definitions);
   return document;

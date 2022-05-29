@@ -112,7 +112,7 @@ Data SelectionSetExecutor::completeList(
   cgqlSPtr<List> resultList = cgqlSMakePtr<List>();
   resultList->elements.reserve(rawResultList->elements.size());
   for(Data rawResult : rawResultList->elements) {
-    resultList->elements.push_back(
+    resultList->elements.emplace_back(
       completeValue(
         ctx,
         field,
@@ -162,15 +162,13 @@ Args SelectionSetExecutor::buildArgumentMap(
     std::static_pointer_cast<Field>(selection);
   const cgqlContainer<Argument>& argumentValues =
     field->getArgs();
-  const cgqlContainer<InputValueDefinition>& argumentDefinitions =
-    fieldType.getArgs();
-  for(const InputValueDefinition& argDef : argumentDefinitions) {
+  for(const InputValueDefinition& argDef : fieldType.getArgs()) {
     const std::string& argName = argDef.getName();
     cgqlContainer<Argument>::const_iterator it = std::find_if(
       argumentValues.begin(),
       argumentValues.end(),
-      [&argName](const Argument& arg) {
-        return arg.getName() == argName;
+      [&argName](const Argument& argument) {
+        return argument.getName() == argName;
       }
     );
     const GraphQLInputTypes defaultValue = argDef.getDefaultValue();

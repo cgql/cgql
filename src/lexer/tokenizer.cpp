@@ -1,5 +1,6 @@
 #include "cgql/lexer/tokenizer.h"
 #include "cgql/logger/logger.h"
+#include "../utils.h"
 
 namespace cgql {
 
