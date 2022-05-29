@@ -16,30 +16,30 @@ static cgqlSPtr<Object> executeQuery(
   return executor.execute(ctx, selection);
 }
 
-static OperationDefinition getOperation(
+struct OperationInfo {
+  OperationDefinition operation;
+  cgqlContainer<FragmentDefinition> fragments;
+};
+
+static OperationInfo getOperation(
   const Document& document,
   OperationType operationName
 ) {
+  OperationInfo operationInfo;
   for(const Definition& def : document.getDefinitions()) {
     if(def.index() == 0) {
       OperationDefinition opDef =
         fromVariant<OperationDefinition>(def);
       if(opDef.getOperationType() == operationName) {
-        return opDef;
+        operationInfo.operation = opDef;
       }
+    } else if(def.index() == 1) {
+      FragmentDefinition fragmentDef =
+        fromVariant<FragmentDefinition>(def);
+      operationInfo.fragments.push_back(fragmentDef);
     }
   }
-  throw operationName;
-}
-
-static cgqlContainer<FragmentDefinition> getFragmentsFromQuery(const Document& document) {
-  cgqlContainer<FragmentDefinition> fragments;
-  for(const Definition& def : document.getDefinitions()) {
-    if(def.index() == 1) {
-      fragments.push_back(fromVariant<FragmentDefinition>(def));
-    }
-  }
-  return fragments;
+  return operationInfo;
 }
 
 cgqlSPtr<Object> execute(
@@ -49,14 +49,20 @@ cgqlSPtr<Object> execute(
   const TypeOfMap& typeOfMap
 ) {
   // get operation
+
+  auto [
+    operation,
+    fragments
+  ] = getOperation(document, OperationType::QUERY);
+
   ExecutionContext ctx;
   ctx.schema = schema;
   ctx.resolverMap = resolverMap;
   ctx.typeOfMap = typeOfMap;
-  ctx.fragments = getFragmentsFromQuery(document);
+  ctx.fragments = fragments;
   return executeQuery(
     ctx,
-    getOperation(document, OperationType::QUERY)
+    operation
   );
 }
 

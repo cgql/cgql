@@ -3,8 +3,6 @@
 #include "cgql/schema/typeDefinitions.h"
 #include "cgql/schema/GraphQLTypes.h"
 
-#include "cgql/utils.h"
-
 #include <cassert>
 
 namespace cgql {
