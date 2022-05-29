@@ -1,7 +1,6 @@
 #pragma once
 
-#include "cgql/logger/logger.h"
-#include "cgql/schema/typeDefinitions.hpp"
+#include "cgql/schema/typeDefinitions.h"
 #include "cgql/schema/GraphQLTypes.h"
 
 #include "cgql/utils.h"
@@ -157,7 +156,6 @@ public:
   Document(
     cgqlContainer<Definition> definitions
   );
-  Document() = default;
   ~Document();
   const cgqlContainer<Definition>& getDefinitions() const { return this->definitions; }
 private:

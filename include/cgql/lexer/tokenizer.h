@@ -2,8 +2,6 @@
 
 #include "cgql/utils.h"
 
-#include <iostream>
-
 namespace cgql {
 
 enum class TokenType {
@@ -36,7 +34,8 @@ enum class TokenType {
 };
 
 const char* tokenTypeToCharArray(const TokenType& type);
-inline std::ostream& operator<<(std::ostream& os, TokenType type) {
+template<typename Ostream>
+inline Ostream& operator<<(Ostream& os, TokenType type) {
   os << tokenTypeToCharArray(type);
   return os;
 }
@@ -58,7 +57,7 @@ public:
   std::string lookAhead();
 private:
   std::string source;
-  size_t cursor;
+  size_t cursor = 0;
   void advanceCursor(int amount);
 
   Token tokenizeName();

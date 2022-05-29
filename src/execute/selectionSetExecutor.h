@@ -1,11 +1,18 @@
 #pragma once
 
-#include "cgql/schema/typeDefinitions.hpp"
+#include "cgql/schema/typeDefinitions.h"
 #include "cgql/query/Document.h"
 #include "cgql/execute/execute.h"
 #include "cgql/cgqlDefs.h"
 
 namespace cgql {
+
+struct ExecutionContext {
+  cgqlSPtr<Schema> schema;
+  ResolverMap resolverMap;
+  TypeOfMap typeOfMap;
+  cgqlContainer<FragmentDefinition> fragments;
+};
 
 class SelectionSetExecutor {
 public:
@@ -39,7 +46,7 @@ private:
   Data completeList(
     const ExecutionContext& ctx,
     const FieldTypeDefinition& field,
-    const cgqlSPtr<ListTypeDefinition<TypeDefinition>>& fieldType,
+    const cgqlSPtr<ListTypeDefinition>& fieldType,
     const SelectionSet& fields,
     const Data& result
   );

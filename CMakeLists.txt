@@ -15,6 +15,7 @@ set(CPP_SOURCES
   src/parser/schemaParser.cpp
   src/query/Document.cpp
   src/schema/typeRegistry.cpp
+  src/schema/typeDefinitions.cpp
 )
 
 add_library(cgqlSource)

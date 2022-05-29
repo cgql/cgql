@@ -2,8 +2,7 @@
 
 #include "cgql/parser/baseParser.h"
 #include "cgql/schema/typeRegistry.h"
-#include "cgql/schema/typeDefinitions.hpp"
-#include "cgql/parser/directiveLocations.h"
+#include "cgql/schema/typeDefinitions.h"
 #include "cgql/cgqlDefs.h"
 
 namespace cgql {

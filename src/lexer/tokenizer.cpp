@@ -89,7 +89,6 @@ static inline Token generateToken(TokenType type, const std::string& value) {
 // Tokenizer
 Tokenizer::Tokenizer(const char* source)
   : source(source),
-    cursor(0),
     current(generateToken(TokenType::START_OF_QUERY)) {}
 Tokenizer::~Tokenizer() {}
 void Tokenizer::advance() {

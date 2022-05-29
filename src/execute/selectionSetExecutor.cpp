@@ -2,6 +2,78 @@
 
 namespace cgql {
 
+static void collectFields(
+  const ExecutionContext& ctx,
+  const cgqlSPtr<TypeDefinition>& objectType,
+  const SelectionSet &selectionSet,
+  GroupedField& groupedFields
+) {
+  for(const cgqlSPtr<Selection>& selection : selectionSet) {
+    const SelectionType type = selection->getSelectionType();
+    switch(type) {
+      case SelectionType::FIELD: {
+        cgqlSPtr<Field> field =
+          std::static_pointer_cast<Field>(selection);
+
+        const std::string& responseKey = field->getResponseKey();
+
+        groupedFields[responseKey].push_back(field);
+        break;
+      }
+      case SelectionType::INLINE_FRAGMENT: {
+        cgqlSPtr<InlineFragment> inlineFragment =
+          std::static_pointer_cast<InlineFragment>(selection);
+        const std::string& typeCondition = inlineFragment->getTypeCondition();
+        if(typeCondition != objectType->getName()) continue;
+
+        collectFields(
+          ctx,
+          objectType,
+          inlineFragment->getSelectionSet(),
+          groupedFields
+        );
+        break;
+      }
+      case SelectionType::FRAGMENT: {
+        cgqlSPtr<Fragment> fragment =
+          std::static_pointer_cast<Fragment>(selection);
+        cgqlContainer<FragmentDefinition>::const_iterator it =
+          std::find_if(
+            ctx.fragments.begin(),
+            ctx.fragments.end(),
+            [&fragment](const FragmentDefinition& fragmentDef) {
+              return fragment->getName() == fragmentDef.getName();
+            }
+          );
+        collectFields(ctx, objectType, it->getSelectionSet(), groupedFields);
+        break;
+      }
+      case SelectionType::BASE:
+        assert(false && "Invalid selection type in execution: BASE");
+        break;
+    }
+  }
+}
+
+static FieldTypeDefinition findGraphQLFieldByName(
+  const cgqlSPtr<ObjectTypeDefinition>& objectType,
+  const std::string& fieldName
+) {
+  cgqlContainer<FieldTypeDefinition>::const_iterator it =
+    std::find_if(
+      objectType->getFields().begin(),
+      objectType->getFields().end(),
+      [&fieldName](const FieldTypeDefinition& field) {
+        return fieldName == field.getName();
+      }
+    );
+  if(it != objectType->getFields().end()) {
+    return *it;
+  }
+  // TODO:
+  return {};
+}
+
 static void mergeSelectionSet(
   const SelectionSet& fields,
   SelectionSet& mergedSelectionSet
@@ -31,7 +103,7 @@ static Data defaultFieldResolver(
 Data SelectionSetExecutor::completeList(
   const ExecutionContext& ctx,
   const FieldTypeDefinition& field,
-  const cgqlSPtr<ListTypeDefinition<TypeDefinition>>& fieldType,
+  const cgqlSPtr<ListTypeDefinition>& fieldType,
   const SelectionSet& fields,
   const Data& result
 ) {
@@ -188,8 +260,8 @@ Data SelectionSetExecutor::completeValue(
 ) {
   const DefinitionType type = fieldType->getDefinitionType();
   if(type == DefinitionType::NON_NULL) {
-    cgqlSPtr<NonNullTypeDefinition<TypeDefinition>> nonNull =
-      std::static_pointer_cast<NonNullTypeDefinition<TypeDefinition>>(fieldType);
+    cgqlSPtr<NonNullTypeDefinition> nonNull =
+      std::static_pointer_cast<NonNullTypeDefinition>(fieldType);
     if(result.index() == 4) {
       // field error
     }
@@ -205,8 +277,8 @@ Data SelectionSetExecutor::completeValue(
   }
   switch (type) {
     case DefinitionType::DEFAULT_WRAP: {
-      cgqlSPtr<DefaultWrapTypeDefinition<TypeDefinition>> defaultWrap =
-        std::static_pointer_cast<DefaultWrapTypeDefinition<TypeDefinition>>(fieldType);
+      cgqlSPtr<DefaultWrapTypeDefinition> defaultWrap =
+        std::static_pointer_cast<DefaultWrapTypeDefinition>(fieldType);
       return completeValue(
         ctx,
         field,
@@ -216,8 +288,8 @@ Data SelectionSetExecutor::completeValue(
       );
     }
     case DefinitionType::LIST: {
-      cgqlSPtr<ListTypeDefinition<TypeDefinition>> list =
-        std::static_pointer_cast<ListTypeDefinition<TypeDefinition>>(fieldType);
+      cgqlSPtr<ListTypeDefinition> list =
+        std::static_pointer_cast<ListTypeDefinition>(fieldType);
       return completeList(
         ctx,
         field,

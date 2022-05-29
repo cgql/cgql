@@ -30,7 +30,6 @@ enum class DirectiveLocation {
 };
 
 static DirectiveLocation getDirectiveLocation(const std::string& str) {
-  // the given string must be in the possibleDirectiveLocations... hence no error checking here!
   static const std::map<std::string_view, DirectiveLocation> possibleDirectiveLocations = {
     { "QUERY", DirectiveLocation::QUERY },
     { "MUTATION", DirectiveLocation::MUTATION },

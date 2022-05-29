@@ -1,5 +1,5 @@
 #include "cgql/parser/schemaParser.h"
-#include "cgql/parser/traits.h"
+#include "cgql/parser/directiveLocations.h"
 
 namespace cgql {
 
@@ -19,26 +19,25 @@ cgqlSPtr<TypeDefinition> SchemaParser::parseType(const TypeRegistry& registry) {
   cgqlSPtr<TypeDefinition> type;
   if(!this->checkType(TokenType::SQUARE_BRACES_L)) {
     type =
-      cgqlSMakePtr<DefaultWrapTypeDefinition<TypeDefinition>>(
+      cgqlSMakePtr<DefaultWrapTypeDefinition>(
         registry.getTypeRef(this->parseName())
       );
   } else {
     this->tokenizer.advance();
-    type = cgqlSMakePtr<ListTypeDefinition<TypeDefinition>>(
+    type = cgqlSMakePtr<ListTypeDefinition>(
       this->parseType(registry)
     );
     this->move(TokenType::SQUARE_BRACES_R);
   }
   if(this->checkType(TokenType::BANG)) {
     this->tokenizer.advance();
-    return cgqlSMakePtr<NonNullTypeDefinition<TypeDefinition>>(type);
+    return cgqlSMakePtr<NonNullTypeDefinition>(type);
   }
   return type;
 }
 
 template<typename T>
 void SchemaParser::parseImplementInterfaces(cgqlSPtr<T>& objectOrInterface) {
-  static_assert(hasSetImplInterfaces<T>::value, "Type must be either an object or an interface");
   if(this->tokenizer.current.value != "implements") return;
   do {
     this->tokenizer.advance();

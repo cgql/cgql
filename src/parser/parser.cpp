@@ -117,9 +117,8 @@ Document QueryParser::parse() {
   do {
     definitions.push_back(this->parseDefinition());
   } while (!this->checkType(TokenType::END_OF_QUERY));
-  return {
-    definitions
-  };
+  Document document(definitions);
+  return document;
 };
 
 

@@ -4,14 +4,27 @@
 
 namespace cgql {
 
-#define MAKE_SCALAR(name, serializer) cgqlSMakePtr<ScalarTypeDefinition>(name, serializer)
+static cgqlSPtr<ScalarTypeDefinition> MAKE_SCALAR(
+  std::string name,
+  Serializer serializer
+) {
+  return cgqlSMakePtr<ScalarTypeDefinition>(name, serializer);
+}
 
-inline bool isInteger(const Data& value) {
+static inline bool isInteger(const Data& value) {
   return value.index() == 0;
 }
 
-inline bool isString(const Data& value) {
+static inline bool isString(const Data& value) {
   return value.index() == 1;
+}
+
+void TypeRegistry::addScalar(cgqlSPtr<ScalarTypeDefinition> type) const {
+  this->types.try_emplace(type->getName(), type);
+};
+
+cgqlSPtr<TypeDefinition> TypeRegistry::getTypeRef(std::string typeName) const {
+  return types[typeName];
 }
 
 void TypeRegistry::init() {
