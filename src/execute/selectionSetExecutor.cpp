@@ -162,11 +162,12 @@ Args SelectionSetExecutor::buildArgumentMap(
   const cgqlSPtr<Selection>& selection,
   const FieldTypeDefinition& fieldType
 ) {
-  Args arg;
   cgqlSPtr<Field> field =
     std::static_pointer_cast<Field>(selection);
   const cgqlContainer<Argument>& argumentValues =
     field->getArgs();
+
+  Args args;
   for(const InputValueDefinition& argDef : fieldType.getArgs()) {
     const std::string& argName = argDef.getName();
     cgqlContainer<Argument>::const_iterator it = std::find_if(
@@ -179,7 +180,7 @@ Args SelectionSetExecutor::buildArgumentMap(
     const GraphQLInputTypes defaultValue = argDef.getDefaultValue();
     bool hasValue = it != argumentValues.end();
     if(!hasValue) {
-      arg.argsMap.try_emplace(
+      args.addArg(
         argName,
         defaultValue
       );
@@ -189,13 +190,13 @@ Args SelectionSetExecutor::buildArgumentMap(
     ) {
       assert(false && "Value is null or not provided");
     } else {
-      arg.argsMap.try_emplace(
+      args.addArg(
         argName,
         it->getValue()
       );
     }
   }
-  return arg;
+  return args;
 }
 
 cgqlSPtr<Object> SelectionSetExecutor::execute(
@@ -207,9 +208,11 @@ cgqlSPtr<Object> SelectionSetExecutor::execute(
 
   cgqlSPtr<Object> resultObj = cgqlSMakePtr<Object>();
   for(auto const& [responseKey, fields] : groupedFieldSet) {
+    cgqlSPtr<Field> fieldNode =
+      std::static_pointer_cast<Field>(fields.front());
     FieldTypeDefinition field = findGraphQLFieldByName(
       obj,
-      std::static_pointer_cast<Field>(fields.front())->getName()
+      fieldNode->getName()
     );
     resultObj->fields.try_emplace(
       responseKey,
