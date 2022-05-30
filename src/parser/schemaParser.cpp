@@ -251,7 +251,8 @@ void SchemaParser::parseDefinition(TypeRegistry& registry) {
     this->parseScalarTypeDefinition(registry);
   else if(currentValue == "directive")
     this->parseDirectiveTypeDefinition(registry);
-  assert(false && "Failed to parse type def");
+  else
+    assert(false && "Failed to parse type def");
 }
 
 void SchemaParser::parse(TypeRegistry& registry) {
