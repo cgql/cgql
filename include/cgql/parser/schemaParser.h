@@ -11,29 +11,29 @@ class SchemaParser : public BaseParser {
 public:
   using BaseParser::BaseParser;
 
-  void parse(const TypeRegistry& registry);
+  void parse(TypeRegistry& registry);
 private:
-  cgqlSPtr<TypeDefinition> parseType(const TypeRegistry& registry);
-  void parseObjectTypeDefinition(const TypeRegistry& registry);
-  void parseInterfaceTypeDefinition(const TypeRegistry& registry);
-  void parseUnionTypeDefinition(const TypeRegistry& registry);
-  void parseEnumTypeDefinition(const TypeRegistry& registry);
-  void parseInputObjectTypeDefinition(const TypeRegistry& registry);
-  void parseScalarTypeDefinition(const TypeRegistry& registry);
-  void parseDirectiveTypeDefinition(const TypeRegistry& registry);
-  FieldTypeDefinition parseFieldTypeDefinition(const TypeRegistry& registry);
-  InputValueDefinition parseInputValueDefinition(const TypeRegistry& registry);
+  cgqlSPtr<TypeDefinition> parseType(TypeRegistry& registry);
+  void parseObjectTypeDefinition(TypeRegistry& registry);
+  void parseInterfaceTypeDefinition(TypeRegistry& registry);
+  void parseUnionTypeDefinition(TypeRegistry& registry);
+  void parseEnumTypeDefinition(TypeRegistry& registry);
+  void parseInputObjectTypeDefinition(TypeRegistry& registry);
+  void parseScalarTypeDefinition(TypeRegistry& registry);
+  void parseDirectiveTypeDefinition(TypeRegistry& registry);
+  FieldTypeDefinition parseFieldTypeDefinition(TypeRegistry& registry);
+  InputValueDefinition parseInputValueDefinition(TypeRegistry& registry);
   template<typename T>
   void parseImplementInterfaces(cgqlSPtr<T>& objectOrInterface);
   cgqlContainer<Directive> parseDirectives();
   cgqlContainer<DirectiveLocation> parseDirectiveLocations();
   Directive::DirectiveArgument parseDirectiveArgument();
 
-  void parseDefinition(const TypeRegistry& registry);
+  void parseDefinition(TypeRegistry& registry);
 
   std::string parseDescription();
 };
 
-cgqlSPtr<Schema> parseSDLSchema(const char *source, const TypeRegistry& registry);
+cgqlSPtr<Schema> parseSDLSchema(const char *source, TypeRegistry& registry);
 
 } /* cgql */ 

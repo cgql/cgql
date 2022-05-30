@@ -3,8 +3,6 @@
 #include "cgql/schema/typeDefinitions.h"
 #include "cgql/schema/GraphQLTypes.h"
 
-#include <cassert>
-
 namespace cgql {
 
 enum class OperationType {
@@ -22,12 +20,8 @@ enum class SelectionType {
 
 class Argument : public AbstractSchemaTypeDefinition {
 public:
-  void setValue(GraphQLInputTypes value) {
-    this->value = value;
-  }
-  const GraphQLInputTypes& getValue() const {
-    return this->value;
-  }
+  void setValue(GraphQLInputTypes value);
+  const GraphQLInputTypes& getValue() const;
 private:
   GraphQLInputTypes value;
 };
@@ -35,25 +29,13 @@ private:
 class Selection;
 using SelectionSet = cgqlContainer<cgqlSPtr<Selection>>;
 
-using GroupedField = std::map<
-  std::string,
-  SelectionSet
->;
 class Selection {
 public:
-  virtual ~Selection() {}
-  void setSelectionSet(SelectionSet selectionSet) {
-    this->selectionSet = std::move(selectionSet);
-  }
-  const SelectionSet& getSelectionSet() const {
-    return this->selectionSet;
-  }
-  void setSelectionType(SelectionType type) {
-    this->type = type;
-  }
-  SelectionType getSelectionType() const {
-    return this->type;
-  }
+  virtual ~Selection();
+  void setSelectionSet(SelectionSet selectionSet);
+  const SelectionSet& getSelectionSet() const;
+  void setSelectionType(SelectionType type);
+  SelectionType getSelectionType() const;
 private:
   SelectionSet selectionSet;
   SelectionType type = SelectionType::BASE;
@@ -63,24 +45,12 @@ class Field
   : public Selection,
     public AbstractSchemaTypeDefinition {
 public:
-  Field() {
-    this->setSelectionType(SelectionType::FIELD);
-  };
-  void setAlias(std::string alias) {
-    this->alias = alias;
-  }
-  const std::string& getAlias() const {
-    return this->alias;
-  }
-  void addArgs(Argument arg) {
-    this->args.push_back(arg);
-  }
-  const cgqlContainer<Argument>& getArgs() const {
-    return this->args;
-  }
-  const std::string& getResponseKey() const {
-    return this->alias.empty() ? this->getName() : this->alias;
-  }
+  Field();
+  void setAlias(std::string alias);
+  const std::string& getAlias() const;
+  void addArgs(Argument arg);
+  const cgqlContainer<Argument>& getArgs() const;
+  const std::string& getResponseKey() const;
 private:
   std::string alias;
   cgqlContainer<Argument> args;
@@ -88,15 +58,9 @@ private:
 
 class InlineFragment : public Selection {
 public:
-  InlineFragment() {
-    this->setSelectionType(SelectionType::INLINE_FRAGMENT);
-  };
-  void setTypeCondition(std::string typeCondition) {
-    this->typeCondition = typeCondition;
-  }
-  const std::string& getTypeCondition() const {
-    return this->typeCondition;
-  }
+  InlineFragment();
+  void setTypeCondition(std::string typeCondition);
+  const std::string& getTypeCondition() const;
 private:
   std::string typeCondition;
 };
@@ -105,9 +69,7 @@ class Fragment
   : public Selection,
     public AbstractSchemaTypeDefinition {
 public:
-  Fragment() {
-    this->setSelectionType(SelectionType::FRAGMENT);
-  }
+  Fragment();
 };
 
 class OperationDefinition {
@@ -116,10 +78,9 @@ public:
     OperationType operationType,
     SelectionSet selectionSet
   );
-  OperationDefinition() = default;
-  ~OperationDefinition();
-  OperationType getOperationType() const { return this->operationType; }
-  const SelectionSet& getSelectionSet() const { return this->selectionSet; }
+  OperationDefinition();
+  OperationType getOperationType() const;
+  const SelectionSet& getSelectionSet() const;
 private:
   OperationType operationType;
   SelectionSet selectionSet;
@@ -127,18 +88,10 @@ private:
 
 class FragmentDefinition : public AbstractSchemaTypeDefinition  {
 public:
-  void setTypeCondition(std::string typeCondition) {
-    this->typeCondition = typeCondition;
-  }
-  const std::string& getTypeCondition() const {
-    return this->typeCondition;
-  }
-  void setSelectionSet(SelectionSet selectionSet) {
-    this->selectionSet = std::move(selectionSet);
-  }
-  const SelectionSet& getSelectionSet() const {
-    return this->selectionSet;
-  }
+  void setTypeCondition(std::string typeCondition);
+  const std::string& getTypeCondition() const;
+  void setSelectionSet(SelectionSet selectionSet);
+  const SelectionSet& getSelectionSet() const;
 private:
   std::string typeCondition;
   SelectionSet selectionSet;
@@ -151,11 +104,8 @@ using Definition = std::variant<
 
 class Document {
 public:
-  Document(
-    cgqlContainer<Definition> definitions
-  );
-  ~Document();
-  const cgqlContainer<Definition>& getDefinitions() const { return this->definitions; }
+  Document(cgqlContainer<Definition> definitions);
+  const cgqlContainer<Definition>& getDefinitions() const;
 private:
   cgqlContainer<Definition> definitions;
 };

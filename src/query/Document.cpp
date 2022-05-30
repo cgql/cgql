@@ -5,20 +5,94 @@
 
 namespace cgql {
 
+void Argument::setValue(GraphQLInputTypes value) {
+  this->value = value;
+}
+const GraphQLInputTypes& Argument::getValue() const {
+  return this->value;
+}
+
+Selection::~Selection() = default;
+void Selection::setSelectionSet(SelectionSet selectionSet) {
+  this->selectionSet = std::move(selectionSet);
+}
+const SelectionSet& Selection::getSelectionSet() const {
+  return this->selectionSet;
+}
+void Selection::setSelectionType(SelectionType type) {
+  this->type = type;
+}
+SelectionType Selection::getSelectionType() const {
+  return this->type;
+}
+
+Field::Field() {
+  this->setSelectionType(SelectionType::FIELD);
+};
+void Field::setAlias(std::string alias) {
+  this->alias = alias;
+}
+const std::string& Field::getAlias() const {
+  return this->alias;
+}
+void Field::addArgs(Argument arg) {
+  this->args.push_back(arg);
+}
+const cgqlContainer<Argument>& Field::getArgs() const {
+  return this->args;
+}
+const std::string& Field::getResponseKey() const {
+  return this->alias.empty() ? this->getName() : this->alias;
+}
+
+InlineFragment::InlineFragment() {
+  this->setSelectionType(SelectionType::INLINE_FRAGMENT);
+};
+void InlineFragment::setTypeCondition(std::string typeCondition) {
+  this->typeCondition = typeCondition;
+}
+const std::string& InlineFragment::getTypeCondition() const {
+  return this->typeCondition;
+}
+
+Fragment::Fragment() {
+  this->setSelectionType(SelectionType::FRAGMENT);
+}
+
 // OperationDefinition
 OperationDefinition::OperationDefinition(
    OperationType operationType,
    SelectionSet selectionSet
 ): operationType(operationType), selectionSet(selectionSet) {}
+OperationDefinition::OperationDefinition() = default;
+OperationType OperationDefinition::getOperationType() const {
+  return this->operationType;
+}
+const SelectionSet& OperationDefinition::getSelectionSet() const {
+  return this->selectionSet; 
+}
 
-OperationDefinition::~OperationDefinition() {}
+void FragmentDefinition::setTypeCondition(std::string typeCondition) {
+  this->typeCondition = typeCondition;
+}
+const std::string& FragmentDefinition::getTypeCondition() const {
+  return this->typeCondition;
+}
+void FragmentDefinition::setSelectionSet(SelectionSet selectionSet) {
+  this->selectionSet = std::move(selectionSet);
+}
+const SelectionSet& FragmentDefinition::getSelectionSet() const {
+  return this->selectionSet;
+}
 
 // Document
 Document::Document(
   cgqlContainer<Definition> definitions
 ): definitions(std::move(definitions)) {}
 
-Document::~Document() {}
+const cgqlContainer<Definition>& Document::getDefinitions() const {
+  return this->definitions;
+}
 
 std::ostream& operator<<(std::ostream& out, OperationType type) {
   std::string outStr;
@@ -37,7 +111,7 @@ std::ostream& operator<<(std::ostream& out, OperationType type) {
   return out;
 }
 
-void printSelectionSet(const SelectionSet selectionSet, int level) {
+static void printSelectionSet(const SelectionSet selectionSet, int level) {
   for(auto const& s : selectionSet) {
     std::string v;
     for(int i = 0; i < level; i++) v += "  ";
@@ -62,7 +136,7 @@ void printDocumentNode(const Document &doc) {
   }
 }
 
-void printScalarValue(
+static void printScalarValue(
   const std::string& key,
   const Data& value,
   const std::string& indentation
@@ -80,7 +154,7 @@ void printScalarValue(
   }
 }
 
-void printList(
+static void printList(
   const std::string& key,
   const cgqlSPtr<List>& value,
   const std::string& indentation

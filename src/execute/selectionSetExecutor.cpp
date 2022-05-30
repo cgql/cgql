@@ -2,6 +2,11 @@
 
 namespace cgql {
 
+using GroupedField = std::map<
+  std::string,
+  SelectionSet
+>;
+
 static void collectFields(
   const ExecutionContext& ctx,
   const cgqlSPtr<TypeDefinition>& objectType,

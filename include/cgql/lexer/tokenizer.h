@@ -48,17 +48,17 @@ struct Token {
 class Tokenizer {
 public:
   Tokenizer(const char* source);
-  ~Tokenizer();
-  Token nextToken();
   Token current;
   void advance();
-  void skipComments();
 
   std::string lookAhead();
 private:
   std::string source;
   size_t cursor = 0;
+
   void advanceCursor(int amount);
+  void skipComments();
+  Token nextToken();
 
   Token tokenizeName();
   Token tokenizeDigits();

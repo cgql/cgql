@@ -15,7 +15,7 @@ std::string SchemaParser::parseDescription() {
   return "";
 }
 
-cgqlSPtr<TypeDefinition> SchemaParser::parseType(const TypeRegistry& registry) {
+cgqlSPtr<TypeDefinition> SchemaParser::parseType(TypeRegistry& registry) {
   cgqlSPtr<TypeDefinition> type;
   if(!this->checkType(TokenType::SQUARE_BRACES_L)) {
     type =
@@ -71,7 +71,7 @@ cgqlContainer<Directive> SchemaParser::parseDirectives() {
   return directives;
 }
 
-FieldTypeDefinition SchemaParser::parseFieldTypeDefinition(const TypeRegistry& registry) {
+FieldTypeDefinition SchemaParser::parseFieldTypeDefinition(TypeRegistry& registry) {
   FieldTypeDefinition field;
   std::string description(this->parseDescription());
   std::string name(this->parseName());
@@ -91,7 +91,7 @@ FieldTypeDefinition SchemaParser::parseFieldTypeDefinition(const TypeRegistry& r
   return field;
 }
 
-void SchemaParser::parseObjectTypeDefinition(const TypeRegistry& registry) {
+void SchemaParser::parseObjectTypeDefinition(TypeRegistry& registry) {
   std::string description = this->parseDescription();
   this->tokenizer.advance();
   cgqlSPtr<ObjectTypeDefinition> obj =
@@ -110,7 +110,7 @@ void SchemaParser::parseObjectTypeDefinition(const TypeRegistry& registry) {
   this->tokenizer.advance();
 }
 
-void SchemaParser::parseInterfaceTypeDefinition(const TypeRegistry& registry) {
+void SchemaParser::parseInterfaceTypeDefinition(TypeRegistry& registry) {
   std::string description = this->parseDescription();
   this->tokenizer.advance();
   cgqlSPtr<InterfaceTypeDefinition> interface =
@@ -129,7 +129,7 @@ void SchemaParser::parseInterfaceTypeDefinition(const TypeRegistry& registry) {
   this->tokenizer.advance();
 }
 
-void SchemaParser::parseUnionTypeDefinition(const TypeRegistry& registry) {
+void SchemaParser::parseUnionTypeDefinition(TypeRegistry& registry) {
   std::string description = this->parseDescription();
   this->tokenizer.advance();
   cgqlSPtr<UnionTypeDefinition> unionType =
@@ -146,7 +146,7 @@ void SchemaParser::parseUnionTypeDefinition(const TypeRegistry& registry) {
   }
 }
 
-void SchemaParser::parseEnumTypeDefinition(const TypeRegistry& registry) {
+void SchemaParser::parseEnumTypeDefinition(TypeRegistry& registry) {
   std::string description = this->parseDescription();
   this->tokenizer.advance();
   cgqlSPtr<EnumTypeDefinition> enumType =
@@ -167,7 +167,7 @@ void SchemaParser::parseEnumTypeDefinition(const TypeRegistry& registry) {
   this->tokenizer.advance();
 }
 
-InputValueDefinition SchemaParser::parseInputValueDefinition(const TypeRegistry& registry) {
+InputValueDefinition SchemaParser::parseInputValueDefinition(TypeRegistry& registry) {
   InputValueDefinition field;
   std::string description(this->parseDescription());
   std::string name(this->parseName());
@@ -184,7 +184,7 @@ InputValueDefinition SchemaParser::parseInputValueDefinition(const TypeRegistry&
   return field;
 }
 
-void SchemaParser::parseInputObjectTypeDefinition(const TypeRegistry& registry) {
+void SchemaParser::parseInputObjectTypeDefinition(TypeRegistry& registry) {
   std::string description = this->parseDescription();
   this->tokenizer.advance();
   cgqlSPtr<InputObjectTypeDefinition> inputType =
@@ -202,7 +202,7 @@ void SchemaParser::parseInputObjectTypeDefinition(const TypeRegistry& registry) 
   this->tokenizer.advance();
 }
 
-void SchemaParser::parseScalarTypeDefinition(const TypeRegistry& registry) {
+void SchemaParser::parseScalarTypeDefinition(TypeRegistry& registry) {
   std::string description = this->parseDescription();
   this->tokenizer.advance();
   cgqlSPtr<ScalarTypeDefinition> scalar =
@@ -215,14 +215,14 @@ cgqlContainer<DirectiveLocation> SchemaParser::parseDirectiveLocations() {
   cgqlContainer<DirectiveLocation> directiveLocations;
   do {
     this->tokenizer.advance();
-    directiveLocations.push_back(
+    directiveLocations.emplace_back(
       getDirectiveLocation(this->parseName())
     );
   } while(this->checkType(TokenType::PIPE));
   return directiveLocations;
 }
 
-void SchemaParser::parseDirectiveTypeDefinition(const TypeRegistry& registry) {
+void SchemaParser::parseDirectiveTypeDefinition(TypeRegistry& registry) {
   std::string description = this->parseDescription();
   this->tokenizer.advance();
   this->move(TokenType::AT);
@@ -244,7 +244,7 @@ void SchemaParser::parseDirectiveTypeDefinition(const TypeRegistry& registry) {
   directive->setDirectiveLocations(this->parseDirectiveLocations());
 }
 
-void SchemaParser::parseDefinition(const TypeRegistry& registry) {
+void SchemaParser::parseDefinition(TypeRegistry& registry) {
   std::string currentValue(this->tokenizer.lookAhead());
   if(currentValue == "type")
     this->parseObjectTypeDefinition(registry);
@@ -260,19 +260,17 @@ void SchemaParser::parseDefinition(const TypeRegistry& registry) {
     this->parseScalarTypeDefinition(registry);
   else if(currentValue == "directive")
     this->parseDirectiveTypeDefinition(registry);
-  else {
-    assert(false && "Failed to parse type def");
-  }
+  assert(false && "Failed to parse type def");
 }
 
-void SchemaParser::parse(const TypeRegistry& registry) {
+void SchemaParser::parse(TypeRegistry& registry) {
   this->move(TokenType::START_OF_QUERY);
   do {
     this->parseDefinition(registry);
   } while (!this->checkType(TokenType::END_OF_QUERY));
 }
 
-cgqlSPtr<Schema> parseSDLSchema(const char *source, const TypeRegistry& registry) {
+cgqlSPtr<Schema> parseSDLSchema(const char *source, TypeRegistry& registry) {
   SchemaParser parser(source);
   parser.parse(registry);
   cgqlSPtr<Schema> schema = cgqlSMakePtr<Schema>();
