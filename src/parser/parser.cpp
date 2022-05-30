@@ -45,8 +45,7 @@ cgqlSPtr<Field> QueryParser::parseField() {
 cgqlSPtr<InlineFragment> QueryParser::parseInlineFragment() {
   cgqlSPtr<InlineFragment> inlineFragment =
     cgqlSMakePtr<InlineFragment>();
-  // TODO: handle error
-  if(this->tokenizer.current.value != "on") {}
+
   this->tokenizer.advance();
   inlineFragment->setTypeCondition(this->parseName());
   inlineFragment->setSelectionSet(this->parseSelectionSet());
@@ -115,8 +114,7 @@ Document QueryParser::parse() {
   do {
     definitions.emplace_back(this->parseDefinition());
   } while (!this->checkType(TokenType::END_OF_QUERY));
-  Document document(definitions);
-  return document;
+  return Document(definitions);
 };
 
 

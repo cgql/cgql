@@ -73,17 +73,15 @@ const char* tokenTypeToCharArray(const TokenType& type) {
 }
 
 static inline Token generateToken(TokenType type) {
-  Token generatedToken {
-    .type = type 
+  return Token {
+    .type = type
   };
-  return generatedToken;
 }
 static inline Token generateToken(TokenType type, std::string value) {
-  Token generatedToken {
+  return Token {
     .value = value,
     .type = type
   };
-  return generatedToken;
 }
 
 
