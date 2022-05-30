@@ -16,7 +16,7 @@ An implementation of GraphQL Service in C++, made from reference of official spe
 **Downloading CGQL**
 - Cloning using Git
 ```bash
-git clone https://github.com/codingwith3dv/cgql.git
+git clone https://github.com/cgql/cgql
 ```
 Doing this will clone the repository to your current working directory.
 - Using tarball file ( *.tar.gz )
@@ -78,7 +78,7 @@ target_link_libraries(
 An example of executing a basic request
 ```cpp
 #include <cgql/cgql.h>
-#include <cgql/type/parser/parser.h>
+#include <cgql/parser/parser.h>
 
 using namespace cgql;
 
@@ -126,8 +126,8 @@ int main() {
   );
 
   // execution
-  auto executionResult = test.execute(query, resolvers, typeOfMap);
-  printResultMap(executionResult);
+  auto executionResult = test.executeWith(query, resolvers, typeOfMap);
+  printResultMap(*executionResult);
   /* prints result to stdout
 
   cw3dv
