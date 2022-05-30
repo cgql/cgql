@@ -4,7 +4,7 @@
 
 namespace cgql {
 
-static cgqlSPtr<ScalarTypeDefinition> MAKE_SCALAR(
+static inline cgqlSPtr<ScalarTypeDefinition> MAKE_SCALAR(
   std::string name,
   Serializer serializer
 ) {
@@ -23,7 +23,7 @@ void TypeRegistry::addScalar(cgqlSPtr<ScalarTypeDefinition> type) const {
   this->types.try_emplace(type->getName(), type);
 };
 
-cgqlSPtr<TypeDefinition> TypeRegistry::getTypeRef(std::string typeName) const {
+cgqlSPtr<TypeDefinition> TypeRegistry::getType(std::string typeName) const {
   return types[typeName];
 }
 

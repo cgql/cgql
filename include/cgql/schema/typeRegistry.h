@@ -8,9 +8,9 @@ namespace cgql {
 class TypeRegistry {
 public:
   void addScalar(cgqlSPtr<ScalarTypeDefinition> type) const;
-  cgqlSPtr<TypeDefinition> getTypeRef(std::string typeName) const;
+  cgqlSPtr<TypeDefinition> getType(std::string typeName) const;
   template<typename T>
-  cgqlSPtr<T> getType(std::string typeName) const {
+  cgqlSPtr<T> registerType(std::string typeName) const {
     this->types[typeName] = cgqlSMakePtr<T>();
     this->types[typeName]->setName(typeName);
     return std::static_pointer_cast<T>(this->types[typeName]);

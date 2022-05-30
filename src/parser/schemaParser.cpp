@@ -17,7 +17,7 @@ cgqlSPtr<TypeDefinition> SchemaParser::parseType(TypeRegistry& registry) {
   if(!this->checkType(TokenType::SQUARE_BRACES_L)) {
     type =
       cgqlSMakePtr<DefaultWrapTypeDefinition>(
-        registry.getTypeRef(this->parseName())
+        registry.getType(this->parseName())
       );
   } else {
     this->tokenizer.advance();
@@ -43,11 +43,12 @@ void SchemaParser::parseImplementInterfaces(cgqlSPtr<T>& objectOrInterface) {
 }
 
 Directive::DirectiveArgument SchemaParser::parseDirectiveArgument() {
-  Directive::DirectiveArgument argument;
-  argument.name = this->parseName();
+  std::string name = this->parseName();
   this->move(TokenType::COLON);
-  argument.value = this->parseValueLiteral();
-  return argument;
+  return Directive::DirectiveArgument {
+    .name = name,
+    .value = this->parseValueLiteral()
+  };
 }
 
 cgqlContainer<Directive> SchemaParser::parseDirectives() {
@@ -89,7 +90,7 @@ void SchemaParser::parseObjectTypeDefinition(TypeRegistry& registry) {
   std::string description = this->parseDescription();
   this->tokenizer.advance();
   cgqlSPtr<ObjectTypeDefinition> obj =
-    registry.getType<ObjectTypeDefinition>(this->parseName());
+    registry.registerType<ObjectTypeDefinition>(this->parseName());
   parseImplementInterfaces(obj);
   obj->setDirectives(this->parseDirectives());
   obj->setDescription(description);
@@ -108,7 +109,7 @@ void SchemaParser::parseInterfaceTypeDefinition(TypeRegistry& registry) {
   std::string description = this->parseDescription();
   this->tokenizer.advance();
   cgqlSPtr<InterfaceTypeDefinition> interface =
-    registry.getType<InterfaceTypeDefinition>(this->parseName());
+    registry.registerType<InterfaceTypeDefinition>(this->parseName());
   parseImplementInterfaces(interface);
   interface->setDirectives(this->parseDirectives());
   interface->setDescription(description);
@@ -127,14 +128,14 @@ void SchemaParser::parseUnionTypeDefinition(TypeRegistry& registry) {
   std::string description = this->parseDescription();
   this->tokenizer.advance();
   cgqlSPtr<UnionTypeDefinition> unionType =
-    registry.getType<UnionTypeDefinition>(this->parseName());
+    registry.registerType<UnionTypeDefinition>(this->parseName());
   unionType->setDirectives(this->parseDirectives());
   unionType->setDescription(description);
   if(this->checkType(TokenType::EQUAL)) {
     do {
       this->tokenizer.advance();
       unionType->addMember(
-        registry.getType<ObjectTypeDefinition>(this->parseName())
+        registry.getType(this->parseName())
       );
     } while(this->checkType(TokenType::PIPE));
   }
@@ -144,7 +145,7 @@ void SchemaParser::parseEnumTypeDefinition(TypeRegistry& registry) {
   std::string description = this->parseDescription();
   this->tokenizer.advance();
   cgqlSPtr<EnumTypeDefinition> enumType =
-    registry.getType<EnumTypeDefinition>(this->parseName());
+    registry.registerType<EnumTypeDefinition>(this->parseName());
   enumType->setDirectives(this->parseDirectives());
   enumType->setDescription(description);
   if(this->checkType(TokenType::CURLY_BRACES_L)) {
@@ -179,7 +180,7 @@ void SchemaParser::parseInputObjectTypeDefinition(TypeRegistry& registry) {
   std::string description = this->parseDescription();
   this->tokenizer.advance();
   cgqlSPtr<InputObjectTypeDefinition> inputType =
-    registry.getType<InputObjectTypeDefinition>(this->parseName());
+    registry.registerType<InputObjectTypeDefinition>(this->parseName());
   inputType->setDirectives(this->parseDirectives());
   inputType->setDescription(description);
   if(this->checkType(TokenType::CURLY_BRACES_L)) {
@@ -197,7 +198,7 @@ void SchemaParser::parseScalarTypeDefinition(TypeRegistry& registry) {
   std::string description = this->parseDescription();
   this->tokenizer.advance();
   cgqlSPtr<ScalarTypeDefinition> scalar =
-    registry.getType<ScalarTypeDefinition>(this->parseName());
+    registry.registerType<ScalarTypeDefinition>(this->parseName());
   scalar->setDirectives(this->parseDirectives());
   scalar->setDescription(description);
 }
@@ -218,7 +219,7 @@ void SchemaParser::parseDirectiveTypeDefinition(TypeRegistry& registry) {
   this->tokenizer.advance();
   this->move(TokenType::AT);
   cgqlSPtr<DirectiveTypeDefinition> directive =
-    registry.getType<DirectiveTypeDefinition>(this->parseName());
+    registry.registerType<DirectiveTypeDefinition>(this->parseName());
   directive->setDescription(description);
   if(this->checkType(TokenType::BRACES_L)) {
     this->tokenizer.advance();
