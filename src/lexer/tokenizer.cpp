@@ -1,6 +1,5 @@
 #include "cgql/lexer/tokenizer.h"
 #include "cgql/logger/logger.h"
-#include "../utils.h"
 
 namespace cgql {
 
@@ -85,6 +84,24 @@ static inline Token generateToken(TokenType type, std::string value) {
     .type = type
   };
   return generatedToken;
+}
+
+
+static inline bool isLetter(uint32_t value) {
+  return (value >= 0x0041 && value <= 0x005A) ||
+         (value >= 0x0061 && value <= 0x007A);
+}
+
+static inline bool isDigit(uint32_t value) {
+   return value >= 0x0030 && value <= 0x0039;
+}
+
+static inline bool isNameStart(uint32_t value) {
+  return isLetter(value) || value == 0x005F;
+}
+
+static inline bool isNameContinue(uint32_t value) {
+  return isLetter(value) || isDigit(value) || value == 0x005F;
 }
 
 // Tokenizer

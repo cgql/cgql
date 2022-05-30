@@ -6,18 +6,13 @@
 
 namespace cgql {
 
-CgqlInstance::CgqlInstance() {
-  this->typeRegistry.init();
-}
-
-void CgqlInstance::useSchema(const cgqlSPtr<Schema>& schema) {
-  this->schema = schema;
-}
-
 cgqlSPtr<Schema> CgqlInstance::parseSchema(const char *schema) {
-  auto parsedSchema = parseSDLSchema(schema, this->typeRegistry);
-  this->useSchema(parsedSchema);
-  return parsedSchema;
+  this->typeRegistry.init();
+  SchemaParser parser(schema);
+  parser.parse(this->typeRegistry);
+  this->schema = cgqlSMakePtr<Schema>();
+  this->schema->setTypeDefMap(this->typeRegistry.getAllTypes());
+  return this->schema;
 }
 
 cgqlSPtr<Object> CgqlInstance::executeWith(

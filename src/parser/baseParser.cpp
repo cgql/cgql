@@ -1,5 +1,4 @@
 #include "cgql/parser/baseParser.h"
-#include "../utils.h"
 
 #include <cassert>
 
@@ -38,7 +37,7 @@ GraphQLInputTypes BaseParser::parseValueLiteral() {
       return this->parseName();
     case TokenType::INT: {
       // potentially an integer
-      return strToInt<Int>(
+      return std::stoi(
         this->move(TokenType::INT).value
       );
     }
@@ -62,9 +61,7 @@ Token BaseParser::move(TokenType type) {
 }
 
 bool BaseParser::checkType(TokenType type) {
-  if(this->tokenizer.current.type == type)
-    return true;
-  return false;
+  return this->tokenizer.current.type == type;
 }
 
 std::string BaseParser::parseName() {

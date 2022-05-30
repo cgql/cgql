@@ -9,8 +9,6 @@ namespace cgql {
 
 class CgqlInstance {
 public:
-  CgqlInstance();
-  void useSchema(const cgqlSPtr<Schema>& schema);
   cgqlSPtr<Object> executeWith(
     const Document& document,
     const ResolverMap& resolverMap,

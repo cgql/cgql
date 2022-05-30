@@ -1,6 +1,5 @@
 #include "cgql/execute/execute.h"
 #include "selectionSetExecutor.h"
-#include "cgql/logger/logger.h"
 
 #include <cassert>
 
@@ -55,11 +54,12 @@ cgqlSPtr<Object> execute(
     fragments
   ] = getOperation(document, OperationType::QUERY);
 
-  ExecutionContext ctx;
-  ctx.schema = schema;
-  ctx.resolverMap = resolverMap;
-  ctx.typeOfMap = typeOfMap;
-  ctx.fragments = fragments;
+  ExecutionContext ctx {
+    .schema = schema,
+    .resolverMap = resolverMap,
+    .typeOfMap = typeOfMap,
+    .fragments = fragments
+  };
   return executeQuery(
     ctx,
     operation

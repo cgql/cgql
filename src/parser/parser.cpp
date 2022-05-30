@@ -22,9 +22,8 @@ cgqlSPtr<Field> QueryParser::parseField() {
     field->setName(aliasOrName);
   } else {
     this->tokenizer.advance();
-    std::string name(this->parseName());
     field->setAlias(aliasOrName); // alias
-    field->setName(name);
+    field->setName(this->parseName());
   }
 
   if(this->checkType(TokenType::BRACES_L)) {
@@ -37,8 +36,7 @@ cgqlSPtr<Field> QueryParser::parseField() {
     this->tokenizer.advance();
   }
 
-  bool hasSelectionSet = this->checkType(TokenType::CURLY_BRACES_L);
-  if(hasSelectionSet) {
+  if(this->checkType(TokenType::CURLY_BRACES_L)) {
     field->setSelectionSet(this->parseSelectionSet());
   }
   return field;
@@ -96,8 +94,8 @@ SelectionSet QueryParser::parseSelectionSet() {
 
 OperationDefinition QueryParser::parseOperationDefinition() {
   return {
-    OperationType::QUERY,
-    this->parseSelectionSet()
+    this->parseSelectionSet(),
+    OperationType::QUERY
   };
 }
 

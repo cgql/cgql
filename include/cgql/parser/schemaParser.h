@@ -34,6 +34,4 @@ private:
   std::string parseDescription();
 };
 
-cgqlSPtr<Schema> parseSDLSchema(const char *source, TypeRegistry& registry);
-
 } /* cgql */ 

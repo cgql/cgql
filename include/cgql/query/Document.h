@@ -75,15 +75,15 @@ public:
 class OperationDefinition {
 public:
   OperationDefinition(
-    OperationType operationType,
-    SelectionSet selectionSet
+    SelectionSet selectionSet,
+    OperationType operationType
   );
   OperationDefinition();
-  OperationType getOperationType() const;
   const SelectionSet& getSelectionSet() const;
+  OperationType getOperationType() const;
 private:
-  OperationType operationType;
   SelectionSet selectionSet;
+  OperationType operationType;
 };
 
 class FragmentDefinition : public AbstractSchemaTypeDefinition  {

@@ -4,15 +4,12 @@
 namespace cgql {
 
 std::string SchemaParser::parseDescription() {
-  if(
-    this->tokenizer.current.type == TokenType::BLOCK_STRING ||
-    this->tokenizer.current.type == TokenType::STRING
-  ) {
-    std::string description = this->tokenizer.current.value;
-    this->tokenizer.advance();
-    return description;
+  if(this->tokenizer.current.type != TokenType::BLOCK_STRING && this->tokenizer.current.type != TokenType::STRING) {
+    return std::string();
   }
-  return "";
+  std::string description = this->tokenizer.current.value;
+  this->tokenizer.advance();
+  return description;
 }
 
 cgqlSPtr<TypeDefinition> SchemaParser::parseType(TypeRegistry& registry) {
@@ -73,8 +70,8 @@ cgqlContainer<Directive> SchemaParser::parseDirectives() {
 
 FieldTypeDefinition SchemaParser::parseFieldTypeDefinition(TypeRegistry& registry) {
   FieldTypeDefinition field;
-  std::string description(this->parseDescription());
-  std::string name(this->parseName());
+  field.setDescription(this->parseDescription());
+  field.setName(this->parseName());
   if(this->checkType(TokenType::BRACES_L)) {
     this->tokenizer.advance();
     do {
@@ -83,11 +80,8 @@ FieldTypeDefinition SchemaParser::parseFieldTypeDefinition(TypeRegistry& registr
     this->tokenizer.advance();
   }
   this->move(TokenType::COLON);
-  cgqlSPtr<TypeDefinition> type = this->parseType(registry);
+  field.setFieldType(this->parseType(registry));
   field.setDirectives(this->parseDirectives());
-  field.setName(name);
-  field.setDescription(description);
-  field.setFieldType(type);
   return field;
 }
 
@@ -169,18 +163,15 @@ void SchemaParser::parseEnumTypeDefinition(TypeRegistry& registry) {
 
 InputValueDefinition SchemaParser::parseInputValueDefinition(TypeRegistry& registry) {
   InputValueDefinition field;
-  std::string description(this->parseDescription());
-  std::string name(this->parseName());
+  field.setDescription(this->parseDescription());
+  field.setName(this->parseName());
   this->move(TokenType::COLON);
-  cgqlSPtr<TypeDefinition> type = this->parseType(registry);
+  field.setInputValueType(this->parseType(registry));
   if(this->checkType(TokenType::EQUAL)) {
     this->tokenizer.advance();
     field.setDefaultValue(this->parseValueLiteral());
   }
   field.setDirectives(this->parseDirectives());
-  field.setName(name);
-  field.setInputValueType(type);
-  field.setDescription(description);
   return field;
 }
 
@@ -268,14 +259,6 @@ void SchemaParser::parse(TypeRegistry& registry) {
   do {
     this->parseDefinition(registry);
   } while (!this->checkType(TokenType::END_OF_QUERY));
-}
-
-cgqlSPtr<Schema> parseSDLSchema(const char *source, TypeRegistry& registry) {
-  SchemaParser parser(source);
-  parser.parse(registry);
-  cgqlSPtr<Schema> schema = cgqlSMakePtr<Schema>();
-  schema->setTypeDefMap(registry.getAllTypes());
-  return schema;
 }
 
 } /* cgql */ 

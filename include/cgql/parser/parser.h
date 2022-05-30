@@ -1,11 +1,7 @@
 #pragma once
 
-#include "cgql/cgql.h"
 #include "cgql/query/Document.h"
-#include "cgql/schema/GraphQLTypes.h"
 #include "cgql/parser/baseParser.h"
-
-#include "cgql/lexer/tokenizer.h"
 
 namespace cgql {
 
