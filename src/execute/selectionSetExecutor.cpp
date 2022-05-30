@@ -72,11 +72,11 @@ static FieldTypeDefinition findGraphQLFieldByName(
         return fieldName == field.getName();
       }
     );
-  if(it != objectType->getFields().end()) {
-    return *it;
+  if(it == objectType->getFields().end()) {
+    // TODO:
+    return {};
   }
-  // TODO:
-  return {};
+  return *it;
 }
 
 static void mergeSelectionSet(
@@ -143,16 +143,16 @@ Data SelectionSetExecutor::completeAbstractType(
   TypeOfMap::const_iterator it = ctx.typeOfMap.find(fieldType->getName());
   for(const cgqlSPtr<TypeDefinition>& possibleType : possibleTypes) {
     String typeName = it->second(resultMap);
-    if(possibleType->getName() == typeName) {
-      cgqlSPtr<ObjectTypeDefinition> object =
-        std::static_pointer_cast<ObjectTypeDefinition>(possibleType);
+    if(possibleType->getName() != typeName) continue;
 
-      SelectionSet selectionSet;
-      mergeSelectionSet(fields, selectionSet);
+    cgqlSPtr<ObjectTypeDefinition> object =
+      std::static_pointer_cast<ObjectTypeDefinition>(possibleType);
 
-      SelectionSetExecutor executor(object, resultMap);
-      return executor.execute(ctx, selectionSet);
-    }
+    SelectionSet selectionSet;
+    mergeSelectionSet(fields, selectionSet);
+
+    SelectionSetExecutor executor(object, resultMap);
+    return executor.execute(ctx, selectionSet);
   }
   assert(false && "Unable to resolve value for implementation of interface");
   /* silence compiler warning */ return 0;
