@@ -211,7 +211,7 @@ class UnionTypeDefinition :
   public TypeDefinition,
   public TypeDefinitionWithDirectives {
 public:
-  void addMember(cgqlSPtr<ObjectTypeDefinition> member);
+  void addMember(cgqlSPtr<TypeDefinition> member);
   const cgqlContainer<cgqlSPtr<TypeDefinition>>& getMembers() const;
   DefinitionType getDefinitionType() const override {
     return DefinitionType::UNION;
@@ -220,9 +220,10 @@ private:
   cgqlContainer<cgqlSPtr<TypeDefinition>> members;
 };
 
-struct EnumValueDefinition :
+class EnumValueDefinition :
   public AbstractSchemaTypeDefinition,
   public TypeDefinitionWithDirectives {
+public:
   EnumValueDefinition(
     std::string description,
     std::string name

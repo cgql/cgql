@@ -112,7 +112,7 @@ const cgqlContainer<std::string>& ObjectTypeDefinition::getImplementedInterfaces
   return this->implements;
 }
 
-void UnionTypeDefinition::addMember(cgqlSPtr<ObjectTypeDefinition> member) {
+void UnionTypeDefinition::addMember(cgqlSPtr<TypeDefinition> member) {
   this->members.push_back(member);
 }
 const cgqlContainer<cgqlSPtr<TypeDefinition>>& UnionTypeDefinition::getMembers() const {
@@ -180,11 +180,11 @@ void Schema::setTypeDefMap(
   const std::unordered_map<std::string, cgqlSPtr<TypeDefinition>>& typeDefMap
 ) {
   for(auto const& [key, def] : typeDefMap) {
-    cgqlContainer<std::string> implements;
     assert(
       def->getDefinitionType() != DefinitionType::TYPE_DEFINITION &&
       "type is empty"
     );
+    cgqlContainer<std::string> implements;
     switch(def->getDefinitionType()) {
       case DefinitionType::OBJECT: {
         cgqlSPtr<ObjectTypeDefinition> object =
