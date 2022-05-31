@@ -6,7 +6,7 @@
 
 using namespace cgql;
 
-inline void parseGHSchema() {
+inline void parseGHSchema() {{
   CgqlInstance test;
   std::string schema;
   std::ifstream file;
@@ -19,9 +19,7 @@ inline void parseGHSchema() {
   }
   file.close();
 
-  {
-    Timer timer("github schema");
-    test.parseSchema(schema.c_str());
-    logger::info("parsing successfull");
-  }
-}
+  Timer timer("github schema");
+  test.parseSchema(schema.c_str());
+  logger::info("parsing successfull");
+}}
