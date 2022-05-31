@@ -334,7 +334,8 @@ Data SelectionSetExecutor::completeValue(
     case DefinitionType::ENUM: {
       cgqlSPtr<EnumTypeDefinition> enumType =
         std::static_pointer_cast<EnumTypeDefinition>(fieldType);
-      return enumType->serialize(fromVariant<String>(result));
+      String enumValue = fromVariant<String>(result);
+      return enumType->serialize(enumValue);
     }
     default:
       assert(false && "TypeDef cannot be base");

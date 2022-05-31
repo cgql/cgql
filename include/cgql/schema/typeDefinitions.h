@@ -27,7 +27,7 @@ enum class DefinitionType {
 };
 
 template<typename Ostream>
-inline Ostream& operator<<(Ostream& os, const DefinitionType& type) {
+Ostream& operator<<(Ostream& os, DefinitionType type) {
   switch(type) {
     case DefinitionType::TYPE_DEFINITION:
       os << "TYPE_DEFINITION"; break;

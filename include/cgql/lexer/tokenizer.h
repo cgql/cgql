@@ -33,10 +33,73 @@ enum class TokenType {
   AT
 };
 
-const char* tokenTypeToCharArray(const TokenType& type);
 template<typename Ostream>
-inline Ostream& operator<<(Ostream& os, TokenType type) {
-  os << tokenTypeToCharArray(type);
+Ostream& operator<<(Ostream& os, TokenType type) {
+  switch (type) {
+    case TokenType::NAME:
+      os << "NAME";
+      break;
+    case TokenType::INT:
+      os << "INT";
+      break;
+    case TokenType::STRING:
+      os << "STRING";
+      break;
+    case TokenType::BLOCK_STRING:
+      os << "BLOCK_STRING";
+      break;
+    case TokenType::CURLY_BRACES_L:
+      os << "CURLY_BRACES_L";
+      break;
+    case TokenType::CURLY_BRACES_R:
+      os << "CURLY_BRACES_R";
+      break;
+    case TokenType::BRACES_L:
+      os << "BRACES_L";
+      break;
+    case TokenType::BRACES_R:
+      os << "BRACES_R";
+      break;
+    case TokenType::SQUARE_BRACES_L:
+      os << "SQUARE_BRACES_L";
+      break;
+    case TokenType::SQUARE_BRACES_R:
+      os << "SQUARE_BRACES_R";
+      break;
+    case TokenType::START_OF_QUERY:
+      os << "START_OF_QUERY";
+      break;
+    case TokenType::END_OF_QUERY:
+      os << "END_OF_QUERY";
+      break;
+    case TokenType::COLON:
+      os << "COLON";
+      break;
+    case TokenType::BANG:
+      os << "BANG";
+      break;
+    case TokenType::AMPERSAND:
+      os << "AMPERSAND";
+      break;
+    case TokenType::SPREAD:
+      os << "SPREAD";
+      break;
+    case TokenType::EQUAL:
+      os << "EQUAL";
+      break;
+    case TokenType::PIPE:
+      os << "PIPE";
+      break;
+    case TokenType::HASH:
+      os << "HASH";
+      break;
+    case TokenType::DOUBLE_QUOTE:
+      os << "DOUBLE_QUOTE";
+      break;
+    case TokenType::AT:
+      os << "AT";
+      break;
+  }
   return os;
 }
 

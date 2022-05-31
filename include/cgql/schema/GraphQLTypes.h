@@ -60,14 +60,16 @@ constexpr const T& fromVariant(
   return std::get<T>(v);
 }
 
-struct Args {
-  ArgsMap argsMap;
+class Args {
+public:
   void addArg(std::string argName, GraphQLInputTypes arg) {
     argsMap.try_emplace(argName, arg);
   }
   const GraphQLInputTypes& operator[](const std::string& argKey) const {
     return this->argsMap.at(argKey);
   }
+private:
+  ArgsMap argsMap;
 };
 
 using ResolverFunc = std::function<

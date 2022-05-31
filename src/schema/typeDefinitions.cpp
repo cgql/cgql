@@ -184,7 +184,15 @@ void Schema::setTypeDefMap(
       def->getDefinitionType() != DefinitionType::TYPE_DEFINITION &&
       "type is empty"
     );
-    cgqlContainer<std::string> implements;
+    auto addImplementedInterface = [this](
+      const cgqlContainer<std::string>& implements,
+      const cgqlSPtr<TypeDefinition>& def
+    ) {
+      for(auto interface : implements) {
+        this->implementedInterfaces[interface]
+          .push_back(def);
+      }
+    };
     switch(def->getDefinitionType()) {
       case DefinitionType::OBJECT: {
         cgqlSPtr<ObjectTypeDefinition> object =
@@ -192,20 +200,16 @@ void Schema::setTypeDefMap(
         if(object->getName() == "Query") {
           this->setQuery(object);
         }
-        implements = object->getImplementedInterfaces();
+        addImplementedInterface(object->getImplementedInterfaces(), def);
         break;
       }
       case DefinitionType::INTERFACE: {
         cgqlSPtr<InterfaceTypeDefinition> interface =
           std::static_pointer_cast<InterfaceTypeDefinition>(def);
-        implements = interface->getImplementedInterfaces();
+        addImplementedInterface(interface->getImplementedInterfaces(), def);
         break;
       }
       default: continue;
-    }
-    for(auto const& interface : implements) {
-      this->implementedInterfaces[interface]
-        .push_back(def);
     }
   }
 }

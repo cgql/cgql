@@ -93,7 +93,8 @@ const cgqlContainer<Definition>& Document::getDefinitions() const {
   return this->definitions;
 }
 
-std::ostream& operator<<(std::ostream& out, OperationType type) {
+template<typename Ostream>
+Ostream& operator<<(Ostream& out, OperationType type) {
   std::string outStr;
   switch(type) {
     case OperationType::QUERY:

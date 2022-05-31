@@ -55,7 +55,7 @@ cgqlContainer<Directive> SchemaParser::parseDirectives() {
   cgqlContainer<Directive> directives;
   while(this->checkType(TokenType::AT)) {
     this->tokenizer.advance();
-    Directive directive;
+    Directive& directive = directives.emplace_back();
     directive.setName(this->parseName());
     if(this->checkType(TokenType::BRACES_L)) {
       this->tokenizer.advance();
@@ -64,7 +64,6 @@ cgqlContainer<Directive> SchemaParser::parseDirectives() {
       } while(!this->checkType(TokenType::BRACES_R));
       this->tokenizer.advance();
     }
-    directives.push_back(directive);
   }
   return directives;
 }
@@ -101,8 +100,8 @@ void SchemaParser::parseObjectTypeDefinition(TypeRegistry& registry) {
         this->parseFieldTypeDefinition(registry)
       );
     } while(!this->checkType(TokenType::CURLY_BRACES_R));
+    this->tokenizer.advance();
   }
-  this->tokenizer.advance();
 }
 
 void SchemaParser::parseInterfaceTypeDefinition(TypeRegistry& registry) {
@@ -120,8 +119,8 @@ void SchemaParser::parseInterfaceTypeDefinition(TypeRegistry& registry) {
         this->parseFieldTypeDefinition(registry)
       );
     } while(!this->checkType(TokenType::CURLY_BRACES_R));
+    this->tokenizer.advance();
   }
-  this->tokenizer.advance();
 }
 
 void SchemaParser::parseUnionTypeDefinition(TypeRegistry& registry) {
@@ -158,8 +157,8 @@ void SchemaParser::parseEnumTypeDefinition(TypeRegistry& registry) {
       enumValue.setDirectives(this->parseDirectives());
       enumType->addValue(enumValue);
     } while(!this->checkType(TokenType::CURLY_BRACES_R));
+    this->tokenizer.advance();
   }
-  this->tokenizer.advance();
 }
 
 InputValueDefinition SchemaParser::parseInputValueDefinition(TypeRegistry& registry) {
@@ -190,8 +189,8 @@ void SchemaParser::parseInputObjectTypeDefinition(TypeRegistry& registry) {
         this->parseInputValueDefinition(registry)
       );
     } while(!this->checkType(TokenType::CURLY_BRACES_R));
+    this->tokenizer.advance();
   }
-  this->tokenizer.advance();
 }
 
 void SchemaParser::parseScalarTypeDefinition(TypeRegistry& registry) {
