@@ -1,5 +1,8 @@
 #include "selectionSetExecutor.h"
 
+#include "cgql/error/error.h"
+#include "cgql/error/exceptions.h"
+
 namespace cgql {
 
 using GroupedField = std::map<
@@ -53,30 +56,8 @@ static void collectFields(
         collectFields(ctx, objectType, it->getSelectionSet(), groupedFields);
         break;
       }
-      case SelectionType::BASE:
-        assert(false && "Invalid selection type in execution: BASE");
-        break;
     }
   }
-}
-
-static FieldTypeDefinition findGraphQLFieldByName(
-  const cgqlSPtr<ObjectTypeDefinition>& objectType,
-  const std::string& fieldName
-) {
-  cgqlContainer<FieldTypeDefinition>::const_iterator it =
-    std::find_if(
-      objectType->getFields().begin(),
-      objectType->getFields().end(),
-      [&fieldName](const FieldTypeDefinition& field) {
-        return fieldName == field.getName();
-      }
-    );
-  if(it == objectType->getFields().end()) {
-    // TODO:
-    return {};
-  }
-  return *it;
 }
 
 static void mergeSelectionSet(
@@ -207,22 +188,41 @@ cgqlSPtr<Object> SelectionSetExecutor::execute(
   collectFields(ctx, obj, selectionSet, groupedFieldSet);
 
   cgqlSPtr<Object> resultObj = cgqlSMakePtr<Object>();
+
+  auto findField = [this](const std::string& name) {
+    cgqlContainer<FieldTypeDefinition>::const_iterator it =
+      std::find_if(
+        obj->getFields().begin(),
+        obj->getFields().end(),
+        [&name](const FieldTypeDefinition& field) {
+          return name == field.getName();
+        }
+      );
+    return it;
+  };
+
   for(auto const& [responseKey, fields] : groupedFieldSet) {
-    cgqlSPtr<Field> fieldNode =
-      std::static_pointer_cast<Field>(fields.front());
-    FieldTypeDefinition field = findGraphQLFieldByName(
-      obj,
-      fieldNode->getName()
-    );
-    resultObj->fields.try_emplace(
-      responseKey,
-      executeField(
+    try {
+      cgqlSPtr<Field> fieldNode =
+        std::static_pointer_cast<Field>(fields.front());
+      auto fieldIter = findField(fieldNode->getName());
+      if(fieldIter == obj->getFields().end()) continue;
+
+      FieldTypeDefinition field = *fieldIter;
+      Data executedFieldResult = executeField(
         ctx,
         field,
         field.getFieldType(),
         fields
-      )
-    );
+      );
+      resultObj->fields.try_emplace(
+        responseKey,
+        executedFieldResult
+      );
+    } catch(const NonNullValueException& exception) {
+      resultObj->fields.try_emplace(responseKey, std::monostate{});
+      resultObj->errors.emplace_back(Error{exception.what()});
+    }
   }
 
   return resultObj;
@@ -268,16 +268,17 @@ Data SelectionSetExecutor::completeValue(
   if(type == DefinitionType::NON_NULL) {
     cgqlSPtr<NonNullTypeDefinition> nonNull =
       std::static_pointer_cast<NonNullTypeDefinition>(fieldType);
-    if(result.index() == 4) {
-      // field error
-    }
-    return completeValue(
+    Data completedValue = completeValue(
       ctx,
       field,
       nonNull->getInnerType(),
       fields,
       result
     );
+    if(result.index() == 4) {
+      throw NonNullValueException(field.getName());
+    }
+    return completedValue;
   } else if(result.index() == 4) {
     return std::monostate{};
   }

@@ -12,7 +12,6 @@ enum class OperationType {
 };
 
 enum class SelectionType {
-  BASE,
   FIELD,
   INLINE_FRAGMENT,
   FRAGMENT
@@ -38,7 +37,7 @@ public:
   SelectionType getSelectionType() const;
 private:
   SelectionSet selectionSet;
-  SelectionType type = SelectionType::BASE;
+  SelectionType type;
 };
 
 class Field

@@ -119,6 +119,10 @@ static inline bool isObject(const Data& type) {
   return type.index() == 2;
 }
 
+static inline bool isNull(const Data& type) {
+  return type.index() == 4;
+}
+
 static void printSelectionSet(const SelectionSet& selectionSet, int level) {
   for(const auto& s : selectionSet) {
     std::string v;
@@ -186,9 +190,19 @@ void printResultMap(const Object& obj, uint8_t level) {
       v += key;
       logger::info(v);
       printResultMap(*fromVariant<std::shared_ptr<Object>>(value), level + 1);
+    } else if(isNull(value)) {
+      std::string v = indentation;
+      v += key;
+      v += " NULL";
+      logger::info(v);
     } else {
       printScalarValue(key, value, indentation);
     }
+  }
+  for(const auto& err : obj.errors) {
+    std::string v = indentation;
+    v += err.message;
+    logger::error(v);
   }
 }
 

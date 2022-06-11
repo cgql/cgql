@@ -147,68 +147,72 @@ Token Tokenizer::nextToken() {
     } else if(isNameStart(this->source[*i])) {
       return this->tokenizeName();
     }
-    switch ((uint32_t)this->source[*i]) {
-      case 0xFEFF:
-      case 0x0009:
-      case 0x0020:
-      case 0x002C:
+    switch (this->source[*i]) {
+      case ' ':
+      case '\n':
+      case '\t':
+      case ',':
         continue;
-      case 0x007B:
+      case '{':
         this->advanceCursor(1);
         return generateToken(TokenType::CURLY_BRACES_L);
-      case 0x007D:
+      case '}':
         this->advanceCursor(1);
         return generateToken(TokenType::CURLY_BRACES_R);
-      case 0x005B:
+      case '[':
         this->advanceCursor(1);
         return generateToken(TokenType::SQUARE_BRACES_L);
-      case 0x005D:
+      case ']':
         this->advanceCursor(1);
         return generateToken(TokenType::SQUARE_BRACES_R);
-      case 0x0028:
+      case '(':
         this->advanceCursor(1);
         return generateToken(TokenType::BRACES_L);
-      case 0x0029:
+      case ')':
         this->advanceCursor(1);
         return generateToken(TokenType::BRACES_R);
-      case 0x003A:
+      case ':':
         this->advanceCursor(1);
         return generateToken(TokenType::COLON);
-      case 0x0021:
+      case '!':
         this->advanceCursor(1);
         return generateToken(TokenType::BANG);
-      case 0x0026:
+      case '&':
         this->advanceCursor(1);
         return generateToken(TokenType::AMPERSAND);
-      case 0x002E:
+      case '.':
         if(
-          this->source[*i + 1] == 0x002E &&
-          this->source[*i + 2] == 0x002E
+          this->source[*i + 1] == '.' &&
+          this->source[*i + 2] == '.'
         ) {
           this->advanceCursor(3);
           return generateToken(TokenType::SPREAD);
         }
-      case 0x003D:
+      case '=':
         this->advanceCursor(1);
         return generateToken(TokenType::EQUAL);
-      case 0x007C:
+      case '|':
         this->advanceCursor(1);
         return generateToken(TokenType::PIPE);
-      case 0x0023:
+      case '#':
         this->advanceCursor(1);
         this->skipComments();
         continue;
-      case 0x0022:
+      case '"':
         if(
-          this->source[*i + 1] == 0x0022 &&
-          this->source[*i + 2] == 0x0022
+          this->source[*i + 1] == '"' &&
+          this->source[*i + 2] == '"'
         ) {
           return this->tokenizeBlockString();
         }
         return this->tokenizeString();
-      case 0x0040:
+      case '@':
         this->advanceCursor(1);
         return generateToken(TokenType::AT);
+      default:
+        // Unicode BOM
+        if(static_cast<uint32_t>(this->source[*i]) == 0xFEFF)
+          continue;
     }
   }
   return generateToken(TokenType::END_OF_QUERY);
