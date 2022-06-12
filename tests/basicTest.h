@@ -48,7 +48,7 @@ inline void runBasicTest() {
 
   // execution
   auto executionResult = test.executeWith(query, resolvers, typeOfMap);
-  printResultMap(*executionResult);
+  printResultMap(*executionResult.data);
   /* prints result to stdout
 
   cw3dv

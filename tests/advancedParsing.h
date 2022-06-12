@@ -94,6 +94,9 @@ inline void runAdvancedParsing() {{
       "}"
     );
     auto r = test.executeWith(doc, root, typeOfMap);
-    // printResultMap(*r);
+    // printResultMap(*r.data);
+    // for(auto err : r.errors) {
+    //   logger::error(err.message);
+    // }
   }
 }}
