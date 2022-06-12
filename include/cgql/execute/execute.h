@@ -7,7 +7,12 @@
 
 namespace cgql {
 
-cgqlSPtr<Object> execute(
+struct ExecutionResult {
+  cgqlSPtr<Object> data;
+  cgqlContainer<Error> errors;
+};
+
+ExecutionResult execute(
   const cgqlSPtr<Schema>& schema,
   const Document& document,
   const ResolverMap& resolverMap,

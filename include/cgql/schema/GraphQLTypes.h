@@ -7,7 +7,6 @@
 #include <string_view>
 #include <variant>
 #include <map>
-#include <list>
 #include <functional>
 
 namespace cgql {
@@ -45,7 +44,6 @@ using Data = std::variant<
 
 struct Object {
   std::map<std::string, Data> fields;
-  std::list<Error> errors;
 };
 struct List {
   std::vector<Data> elements;
