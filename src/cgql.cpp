@@ -15,7 +15,7 @@ cgqlSPtr<Schema> CgqlInstance::parseSchema(const char *schema) {
   return this->schema;
 }
 
-cgqlSPtr<Object> CgqlInstance::executeWith(
+ExecutionResult CgqlInstance::executeWith(
   const Document& document,
   const ResolverMap& resolverMap,
   const TypeOfMap& typeOfMap

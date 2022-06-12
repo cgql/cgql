@@ -199,11 +199,6 @@ void printResultMap(const Object& obj, uint8_t level) {
       printScalarValue(key, value, indentation);
     }
   }
-  for(const auto& err : obj.errors) {
-    std::string v = indentation;
-    v += err.message;
-    logger::error(v);
-  }
 }
 
 } // cgql

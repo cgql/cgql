@@ -1,7 +1,6 @@
 #include "selectionSetExecutor.h"
 
 #include "cgql/error/error.h"
-#include "cgql/error/exceptions.h"
 
 namespace cgql {
 
@@ -11,7 +10,7 @@ using GroupedField = std::map<
 >;
 
 static void collectFields(
-  const ExecutionContext& ctx,
+  ExecutionContext& ctx,
   const cgqlSPtr<TypeDefinition>& objectType,
   const SelectionSet &selectionSet,
   GroupedField& groupedFields
@@ -87,7 +86,7 @@ static Data defaultFieldResolver(
 }
 
 Data SelectionSetExecutor::completeList(
-  const ExecutionContext& ctx,
+  ExecutionContext& ctx,
   const FieldTypeDefinition& field,
   const cgqlSPtr<ListTypeDefinition>& fieldType,
   const SelectionSet& fields,
@@ -112,7 +111,7 @@ Data SelectionSetExecutor::completeList(
 }
 
 Data SelectionSetExecutor::completeAbstractType(
-  const ExecutionContext& ctx,
+  ExecutionContext& ctx,
   const cgqlSPtr<TypeDefinition>& fieldType,
   const SelectionSet& fields,
   const Data& result
@@ -121,9 +120,19 @@ Data SelectionSetExecutor::completeAbstractType(
     fromVariant<cgqlSPtr<Object>>(result);
   const cgqlContainer<cgqlSPtr<TypeDefinition>>& possibleTypes =
     ctx.schema->getPossibleTypes(fieldType);
+
   TypeOfMap::const_iterator it = ctx.typeOfMap.find(fieldType->getName());
+  String typeName = it->second(resultMap);
+  
+  if(typeName == "") {
+    ctx.errorManager.addError(Error{
+      "abstract type must resolve to runtime type "
+      "which requires type name"
+    });
+    return std::monostate{};
+  }
+
   for(const cgqlSPtr<TypeDefinition>& possibleType : possibleTypes) {
-    String typeName = it->second(resultMap);
     if(possibleType->getName() != typeName) continue;
 
     cgqlSPtr<ObjectTypeDefinition> object =
@@ -135,8 +144,12 @@ Data SelectionSetExecutor::completeAbstractType(
     SelectionSetExecutor executor(object, resultMap);
     return executor.execute(ctx, selectionSet);
   }
-  assert(false && "Unable to resolve value for implementation of interface");
-  /* silence compiler warning */ return 0;
+
+  ctx.errorManager.addError(Error{
+    "resolved type does not match any of the provided "
+    "types in the abstract type"
+  });
+  return std::monostate{};
 }
 
 Args SelectionSetExecutor::buildArgumentMap(
@@ -181,7 +194,7 @@ Args SelectionSetExecutor::buildArgumentMap(
 }
 
 cgqlSPtr<Object> SelectionSetExecutor::execute(
-  const ExecutionContext& ctx,
+  ExecutionContext& ctx,
   const SelectionSet& selectionSet
 ) {
   GroupedField groupedFieldSet;
@@ -202,34 +215,29 @@ cgqlSPtr<Object> SelectionSetExecutor::execute(
   };
 
   for(auto const& [responseKey, fields] : groupedFieldSet) {
-    try {
-      cgqlSPtr<Field> fieldNode =
-        std::static_pointer_cast<Field>(fields.front());
-      auto fieldIter = findField(fieldNode->getName());
-      if(fieldIter == obj->getFields().end()) continue;
+    cgqlSPtr<Field> fieldNode =
+      std::static_pointer_cast<Field>(fields.front());
+    auto fieldIter = findField(fieldNode->getName());
+    if(fieldIter == obj->getFields().end()) continue;
 
-      FieldTypeDefinition field = *fieldIter;
-      Data executedFieldResult = executeField(
-        ctx,
-        field,
-        field.getFieldType(),
-        fields
-      );
-      resultObj->fields.try_emplace(
-        responseKey,
-        executedFieldResult
-      );
-    } catch(const NonNullValueException& exception) {
-      resultObj->fields.try_emplace(responseKey, std::monostate{});
-      resultObj->errors.emplace_back(Error{exception.what()});
-    }
+    FieldTypeDefinition field = *fieldIter;
+    Data executedFieldResult = executeField(
+      ctx,
+      field,
+      field.getFieldType(),
+      fields
+    );
+    resultObj->fields.try_emplace(
+      responseKey,
+      executedFieldResult
+    );
   }
 
   return resultObj;
 }
 
 Data SelectionSetExecutor::executeField(
-  const ExecutionContext& ctx,
+  ExecutionContext& ctx,
   const FieldTypeDefinition& field,
   const cgqlSPtr<TypeDefinition>& fieldType,
   const SelectionSet& fields
@@ -258,7 +266,7 @@ Data SelectionSetExecutor::executeField(
 }
 
 Data SelectionSetExecutor::completeValue(
-  const ExecutionContext& ctx,
+  ExecutionContext& ctx,
   const FieldTypeDefinition& field,
   const cgqlSPtr<TypeDefinition>& fieldType,
   const SelectionSet& fields,
@@ -276,7 +284,8 @@ Data SelectionSetExecutor::completeValue(
       result
     );
     if(result.index() == 4) {
-      throw NonNullValueException(field.getName());
+      ctx.errorManager.addError(Error{"expected a non-null value"});
+      return std::monostate{};
     }
     return completedValue;
   } else if(result.index() == 4) {
@@ -340,8 +349,8 @@ Data SelectionSetExecutor::completeValue(
     }
     default:
       assert(false && "TypeDef cannot be base");
+      return std::monostate{};
   }
-  /* silence compiler warning */ return 0;
 }
 
 }

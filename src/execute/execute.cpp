@@ -5,14 +5,17 @@
 
 namespace cgql {
 
-static cgqlSPtr<Object> executeQuery(
-  const ExecutionContext& ctx,
+static ExecutionResult executeQuery(
+  ExecutionContext& ctx,
   const OperationDefinition& query
 ) {
   const SelectionSet& selection = query.getSelectionSet();
 
   SelectionSetExecutor executor(ctx.schema->getQuery());
-  return executor.execute(ctx, selection);
+  return ExecutionResult {
+    .data = executor.execute(ctx, selection),
+    .errors = ctx.errorManager.getAllErrors()
+  };
 }
 
 struct OperationInfo {
@@ -41,7 +44,7 @@ static OperationInfo getOperation(
   return operationInfo;
 }
 
-cgqlSPtr<Object> execute(
+ExecutionResult execute(
   const cgqlSPtr<Schema> &schema,
   const Document &document,
   const ResolverMap& resolverMap,

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "cgql/error/error.h"
 #include "cgql/schema/typeDefinitions.h"
 #include "cgql/query/Document.h"
 #include "cgql/execute/execute.h"
@@ -12,6 +13,7 @@ struct ExecutionContext {
   ResolverMap resolverMap;
   TypeOfMap typeOfMap;
   cgqlContainer<FragmentDefinition> fragments;
+  ErrorManager errorManager;
 };
 
 class SelectionSetExecutor {
@@ -26,32 +28,32 @@ public:
     : obj(obj), source(objectValue) {
   }
   cgqlSPtr<Object> execute(
-    const ExecutionContext& ctx,
+    ExecutionContext& ctx,
     const SelectionSet& selectionSet
   );
 private:
   Data executeField(
-    const ExecutionContext& ctx,
+    ExecutionContext& ctx,
     const FieldTypeDefinition& field,
     const cgqlSPtr<TypeDefinition>& fieldType,
     const SelectionSet& fields
   );
   Data completeValue(
-    const ExecutionContext& ctx,
+    ExecutionContext& ctx,
     const FieldTypeDefinition& field,
     const cgqlSPtr<TypeDefinition>& fieldType,
     const SelectionSet& fields,
     const Data& result
   );
   Data completeList(
-    const ExecutionContext& ctx,
+    ExecutionContext& ctx,
     const FieldTypeDefinition& field,
     const cgqlSPtr<ListTypeDefinition>& fieldType,
     const SelectionSet& fields,
     const Data& result
   );
   Data completeAbstractType(
-    const ExecutionContext& ctx,
+    ExecutionContext& ctx,
     const cgqlSPtr<TypeDefinition>& fieldType,
     const SelectionSet& fields,
     const Data& result
