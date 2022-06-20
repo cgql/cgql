@@ -55,8 +55,7 @@ cgqlContainer<Directive> SchemaParser::parseDirectives() {
   cgqlContainer<Directive> directives;
   while(this->checkType(TokenType::AT)) {
     this->tokenizer.advance();
-    Directive& directive = directives.emplace_back();
-    directive.setName(this->parseName());
+    Directive& directive = directives.emplace_back(this->parseName());
     if(this->checkType(TokenType::BRACES_L)) {
       this->tokenizer.advance();
       do {
@@ -206,7 +205,7 @@ cgqlContainer<DirectiveLocation> SchemaParser::parseDirectiveLocations() {
   cgqlContainer<DirectiveLocation> directiveLocations;
   do {
     this->tokenizer.advance();
-    directiveLocations.emplace_back(
+    directiveLocations.push_back(
       getDirectiveLocation(this->parseName())
     );
   } while(this->checkType(TokenType::PIPE));

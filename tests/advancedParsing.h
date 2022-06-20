@@ -79,7 +79,7 @@ inline void runAdvancedParsing() {{
   for(int i = 0; i < 50000; i++) {
     auto doc = parse(
       "{"
-      "  cw3dv: person(args: { id: 65 name: \"Hello\" } ) {"
+      "  cw3dv: person(args: { name: \"bruhhh\" }) {"
       "    name"
       "    age"
       "    addr: address {"

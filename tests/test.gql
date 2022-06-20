@@ -4,7 +4,7 @@
 Heyyyy
 """
 input PersonQueryInput {
-  id: Int!
+  id: Int! = 96
   name: String = "Heyyy"
 }
 

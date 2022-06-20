@@ -20,7 +20,8 @@ using GraphQLInputTypes = std::variant<
   Int,
   std::string,
   cgqlSPtr<ObjectType>,
-  cgqlSPtr<ListType>
+  cgqlSPtr<ListType>,
+  std::monostate
 >;
 
 struct ObjectType {

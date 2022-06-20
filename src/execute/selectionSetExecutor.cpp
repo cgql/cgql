@@ -1,6 +1,8 @@
 #include "selectionSetExecutor.h"
 
 #include "cgql/error/error.h"
+#include "cgql/logger/logger.h"
+#include "execute/coerceArgumentValues.h"
 
 namespace cgql {
 
@@ -92,12 +94,17 @@ Data SelectionSetExecutor::completeList(
   const SelectionSet& fields,
   const Data& result
 ) {
+  if(result.index() != 3) {
+    ctx.errorManager.addError(Error{"Expected an iterable list"});
+    return std::monostate{};
+  }
+
   cgqlSPtr<List> rawResultList =
     fromVariant<cgqlSPtr<List>>(result);
   cgqlSPtr<List> resultList = cgqlSMakePtr<List>();
   resultList->elements.reserve(rawResultList->elements.size());
   for(Data rawResult : rawResultList->elements) {
-    resultList->elements.emplace_back(
+    resultList->elements.push_back(
       completeValue(
         ctx,
         field,
@@ -153,6 +160,7 @@ Data SelectionSetExecutor::completeAbstractType(
 }
 
 Args SelectionSetExecutor::buildArgumentMap(
+  ExecutionContext& ctx,
   const cgqlSPtr<Selection>& selection,
   const FieldTypeDefinition& fieldType
 ) {
@@ -173,22 +181,20 @@ Args SelectionSetExecutor::buildArgumentMap(
     );
     const GraphQLInputTypes defaultValue = argDef.getDefaultValue();
     bool hasValue = it != argumentValues.end();
-    if(!hasValue) {
-      args.addArg(
-        argName,
-        defaultValue
-      );
-    } else if (
+
+    if(
       argDef.getInputValueType()->getDefinitionType() == DefinitionType::NON_NULL &&
       !hasValue
     ) {
-      assert(false && "Value is null or not provided");
-    } else {
-      args.addArg(
-        argName,
-        it->getValue()
-      );
+      ctx.errorManager.addError(Error{"argument value not provided"});
     }
+
+    GraphQLInputTypes coercedValue =
+      coerceArgumentValues(ctx, argDef.getInputValueType(), it->getValue());
+    args.addArg(
+      argName,
+      coercedValue
+    );
   }
   return args;
 }
@@ -246,6 +252,7 @@ Data SelectionSetExecutor::executeField(
   Data result = [&]() {
     if(it != ctx.resolverMap.end()) {
       return it->second(buildArgumentMap(
+        ctx,
         fields.front(),
         field
       ));

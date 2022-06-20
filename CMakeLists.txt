@@ -9,6 +9,7 @@ set(CPP_SOURCES
   src/cgql.cpp
   src/execute/execute.cpp
   src/execute/selectionSetExecutor.cpp
+  src/execute/coerceArgumentValues.cpp
   src/lexer/tokenizer.cpp
   src/parser/baseParser.cpp
   src/parser/parser.cpp

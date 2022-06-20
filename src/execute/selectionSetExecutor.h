@@ -59,6 +59,7 @@ private:
     const Data& result
   );
   Args buildArgumentMap(
+    ExecutionContext& ctx,
     const cgqlSPtr<Selection>& selection,
     const FieldTypeDefinition& fieldType
   );

@@ -24,7 +24,7 @@ cgqlSPtr<ListType> BaseParser::parseList() {
   this->tokenizer.advance();
   cgqlSPtr<ListType> list = cgqlSMakePtr<ListType>();
   while(!this->checkType(TokenType::SQUARE_BRACES_R)) {
-    list->elements.emplace_back(this->parseValueLiteral());
+    list->elements.push_back(this->parseValueLiteral());
   }
   this->tokenizer.advance();
   return list;

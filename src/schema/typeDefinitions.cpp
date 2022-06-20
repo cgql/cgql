@@ -15,6 +15,9 @@ const std::string& AbstractSchemaTypeDefinition::getDescription() const {
   return this->description;
 }
 
+Directive::Directive(std::string name) {
+  this->setName(name);
+}
 void Directive::addArgument(Directive::DirectiveArgument argument) {
   this->args.push_back(argument);
 }
@@ -186,7 +189,7 @@ void Schema::setTypeDefMap(
     );
     auto addImplementedInterface = [this](
       const cgqlContainer<std::string>& implements,
-      const cgqlSPtr<TypeDefinition>& def
+      cgqlSPtr<TypeDefinition> def
     ) {
       for(auto interface : implements) {
         this->implementedInterfaces[interface]

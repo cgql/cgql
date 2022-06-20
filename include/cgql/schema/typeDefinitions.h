@@ -75,6 +75,7 @@ public:
     GraphQLInputTypes value;
   };
 public:
+  Directive(std::string name);
   void addArgument(DirectiveArgument argument);
   const cgqlContainer<DirectiveArgument>& getArguments() const;
 private:
@@ -293,7 +294,7 @@ public:
         std::static_pointer_cast<UnionTypeDefinition>(abstractType);
       return unionType->getMembers();
     }
-    ImplementedInterfaces::const_iterator it = this->implementedInterfaces.find(abstractType->getName());
+    auto it = this->implementedInterfaces.find(abstractType->getName());
     return it->second;
   }
 private:
