@@ -95,7 +95,7 @@ Data SelectionSetExecutor::completeList(
   const Data& result
 ) {
   if(result.index() != 3) {
-    ctx.errorManager.addError(Error{"Expected an iterable list"});
+    ctx.errorManager.addError("Expected an iterable list");
     return std::monostate{};
   }
 
@@ -103,7 +103,7 @@ Data SelectionSetExecutor::completeList(
     fromVariant<cgqlSPtr<List>>(result);
   cgqlSPtr<List> resultList = cgqlSMakePtr<List>();
   resultList->elements.reserve(rawResultList->elements.size());
-  for(Data rawResult : rawResultList->elements) {
+  for(const Data& rawResult : rawResultList->elements) {
     resultList->elements.push_back(
       completeValue(
         ctx,
@@ -132,10 +132,10 @@ Data SelectionSetExecutor::completeAbstractType(
   String typeName = it->second(resultMap);
   
   if(typeName == "") {
-    ctx.errorManager.addError(Error{
+    ctx.errorManager.addError(
       "abstract type must resolve to runtime type "
       "which requires type name"
-    });
+    );
     return std::monostate{};
   }
 
@@ -152,10 +152,10 @@ Data SelectionSetExecutor::completeAbstractType(
     return executor.execute(ctx, selectionSet);
   }
 
-  ctx.errorManager.addError(Error{
+  ctx.errorManager.addError(
     "resolved type does not match any of the provided "
     "types in the abstract type"
-  });
+  );
   return std::monostate{};
 }
 
@@ -186,7 +186,7 @@ Args SelectionSetExecutor::buildArgumentMap(
       argDef.getInputValueType()->getDefinitionType() == DefinitionType::NON_NULL &&
       !hasValue
     ) {
-      ctx.errorManager.addError(Error{"argument value not provided"});
+      ctx.errorManager.addError("argument value not provided");
     }
 
     GraphQLInputTypes coercedValue =
@@ -291,7 +291,7 @@ Data SelectionSetExecutor::completeValue(
       result
     );
     if(result.index() == 4) {
-      ctx.errorManager.addError(Error{"expected a non-null value"});
+      ctx.errorManager.addError("expected a non-null value");
       return std::monostate{};
     }
     return completedValue;
