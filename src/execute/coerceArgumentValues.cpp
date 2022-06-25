@@ -16,7 +16,7 @@ GraphQLInputTypes coerceArgumentValues(
     }
     case DefinitionType::INPUT_OBJECT: {
       if(value.index() != 2) {
-        ctx.errorManager.addError(Error{"expected an object as input type"});
+        ctx.errorManager.addError("expected an object as input type");
         return std::monostate{};
       }
 
@@ -38,7 +38,7 @@ GraphQLInputTypes coerceArgumentValues(
     }
     case DefinitionType::LIST: {
       if(value.index() != 3) {
-        ctx.errorManager.addError(Error{"expected a list as input type"});
+        ctx.errorManager.addError("expected a list as input type");
         return std::monostate{};
       }
 
@@ -54,6 +54,26 @@ GraphQLInputTypes coerceArgumentValues(
         );
       }
       return coercedList;
+    }
+    case DefinitionType::NON_NULL: {
+      if(value.index() == 4) {
+        ctx.errorManager.addError("expected a non-null value as input type");
+        return std::monostate{};
+      }
+      cgqlSPtr<NonNullTypeDefinition> nonNull =
+        std::static_pointer_cast<NonNullTypeDefinition>(type);
+      return coerceArgumentValues(ctx, nonNull->getInnerType(), value);
+    }
+    case DefinitionType::ENUM: {
+      if(value.index() != 1) {
+        ctx.errorManager.addError("expected an enum as input type");
+        return std::monostate{};
+      }
+      std::string enumValue = fromVariant<std::string>(value);
+      cgqlSPtr<EnumTypeDefinition> enumType =
+        std::static_pointer_cast<EnumTypeDefinition>(type);
+      std::string result = enumType->serialize(enumValue).data();
+      return result;
     }
     default: return value;
   }
