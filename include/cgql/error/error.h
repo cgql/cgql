@@ -7,15 +7,16 @@
 namespace cgql {
 
 struct Error {
+  Error(std::string message) : message(message) {}
   std::string message;
 };
 
 class ErrorManager {
 public:
-  void addError(Error error) {
-    this->errors.push_back(error);
+  void addError(const char* errorMsg) {
+    this->errors.emplace_back(errorMsg);
   }
-  auto getAllErrors() const {
+  const auto& getAllErrors() const {
     return this->errors;
   }
 private:
